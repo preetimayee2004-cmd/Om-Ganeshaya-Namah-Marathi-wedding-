@@ -1,0 +1,31 @@
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: ["./index.html", "./src/**/*.{ts,tsx}"],
+  theme: {
+    extend: {
+      colors: {
+        // PRD palette (confirmed by client over the brief's #ca4c3d / #f7f2eb)
+        wine: "#722B35", // primary identity: headings, CTAs
+        gold: "#C6A15B", // fine decorative details only
+        ivory: "#F7EEDC", // main background
+        olive: "#687253", // secondary accents
+        espresso: "#382923", // body text
+        blush: "#E8C9BE", // floral accents
+      },
+      fontFamily: {
+        // Exactly two Latin families + a Devanagari fallback. No ad hoc fonts per section.
+        script: ['"Great Vibes"', "cursive"], // headings & couple names
+        body: ["Lato", "system-ui", "sans-serif"], // all body copy
+        marathi: ['"Mukta"', '"Noto Sans Devanagari"', "sans-serif"],
+      },
+      keyframes: { fadeIn: { from: { opacity: "0" }, to: { opacity: "1" } } },
+      // Mobile-first. `lg` is the only point where the phone mockup activates.
+      screens: {
+        sm: "480px",
+        md: "768px",
+        lg: "1024px",
+      },
+    },
+  },
+  plugins: [],
+};
