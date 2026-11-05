@@ -6,7 +6,7 @@ export default {
       colors: {
         // PRD palette (confirmed by client over the brief's #ca4c3d / #f7f2eb)
         wine: "#6B1624", // deep maroon-red: headings, CTAs on parchment
-        maroon: "#3B0710", // dark sections and page frame (matches the opening)
+        maroon: "#0E210B", // dark forest green: dark sections and page frame (client-chosen swatch)
         zari: "#E2A84B", // bright gold for text on maroon
         gold: "#A8762E", // antique gold: borders and small details on parchment
         ivory: "#F6E6C3", // parchment: main background
