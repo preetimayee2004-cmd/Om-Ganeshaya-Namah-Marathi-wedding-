@@ -2,8 +2,8 @@
 // Change names, dates and photos here; no component should hard-code them.
 export const wedding = {
   couple: {
-    bride: "Aabha",
-    groom: "Groom Name",
+    bride: "Preeti",
+    groom: "Shivasish",
   },
   coupleHeading: "The People Behind the Celebration",
   coupleMessage:
@@ -36,7 +36,7 @@ export const wedding = {
       art: "halad",
       name: "Halad",
       marathi: "हळद",
-      start: "2027-02-12T10:00:00+05:30",
+      start: "2027-02-10T10:00:00+05:30",
       venue: "Venue name, City",
       mapUrl: "https://maps.google.com/?q=Venue+name",
       description:
@@ -47,7 +47,7 @@ export const wedding = {
       art: "puja",
       name: "Ganesh Puja",
       marathi: "गणेश पूजन",
-      start: "2027-02-13T08:30:00+05:30",
+      start: "2027-02-11T08:30:00+05:30",
       venue: "Venue name, City",
       mapUrl: "https://maps.google.com/?q=Venue+name",
       description:
@@ -58,7 +58,7 @@ export const wedding = {
       art: "kalash",
       name: "Seemant Pujan",
       marathi: "सीमांत पूजन",
-      start: "2027-02-13T18:00:00+05:30",
+      start: "2027-02-11T18:00:00+05:30",
       venue: "Venue name, City",
       mapUrl: "https://maps.google.com/?q=Venue+name",
       description:
@@ -69,8 +69,8 @@ export const wedding = {
       art: "antarpat",
       name: "Wedding Ceremony",
       marathi: "विवाह सोहळा",
-      start: "2027-02-14T11:30:00+05:30",
-      venue: "Venue name, City",
+      start: "2027-02-12T11:30:00+05:30",
+      venue: "Jagannath Kalyan Mandap, Bhubaneswar",
       mapUrl: "https://maps.google.com/?q=Venue+name",
       description:
         "Antarpat and Mangalashtak, Kanyadaan and Saptapadi: the sacred rituals that unite the couple.",
@@ -80,7 +80,7 @@ export const wedding = {
       art: "evening",
       name: "Reception",
       marathi: "स्वागत समारंभ",
-      start: "2027-02-14T19:30:00+05:30",
+      start: "2027-02-12T19:30:00+05:30",
       venue: "Venue name, City",
       mapUrl: "https://maps.google.com/?q=Venue+name",
       description:
@@ -110,10 +110,11 @@ export const wedding = {
   ],
   // Placeholder venue and travel info: replace with the real details.
   venue: {
-    name: "Venue Name",
+    name: "Jagannath Kalyan Mandap",
+    city: "Bhubaneswar",
     marathi: "विवाह स्थळ",
-    address: "Street address, Area, City, State PIN",
-    mapUrl: "https://maps.google.com/?q=Venue+Name+City",
+    address: "Jagannath Kalyan Mandap, Bhubaneswar, Odisha (add the street address and PIN)",
+    mapUrl: "https://maps.google.com/?q=Jagannath+Kalyan+Mandap+Bhubaneswar",
     note: "Parking is available on site. Please arrive 15 minutes before the ceremony.",
   },
   travel: [
@@ -129,7 +130,7 @@ export const wedding = {
   thankYouMessage:
     "Your presence, love and blessings mean more to us than words can express. We cannot wait to celebrate this beautiful beginning with you.",
   finalNote: "Until we celebrate together, with all our love.",
-  hashtag: "#AabhaWeds",
+  hashtag: "#PreetiWedsShivasish",
   // Placeholder contacts. Use digits with country code, no spaces (e.g. +919876543210).
   contacts: [
     { name: "Contact Person 1", role: "Bride's family", phone: "+910000000011" },
@@ -154,7 +155,8 @@ export const wedding = {
     { alt: "Laughing together", caption: "Laughter", ratio: "4/5", tone: "blush" },
   ] as { alt: string; caption: string; ratio: string; tone: string; src?: string }[],
   // ISO string with explicit offset so the countdown is correct for any viewer (IST here).
-  date: "2027-02-14T11:30:00+05:30",
+  // Date is from the invitation (12 Feb 2027); the 11:30 AM start time is a placeholder until confirmed.
+  date: "2027-02-12T11:30:00+05:30",
   timeZone: "Asia/Kolkata",
   guestParam: "guest", // ?guest=Priya+Sharma
   guestFallback: "Guest",
