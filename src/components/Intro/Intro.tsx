@@ -44,7 +44,7 @@ const goldText: CSSProperties = {
 function useMarathiDate() {
   return useMemo(
     () =>
-      new Intl.DateTimeFormat("mr-IN", { day: "numeric", month: "long", year: "numeric", timeZone: wedding.timeZone }).format(new Date(wedding.date)),
+      new Intl.DateTimeFormat("mr-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: wedding.timeZone }).format(new Date(wedding.date)),
     [],
   );
 }
@@ -383,6 +383,9 @@ export default function Intro() {
             </p>
             <p lang="mr" className="font-marathi" style={{ marginTop: "4cqw", fontSize: "5.6cqw", color: MAROON, fontWeight: 600, ...fade(on(3), 2100, 1100) }}>
               {dateText}
+            </p>
+            <p className="font-body" style={{ marginTop: "1.5cqw", fontSize: "3.6cqw", color: "#4a2a1c", ...fade(on(3), 2400, 1100) }}>
+              {wedding.venue.name}, {wedding.venue.city}
             </p>
           </div>
 
