@@ -135,12 +135,13 @@ export default function Intro() {
 
   const pill: CSSProperties = {
     position: "absolute",
-    right: 12,
-    top: `calc(${SAFE_TOP} + ${stage === 0 ? 12 : 60}px)`,
+    right: 6,
+    top: `calc(${SAFE_TOP} + 6px)`,
     zIndex: 40,
-    padding: "8px 14px",
+    padding: "3px 11px",
     borderRadius: 999,
-    fontSize: 12,
+    fontSize: 11,
+    lineHeight: 1.4,
     letterSpacing: "0.12em",
     color: MAROON,
     background: "rgba(251,245,232,.88)",
@@ -259,29 +260,7 @@ export default function Intro() {
 
           {/* ---------- scene 3 text + button ---------- */}
           <div style={{ opacity: stage === 2 ? 1 : 0, transition: "opacity 500ms ease-in-out" }}>
-            <InviteText show={on(2)} />
-            <div className="absolute inset-x-0 flex justify-center" style={{ top: "calc(50cqw + 93cqw)" }}>
-              <button
-                onClick={meet}
-                tabIndex={on(2) && btnReady ? 0 : -1}
-                className="zv-anim"
-                style={{
-                  padding: "2.6cqw 6.5cqw",
-                  borderRadius: 999,
-                  border: "1px solid #e2b24f",
-                  background: "linear-gradient(180deg, #8a1f32, #5e1020)",
-                  color: "#fbe9b8",
-                  boxShadow: "0 4px 14px rgba(94,16,32,.35)",
-                  opacity: btnReady && stage === 2 ? 1 : 0,
-                  transition: "opacity 900ms ease-in-out",
-                  animation: btnReady ? "zv-pulse 2.4s ease-in-out infinite" : "none",
-                  pointerEvents: btnReady && stage === 2 ? "auto" : "none",
-                }}
-              >
-                <span lang="mr" className="font-marathi" style={{ display: "block", fontSize: "4.6cqw", fontWeight: 600 }}>वधू-वर पाहा</span>
-                <span style={{ display: "block", fontFamily: '"Cormorant Garamond", serif', fontSize: "3.6cqw", opacity: 0.9 }}>Meet the Couple</span>
-              </button>
-            </div>
+            <InviteText show={on(2)} meetReady={btnReady && stage === 2} onMeet={meet} />
           </div>
 
           {/* ---------- scene 4 text + scroll cue (also the start of the scroll scene) ---------- */}
@@ -347,7 +326,7 @@ export default function Intro() {
               onClick={() => setSoundOn((s) => !s)}
               aria-pressed={soundOn}
               aria-label={soundOn ? "Mute shehnai music" : "Play shehnai music"}
-              style={{ ...pill, right: "auto", left: 12 }}
+              style={{ ...pill, right: "auto", left: 6 }}
             >
               {soundOn ? "Sound on" : "Sound off"}
             </button>

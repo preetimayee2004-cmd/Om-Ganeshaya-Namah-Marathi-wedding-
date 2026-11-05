@@ -8,7 +8,7 @@ const TOP = "50cqw";
 const SERIF = '"Cormorant Garamond", Georgia, serif';
 
 /** Scene 3: shloka, "Together with their families", names, date, venue. */
-export function InviteText({ show }: { show: boolean }) {
+export function InviteText({ show, meetReady = false, onMeet }: { show: boolean; meetReady?: boolean; onMeet?: () => void }) {
   const date = useMarathiDate();
   const [first, second] = coupleOrder;
   const fit = (s: string) => `${16.8 * Math.min(1, 7.5 / Math.max(s.length, 1))}cqw`;
@@ -19,15 +19,41 @@ export function InviteText({ show }: { show: boolean }) {
   });
   return (
     <div className="absolute inset-x-0 text-center" style={{ top: TOP, pointerEvents: "none" }}>
-      <p lang="mr" className="font-marathi" style={{ fontSize: "4.7cqw", color: MAROON, ...line(0) }}>॥ श्री गणेशाय नमः ॥</p>
-      <p style={{ marginTop: "1.4cqw", fontFamily: SERIF, fontStyle: "italic", fontWeight: 500, fontSize: "5.3cqw", color: "#4a2a1c", ...line(1) }}>Together with their families</p>
-      <p className="font-script" style={{ ...goldText, marginTop: "2cqw", fontSize: fit(first), lineHeight: 1.05, ...line(2) }}>{first}</p>
-      <p className="font-script" style={{ fontSize: "10cqw", lineHeight: 1, color: "#c4872a", ...line(3) }}>&amp;</p>
-      <p className="font-script" style={{ ...goldText, fontSize: fit(second), lineHeight: 1.05, ...line(4) }}>{second}</p>
-      <p lang="mr" className="font-marathi" style={{ marginTop: "4cqw", fontSize: "5cqw", color: MAROON, ...line(5) }}>{date}</p>
-      <p style={{ marginTop: "7.5cqw", fontFamily: SERIF, fontWeight: 500, fontSize: "5.3cqw", color: "#4a2a1c", ...line(6) }}>
+      <p lang="mr" className="font-marathi" style={{ fontSize: "4.4cqw", color: MAROON, ...line(0) }}>॥ श्री गणेशाय नमः ॥</p>
+      <p style={{ marginTop: "1cqw", fontFamily: SERIF, fontStyle: "italic", fontWeight: 500, fontSize: "5cqw", color: "#4a2a1c", ...line(1) }}>Together with their families</p>
+      <p className="font-script" style={{ ...goldText, marginTop: "1cqw", fontSize: fit(first), lineHeight: 1, ...line(2) }}>{first}</p>
+      <p className="font-script" style={{ fontSize: "9cqw", lineHeight: 0.7, color: "#c4872a", ...line(3) }}>&amp;</p>
+      <p className="font-script" style={{ ...goldText, fontSize: fit(second), lineHeight: 1, ...line(4) }}>{second}</p>
+      <p lang="mr" className="font-marathi" style={{ marginTop: "3cqw", fontSize: "4.8cqw", color: MAROON, ...line(5) }}>{date}</p>
+      <p style={{ marginTop: "5cqw", fontFamily: SERIF, fontWeight: 500, fontSize: "5.3cqw", color: "#4a2a1c", ...line(6) }}>
         {wedding.venue.name}, {wedding.venue.city}
       </p>
+      {/* slim frosted-glass button */}
+      <button
+        onClick={onMeet}
+        tabIndex={meetReady ? 0 : -1}
+        className="zv-anim"
+        style={{
+          marginTop: "5cqw",
+          width: "76cqw",
+          padding: "1.2cqw 4cqw",
+          lineHeight: 1.25,
+          borderRadius: 999,
+          color: MAROON,
+          background: "linear-gradient(180deg, rgba(255,255,255,.55), rgba(255,255,255,.22))",
+          border: "1px solid rgba(255,255,255,.85)",
+          boxShadow: "0 4px 16px rgba(109,15,27,.18), inset 0 1px 0 rgba(255,255,255,.9)",
+          WebkitBackdropFilter: "blur(8px)",
+          backdropFilter: "blur(8px)",
+          opacity: meetReady ? 1 : 0,
+          pointerEvents: meetReady ? "auto" : "none",
+          transition: "opacity 900ms ease-in-out",
+          animation: meetReady ? "zv-pulse 2.6s ease-in-out infinite" : "none",
+        }}
+      >
+        <span lang="mr" className="font-marathi" style={{ fontSize: "4.4cqw", fontWeight: 600 }}>वधू-वर पाहा</span>
+        <span style={{ fontFamily: SERIF, fontSize: "4cqw", marginLeft: "2cqw", opacity: 0.85 }}>· Meet the Couple</span>
+      </button>
     </div>
   );
 }
