@@ -11,10 +11,10 @@ export default function App() {
     <Layout>
       <Intro />
       <PinnedScene>
+        <CountdownCard />
         <StoryCard />
         <EventsCard />
         <VenueCard />
-        <CountdownCard />
         <RsvpBlessingsCard />
         <ClosingCard />
       </PinnedScene>
