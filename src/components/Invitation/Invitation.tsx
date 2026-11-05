@@ -63,7 +63,7 @@ export default function Invitation() {
       ref={cardRef}
       id="invitation"
       aria-labelledby="invitation-title"
-      className="relative flex min-h-screen items-center justify-center px-5 py-14"
+      className="weave relative flex min-h-screen items-center justify-center bg-maroon px-5 py-14"
     >
       {/* Paper card: unfolds on first view */}
       <div

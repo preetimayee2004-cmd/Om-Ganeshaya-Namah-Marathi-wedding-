@@ -16,7 +16,7 @@ export default function Layout({ children }: { children: ReactNode }) {
     return (
       <ScrollRootContext.Provider value={null}>
         {/* overflow-x-clip: slide-in reveals start off to the side; never let them add a horizontal scrollbar */}
-        <main className="mx-auto min-h-screen w-full max-w-[480px] overflow-x-clip bg-ivory">
+        <main className="mx-auto min-h-screen w-full max-w-[480px] paper overflow-x-clip">
           {children}
         </main>
       </ScrollRootContext.Provider>
@@ -39,7 +39,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         {/* Screen. translateZ(0) makes position:fixed children stay inside the phone. */}
         <div
           ref={setScreen}
-          className="no-scrollbar relative h-full w-full overflow-y-auto overflow-x-hidden rounded-[2.7rem] bg-ivory"
+          className="no-scrollbar relative h-full w-full overflow-y-auto overflow-x-hidden rounded-[2.7rem] paper"
           style={{ transform: "translateZ(0)" }}
         >
           {/* dynamic island */}

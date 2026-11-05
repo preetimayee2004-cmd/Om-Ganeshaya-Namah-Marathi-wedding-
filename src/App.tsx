@@ -1,4 +1,5 @@
 import Layout from "./components/Layout/Layout";
+import Divider from "./components/Layout/Divider";
 import Intro from "./components/Intro/Intro";
 import Invitation from "./components/Invitation/Invitation";
 import Couple from "./components/Couple/Couple";
@@ -19,15 +20,22 @@ export default function App() {
     <Layout>
       <Intro />
       <Invitation />
+      <Divider />
       <Couple />
       <Countdown />
+      <Divider />
       <OurStory />
+      <Divider />
       <Events />
+      <Divider />
       <Family />
+      <Divider />
       <Gallery />
       <RSVP />
       <WishingWall />
+      <Divider />
       <TravelStay />
+      <Divider />
       <Contact />
       <ThankYou />
       <Footer />

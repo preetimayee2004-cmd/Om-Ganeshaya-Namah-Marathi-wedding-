@@ -21,8 +21,8 @@ export default function Footer() {
   };
 
   return (
-    <footer ref={ref} className="bg-wine px-6 pb-10 pt-16 text-center text-ivory">
-      <svg viewBox="0 0 48 44" className="mx-auto h-10 w-10 text-gold" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden
+    <footer ref={ref} className="weave bg-maroon px-6 pb-10 pt-16 text-center text-ivory">
+      <svg viewBox="0 0 48 44" className="mx-auto h-10 w-10 text-zari" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden
         style={{ transform: seen ? "scale(1)" : "scale(0.6)", opacity: seen ? 1 : 0, transition: "all 1200ms cubic-bezier(.2,1.4,.4,1)" }}>
         <path d="M24 40C8 28 4 18 4 12a9 9 0 0 1 20-3 9 9 0 0 1 20 3c0 6-4 16-20 28Z" />
       </svg>
@@ -35,7 +35,7 @@ export default function Footer() {
       </p>
 
       <div style={{ opacity: seen ? 1 : 0, transition: "opacity 1600ms ease 900ms" }}>
-        <p className="mt-6 font-script text-3xl text-gold">
+        <p className="mt-6 font-script text-3xl text-zari">
           {wedding.couple.bride} &amp; {wedding.couple.groom}
         </p>
         <p className="mt-1 font-body text-xs uppercase tracking-[0.3em] text-ivory/80">{date}</p>
@@ -44,7 +44,7 @@ export default function Footer() {
 
       <button
         onClick={toTop}
-        className="mt-8 min-h-11 rounded-full border border-gold/70 px-6 font-body text-xs font-bold uppercase tracking-widest text-gold transition active:scale-95"
+        className="mt-8 min-h-11 rounded-full border border-zari/70 px-6 font-body text-xs font-bold uppercase tracking-widest text-zari transition active:scale-95"
       >
         Back to top ↑
       </button>
