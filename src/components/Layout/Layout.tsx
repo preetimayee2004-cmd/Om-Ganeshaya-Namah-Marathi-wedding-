@@ -55,10 +55,6 @@ export default function Layout({ children }: { children: ReactNode }) {
           </ScrollRootContext.Provider>
         </div>
       </div>
-
-      <p className="fixed bottom-4 left-1/2 -translate-x-1/2 font-body text-xs tracking-widest text-espresso/50">
-        BEST VIEWED ON MOBILE · SHARE THE LINK ON WHATSAPP
-      </p>
     </div>
   );
 }
