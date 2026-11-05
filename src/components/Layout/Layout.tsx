@@ -24,7 +24,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-espresso via-[#4a342d] to-wine/80 p-6">
+    <div className="fixed inset-0 flex items-center justify-center overflow-hidden bg-gradient-to-br from-espresso via-[#4a342d] to-wine/80 p-6">
       {/* Phone: 440x956 pt aspect (iPhone 17 Pro Max), fitted to viewport height */}
       <div
         className="relative rounded-[3.4rem] bg-[#1b1412] p-[10px] shadow-[0_40px_90px_-20px_rgba(0,0,0,0.65),inset_0_0_0_2px_#6b5a52]"
