@@ -183,9 +183,8 @@ export default function Intro() {
               position: "absolute",
               inset: 0,
               transformOrigin: "50% 48%",
-              transform: on(2) ? "scale(1.1)" : "scale(1)",
               opacity: on(1) && !on(2) ? 1 : 0,
-              transition: on(2) ? `transform 2000ms ${EASE}, opacity 1800ms ease-in-out` : "opacity 900ms ease-in-out 400ms",
+              transition: on(2) ? "opacity 1800ms ease-in-out" : "opacity 900ms ease-in-out 400ms",
             }}
           >
             {/* soft golden halo behind Ganesha (images multiply over it) */}
@@ -244,7 +243,7 @@ export default function Intro() {
           <ArtLayer src="/intro/arch.jpg" anchor="top" height={H.arch} mask={vFade("bottom", 14)} style={{ opacity: on(2) ? 1 : 0, transition: "opacity 1600ms ease-in-out 600ms" }} />
           <SceneArt
             src="/intro/palace.jpg"
-            style={{ opacity: on(2) ? 1 : 0, transform: on(2) ? "translateY(0)" : "translateY(90px)", transition: "opacity 1500ms ease-out 700ms, transform 1700ms cubic-bezier(.22,1,.36,1) 700ms" }}
+            style={{ opacity: on(2) ? 1 : 0, transition: "opacity 1500ms ease-out 700ms" }}
           />
 
           {/* ---------- scene 4: the couple slides in from the right ---------- */}

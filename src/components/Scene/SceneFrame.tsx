@@ -10,6 +10,17 @@ import { useScrollRoot } from "../Layout/ScrollRoot";
  */
 export const BORDER = "8.85cqw";
 
+/** the peacock frame + ivory paper; repeats down any height, so it can wrap a scrolling page */
+export const frameStyle: CSSProperties = {
+  boxSizing: "border-box",
+  border: `${BORDER} solid transparent`,
+  borderImage: `url(/intro/frame.webp) 99 104 96 102 / ${BORDER} round`,
+  backgroundClip: "padding-box",
+  backgroundColor: "#f5efe3",
+  backgroundImage: "radial-gradient(ellipse at 50% 20%, #f8f3e8 0%, #f3ecdc 100%)",
+  containerType: "inline-size",
+};
+
 export default function SceneFrame({ children, style }: { children: ReactNode; style?: CSSProperties }) {
   return (
     <div style={{ position: "absolute", inset: 0, containerType: "inline-size", ...style }}>
