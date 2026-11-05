@@ -8,10 +8,10 @@ export default {
         wine: "#6B1624", // deep maroon-red: headings, CTAs on parchment
         maroon: "#0E210B", // dark forest green: dark sections and page frame (client-chosen swatch)
         zari: "#E2A84B", // bright gold for text on maroon
-        gold: "#A8762E", // antique gold: borders and small details on parchment
+        gold: "#0E210B", // borders, rules and small labels on parchment: forest green (client-chosen); bright gold lives in `zari`
         ivory: "#F6E6C3", // parchment: main background
         olive: "#687253", // secondary accents
-        espresso: "#382923", // body text
+        espresso: "#0E210B", // body text: dark forest green (client-chosen swatch)
         blush: "#E8C9BE", // floral accents
       },
       fontFamily: {
