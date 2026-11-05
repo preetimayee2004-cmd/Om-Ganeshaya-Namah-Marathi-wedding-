@@ -16,7 +16,7 @@ export default function Layout({ children }: { children: ReactNode }) {
     return (
       <ScrollRootContext.Provider value={null}>
         {/* overflow-x-clip: slide-in reveals start off to the side; never let them add a horizontal scrollbar */}
-        <main className="mx-auto min-h-screen w-full max-w-[480px] paper overflow-x-clip">
+        <main className="mx-auto min-h-screen w-full max-w-[430px] paper overflow-x-clip">
           {children}
         </main>
       </ScrollRootContext.Provider>
