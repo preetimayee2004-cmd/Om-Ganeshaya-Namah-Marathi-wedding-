@@ -7,7 +7,7 @@ const inputCls =
   "w-full rounded-md border border-gold/60 bg-[#fffdf6] px-4 py-3 font-body text-base text-espresso placeholder:text-espresso/40 focus:border-wine focus:outline-none focus:ring-2 focus:ring-gold/50";
 const labelCls = "mb-1 block font-body text-xs uppercase tracking-widest text-olive";
 
-export default function RSVP() {
+export default function RSVP({ inScene = false }: { inScene?: boolean }) {
   const { guestName, isPersonalised } = useGuest();
   const [values, setValues] = useState<RsvpInput>({
     name: isPersonalised ? guestName : "",
@@ -54,11 +54,11 @@ export default function RSVP() {
   const attending = (previous?.attending ?? values.attending) === "yes";
 
   return (
-    <section id="rsvp" aria-labelledby="rsvp-title" className="weave bg-maroon px-5 py-20 text-ivory">
+    <section id="rsvp" aria-labelledby="rsvp-title" className={inScene ? "px-0 py-8" : "weave bg-maroon px-5 py-20 text-ivory"}>
       <Reveal className="text-center">
-        <p className="font-body text-[10px] uppercase tracking-[0.35em] text-zari">Kindly reply</p>
-        <h2 id="rsvp-title" className="mt-2 !text-zari text-5xl">RSVP</h2>
-        <p className="mx-auto mt-3 max-w-[18rem] font-body text-sm font-light text-ivory/80">
+        <p className={`font-body text-[10px] uppercase tracking-[0.35em] ${inScene ? "text-gold" : "text-zari"}`}>Kindly reply</p>
+        <h2 id="rsvp-title" className={`mt-2 text-5xl ${inScene ? "" : "!text-zari"}`}>RSVP</h2>
+        <p className={`mx-auto mt-3 max-w-[18rem] font-body text-sm font-light ${inScene ? "text-espresso/80" : "text-ivory/80"}`}>
           Your presence would mean the world to us. Please let us know if you can join the celebration.
         </p>
       </Reveal>

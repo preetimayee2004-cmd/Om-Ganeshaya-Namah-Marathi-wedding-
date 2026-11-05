@@ -1,44 +1,23 @@
 import Layout from "./components/Layout/Layout";
-import Divider from "./components/Layout/Divider";
 import Intro from "./components/Intro/Intro";
-import Invitation from "./components/Invitation/Invitation";
-import Couple from "./components/Couple/Couple";
-import Countdown from "./components/Countdown/Countdown";
-import OurStory from "./components/OurStory/OurStory";
-import Events from "./components/Events/Events";
-import Family from "./components/Family/Family";
-import Gallery from "./components/Gallery/Gallery";
-import RSVP from "./components/RSVP/RSVP";
-import WishingWall from "./components/WishingWall/WishingWall";
-import TravelStay from "./components/TravelStay/TravelStay";
-import Contact from "./components/Contact/Contact";
-import ThankYou from "./components/ThankYou/ThankYou";
-import Footer from "./components/Footer/Footer";
+import PinnedScene from "./components/Scene/PinnedScene";
+import { ClosingCard, CountdownCard, EventsCard, RsvpBlessingsCard, StoryCard, VenueCard } from "./components/Scene/sections";
 
+// Opening (tap to begin) -> pinned scene: the Paithani frame, arch, palace and couple stay fixed
+// while these cards scroll over them. Family, Gallery and the other earlier section components
+// are still in src/components if you want them back as extra cards.
 export default function App() {
   return (
     <Layout>
       <Intro />
-      <Invitation />
-      <Divider />
-      <Couple />
-      <Countdown />
-      <Divider />
-      <OurStory />
-      <Divider />
-      <Events />
-      <Divider />
-      <Family />
-      <Divider />
-      <Gallery />
-      <RSVP />
-      <WishingWall />
-      <Divider />
-      <TravelStay />
-      <Divider />
-      <Contact />
-      <ThankYou />
-      <Footer />
+      <PinnedScene>
+        <StoryCard />
+        <EventsCard />
+        <VenueCard />
+        <CountdownCard />
+        <RsvpBlessingsCard />
+        <ClosingCard />
+      </PinnedScene>
     </Layout>
   );
 }
