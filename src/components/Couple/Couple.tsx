@@ -1,44 +1,16 @@
 import { wedding, coupleOrder } from "../../config/wedding";
 import Reveal, { useInView } from "../Layout/Reveal";
 
-// Placeholder couple portrait: stands in for the custom illustration asset.
-// Bride (Nauvari saree, nath, green bangles, gajra) and groom (pheta, ivory attire, shawl).
+// The couple in front of the heritage palace, from the supplied artwork.
 export function CouplePlaceholder() {
   return (
-    <svg
-      viewBox="0 0 220 260"
-      className="h-full w-full"
-      role="img"
-      aria-label="Illustration of the bride and groom in traditional Maharashtrian attire"
-    >
-      {/* groom */}
-      <g>
-        <path d="M70 120h50l10 140H60Z" fill="#F7EEDC" stroke="#C6A15B" />
-        <path d="M70 128l30 70 30-70" fill="none" stroke="#C6A15B" strokeWidth="1.2" />
-        <path d="M60 138l40 20 40-20-8 28-32 14-32-14Z" fill="#687253" opacity=".85" />
-        <circle cx="95" cy="92" r="17" fill="#e3b995" />
-        <path d="M76 86c0-18 38-18 38 0-6-6-32-6-38 0Z" fill="#722B35" />
-        <path d="M78 80c6-16 30-16 36 0l-4 6H82Z" fill="#C6A15B" opacity=".9" />
-        <circle cx="90" cy="94" r="1.2" fill="#382923" />
-        <circle cx="100" cy="94" r="1.2" fill="#382923" />
-      </g>
-      {/* bride */}
-      <g>
-        <path d="M130 124h46l14 136H116Z" fill="#722B35" />
-        <path d="M122 200c20-14 46-14 70 0" fill="none" stroke="#C6A15B" strokeWidth="2" />
-        <path d="M118 236c24-12 52-12 74 0" fill="none" stroke="#C6A15B" strokeWidth="2" />
-        <path d="M130 124l20 30 26-30" fill="#C6A15B" opacity=".9" />
-        <circle cx="152" cy="98" r="16" fill="#e3b995" />
-        <path d="M134 94c0-22 36-22 36 0-4-8-32-8-36 0Z" fill="#382923" />
-        <path d="M140 84c4-6 20-6 24 0" fill="none" stroke="#E8C9BE" strokeWidth="3" />
-        <circle cx="147" cy="99" r="1.2" fill="#382923" />
-        <circle cx="157" cy="99" r="1.2" fill="#382923" />
-        <circle cx="152" cy="106" r="2" fill="none" stroke="#C6A15B" />
-        {/* green bangles */}
-        <rect x="124" y="170" width="10" height="3" rx="1.5" fill="#687253" />
-        <rect x="124" y="175" width="10" height="3" rx="1.5" fill="#687253" />
-      </g>
-    </svg>
+    <img
+      src="/intro/couple.jpg"
+      alt="The bride and groom in traditional Maharashtrian attire, looking at a heritage palace"
+      draggable={false}
+      className="h-full w-full object-cover"
+      style={{ objectPosition: "90% 50%" }}
+    />
   );
 }
 
