@@ -1,33 +1,35 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
-import { wedding } from "../../config/wedding";
 import { useScrollRoot } from "../Layout/ScrollRoot";
-import SceneFrame, { ArtLayer, H, MAROON, vFade } from "../Scene/SceneFrame";
-import CoupleHero from "../Scene/CoupleHero";
+import SceneFrame, { ArtLayer, H, MAROON, SceneArt, vFade } from "../Scene/SceneFrame";
+import { CoupleText, InviteText } from "../Scene/Texts";
 
 /**
  * Opening storyboard (tap-driven), art from the supplied reference images (public/intro):
- *  0  cover        ivory canvas inside the Paithani peacock frame + golden seal "tap to open"
- *  1  Ganpati      toran slides down, Ganpati rises into his halo, petals drift
- *  2  palace       Ganpati zooms softly away; arch + heritage palace slide up on the same canvas;
- *                  Marathi invitation text fades in with a "Meet the Couple" button
- *  3  couple       the couple steps in from the right; names, date and venue settle in
- *  4  scroll hint  "scroll down" cue; tap or scroll to enter the site (the pinned scene below)
+ *  0  seal         cream canvas inside the Paithani frame; gold seal, hint, Skip. Whole screen taps.
+ *  1  Ganpati      seal ripples and fades; toran drops, Ganpati blooms in a golden halo, petals drift
+ *  2  palace       Ganpati fades away; the palace rises on the same canvas; invitation text rises
+ *                  line by line; "Meet the Couple" appears
+ *  3  couple       text fades out; the couple slides in; couple-section text fades in
+ *  4  scroll cue   tap the cue or scroll to enter the pinned scene (no parallax after this point)
  *  5 leaving, 6 gone
- * The frame is one persistent element, so the canvas never reloads between scenes, and it is
- * the same stage the pinned scroll scene uses.
  */
 const FADE_MS = 900;
 const EASE = "cubic-bezier(.45,0,.25,1)";
 const IMAGES = ["frame.webp", "gan-top.jpg", "gan-main.jpg", "arch.jpg", "palace.jpg", "couple.jpg"].map((n) => `/intro/${n}`);
+const SAFE_TOP = "env(safe-area-inset-top, 0px)";
 
+// Ganesha's centre sits at ~34% of gan-main's height; place that point at ~48% of the screen
+const GAN_TOP = `calc(47.8% - ${0.338 * 143.6}cqw)`;
 const PETALS = [
-  { l: 8, d: 0, t: 7.5, s: 11 }, { l: 22, d: 1.2, t: 8.5, s: 9 }, { l: 35, d: 0.4, t: 7, s: 12 },
-  { l: 48, d: 2.1, t: 9, s: 10 }, { l: 60, d: 0.8, t: 7.8, s: 11 }, { l: 72, d: 1.6, t: 8.2, s: 9 },
-  { l: 84, d: 0.2, t: 9.2, s: 12 }, { l: 92, d: 2.4, t: 7.4, s: 10 }, { l: 15, d: 3, t: 8.8, s: 9 },
+  { l: 8, d: 0, t: 5.5, s: 11 }, { l: 24, d: 1.2, t: 6.5, s: 9 }, { l: 38, d: 0.4, t: 5, s: 12 },
+  { l: 52, d: 2.1, t: 6.8, s: 10 }, { l: 66, d: 0.8, t: 5.8, s: 11 }, { l: 78, d: 1.6, t: 6.2, s: 9 },
+  { l: 90, d: 0.2, t: 6.9, s: 12 },
 ];
 
 export default function Intro() {
   const [stage, setStage] = useState(0);
+  const [ready, setReady] = useState(false);
+  const [rippling, setRippling] = useState(false);
   const [btnReady, setBtnReady] = useState(false);
   const [hasAudio, setHasAudio] = useState(false);
   const [soundOn, setSoundOn] = useState(false);
@@ -36,13 +38,28 @@ export default function Intro() {
   const timers = useRef<number[]>([]);
   const touchY = useRef<number | null>(null);
   const gone = stage >= 6;
-  const { bride, groom } = wedding.couple;
 
+  // preload every layer before the seal screen is shown (with a safety timeout)
   useEffect(() => {
-    IMAGES.forEach((src) => {
-      const i = new Image();
-      i.src = src;
-    });
+    let done = false;
+    const finish = () => {
+      if (!done) {
+        done = true;
+        setReady(true);
+      }
+    };
+    Promise.all(
+      IMAGES.map(
+        (src) =>
+          new Promise<void>((res) => {
+            const i = new Image();
+            i.onload = i.onerror = () => res();
+            i.src = src;
+          }),
+      ),
+    ).then(finish);
+    const t = window.setTimeout(finish, 3000);
+    return () => clearTimeout(t);
   }, []);
 
   useEffect(() => {
@@ -80,21 +97,23 @@ export default function Intro() {
   const reduced = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   const open = () => {
-    if (stage !== 0) return;
+    if (stage !== 0 || !ready) return;
     if (reduced()) {
       setStage(4);
       setBtnReady(true);
       return;
     }
+    setRippling(true);
+    later(() => setRippling(false), 1300);
     setStage(1);
-    later(() => setStage(2), 2800);
-    later(() => setBtnReady(true), 2800 + 3600);
+    later(() => setStage(2), 4200); // 3s of Ganpati + a 1.2s hold
+    later(() => setBtnReady(true), 4200 + 4400);
   };
 
   const meet = () => {
     if (stage !== 2 || !btnReady) return;
     setStage(3);
-    later(() => setStage(4), 3200);
+    later(() => setStage(4), 3600);
   };
 
   const enter = () => {
@@ -106,19 +125,29 @@ export default function Intro() {
 
   const skip = () => {
     timers.current.forEach(clearTimeout);
-    setStage(6);
+    setStage(6); // lands on the end of the opening: couple text + scroll cue, scroll unlocked
   };
 
   if (gone) return null;
 
   const on = (n: number) => stage >= n;
-  const fade = (visible: boolean, delay = 0, dur = 1000): CSSProperties => ({
-    opacity: visible ? 1 : 0,
-    transform: visible ? "translateY(0)" : "translateY(10px)",
-    transition: `opacity ${dur}ms ease-in-out ${delay}ms, transform ${dur}ms ease-in-out ${delay}ms`,
-  });
-  const wipe = "linear-gradient(to right, transparent 0%, transparent 34%, #000 50%, #000 100%)";
-  const coupleMask = `${vFade("top", 16)}, ${wipe}`;
+  const SEAL = "min(140px, 44cqw)";
+
+  const pill: CSSProperties = {
+    position: "absolute",
+    right: 12,
+    top: `calc(${SAFE_TOP} + ${stage === 0 ? 12 : 60}px)`,
+    zIndex: 40,
+    padding: "8px 14px",
+    borderRadius: 999,
+    fontSize: 12,
+    letterSpacing: "0.12em",
+    color: MAROON,
+    background: "rgba(251,245,232,.88)",
+    border: "1px solid rgba(109,15,27,.25)",
+    transition: "top 600ms ease-in-out, opacity 400ms",
+    fontFamily: "Lato, system-ui, sans-serif",
+  };
 
   return (
     <div
@@ -147,156 +176,188 @@ export default function Intro() {
     >
       <div style={{ position: "relative", height: "100%", maxWidth: 480, margin: "0 auto" }}>
         <SceneFrame>
-          {/* scene 1: Ganpati (toran drops, Ganpati rises into the halo) */}
+          {/* ---------- scene 1: Ganpati ---------- */}
           <div
             style={{
               position: "absolute",
               inset: 0,
-              transformOrigin: "50% 55%",
-              transform: on(2) ? "scale(1.14)" : "scale(1)",
+              transformOrigin: "50% 48%",
+              transform: on(2) ? "scale(1.1)" : "scale(1)",
               opacity: on(1) && !on(2) ? 1 : 0,
-              transition: on(2) ? `transform 2200ms ${EASE}, opacity 1700ms ease-in-out` : "opacity 1400ms ease-in-out",
+              transition: on(2) ? `transform 2000ms ${EASE}, opacity 1800ms ease-in-out` : "opacity 900ms ease-in-out 400ms",
             }}
           >
+            {/* soft golden halo behind Ganesha (images multiply over it) */}
+            <div
+              style={{
+                position: "absolute",
+                left: "50%",
+                top: "47.8%",
+                width: "104cqw",
+                height: "104cqw",
+                borderRadius: "50%",
+                background: "radial-gradient(circle, rgba(242,163,58,.95) 0%, rgba(242,163,58,.35) 38%, rgba(242,163,58,0) 66%)",
+                transform: `translate(-50%, -50%) scale(${on(1) ? 1.2 : 0.8})`,
+                opacity: on(1) ? 0.5 : 0,
+                transition: "transform 2200ms ease-out 300ms, opacity 1600ms ease-out 300ms",
+              }}
+            />
             <ArtLayer
               src="/intro/gan-main.jpg"
-              anchor="bottom"
+              anchor="top"
               height={H.ganMain}
-              mask={vFade("top", 12)}
-              style={{ transform: on(1) ? "scale(1)" : "scale(.94)", transformOrigin: "50% 40%", transition: `transform 2000ms ${EASE} 300ms` }}
+              mask="linear-gradient(to bottom, transparent 0, #000 12%, #000 90%, transparent 100%)"
+              style={{
+                top: GAN_TOP,
+                mixBlendMode: "multiply",
+                transformOrigin: "50% 33.8%",
+                transform: on(1) ? "scale(1.15)" : "scale(1.04)",
+                opacity: on(1) ? 1 : 0,
+                transition: `transform 1400ms ease-out 400ms, opacity 1200ms ease-out 400ms`,
+              }}
             />
             <ArtLayer
               src="/intro/gan-top.jpg"
               anchor="top"
               height={H.ganTop}
               mask={vFade("bottom", 12)}
-              alt="Lord Ganesha"
-              style={{ transform: on(1) ? "translateY(0)" : "translateY(-14%)", transition: `transform 1600ms ${EASE}` }}
+              alt="Lord Ganesha with a marigold toran"
+              style={{
+                top: SAFE_TOP,
+                mixBlendMode: "multiply",
+                transform: on(1) ? "translateY(0)" : "translateY(-120px)",
+                transition: "transform 1500ms cubic-bezier(.34,1.3,.5,1)", // gentle settle
+              }}
             />
+            {/* petals live in the bottom strip only, behind the text */}
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 overflow-hidden" style={{ height: "16%", zIndex: 0 }}>
+              {PETALS.map((p, i) => (
+                <svg key={i} viewBox="0 0 10 14" className="zv-anim absolute" style={{ left: `${p.l}%`, top: 0, width: p.s, animation: on(1) ? `zv-petal-low ${p.t}s ease-in ${p.d}s infinite` : "none" }} aria-hidden>
+                  <path d="M5 0 C9 3 10 9 5 14 C0 9 1 3 5 0Z" fill={i % 3 === 0 ? "#e9a23b" : "#d96a82"} opacity=".85" />
+                </svg>
+              ))}
+            </div>
           </div>
 
-          {/* scene 2: arch + palace on the same canvas */}
-          <ArtLayer src="/intro/arch.jpg" anchor="top" height={H.arch} mask={vFade("bottom", 14)} style={{ opacity: on(2) ? 1 : 0, transition: "opacity 1600ms ease-in-out 500ms" }} />
-          <ArtLayer
+          {/* ---------- scene 2: arch + palace ---------- */}
+          <ArtLayer src="/intro/arch.jpg" anchor="top" height={H.arch} mask={vFade("bottom", 14)} style={{ opacity: on(2) ? 1 : 0, transition: "opacity 1600ms ease-in-out 600ms" }} />
+          <SceneArt
             src="/intro/palace.jpg"
-            anchor="bottom"
-            height={H.scene}
-            mask={vFade("top", 14)}
-            style={{ opacity: on(2) ? 1 : 0, transform: on(2) ? "translateY(0)" : "translateY(40px)", transition: "opacity 1500ms ease-out 300ms, transform 1800ms ease-out 300ms" }}
+            style={{ opacity: on(2) ? 1 : 0, transform: on(2) ? "translateY(0)" : "translateY(90px)", transition: "opacity 1500ms ease-out 700ms, transform 1700ms cubic-bezier(.22,1,.36,1) 700ms" }}
           />
 
-          {/* scene 3: the couple steps in from the right */}
-          <ArtLayer
+          {/* ---------- scene 4: the couple slides in from the right ---------- */}
+          <SceneArt
             src="/intro/couple.jpg"
-            anchor="bottom"
-            height={H.scene}
             alt="The bride and groom in traditional Maharashtrian attire, looking at the palace"
-            mask={coupleMask}
+            wipe={on(3)}
             style={{
-              WebkitMaskComposite: "source-in",
-              maskComposite: "intersect",
-              WebkitMaskSize: "100% 100%, 300% 100%",
-              maskSize: "100% 100%, 300% 100%",
-              WebkitMaskRepeat: "no-repeat",
-              maskRepeat: "no-repeat",
-              WebkitMaskPosition: on(3) ? "0 0, 100% 0" : "0 0, 0% 0",
-              maskPosition: on(3) ? "0 0, 100% 0" : "0 0, 0% 0",
-              transform: on(3) ? "translateX(0)" : "translateX(28px)",
-              transition: "mask-position 2200ms ease-in-out, -webkit-mask-position 2200ms ease-in-out, transform 2200ms ease-out",
+              transform: on(3) ? "translateX(0)" : "translateX(60px)",
+              transition: "mask-position 1600ms ease-in-out, -webkit-mask-position 1600ms ease-in-out, transform 1400ms ease-out",
             }}
           />
 
-          {/* petals (Step 1 and 2) */}
-          <div className="pointer-events-none absolute inset-0 overflow-hidden" style={{ opacity: on(1) && !on(3) ? 1 : 0, transition: "opacity 1200ms" }}>
-            {PETALS.map((p, i) => (
-              <svg key={i} viewBox="0 0 10 14" className="zv-anim absolute" style={{ left: `${p.l}%`, top: 0, width: p.s, animation: on(1) ? `zv-petal ${p.t}s ease-in-out ${p.d}s infinite` : "none" }} aria-hidden>
-                <path d="M5 0 C9 3 10 9 5 14 C0 9 1 3 5 0Z" fill={i % 3 === 0 ? "#e9a23b" : "#d96a82"} opacity=".85" />
-              </svg>
-            ))}
-          </div>
-
-          {/* cover: golden seal */}
-          <div
-            className="absolute inset-x-0 flex flex-col items-center text-center"
-            style={{ top: "34%", opacity: stage === 0 ? 1 : 0, transform: stage === 0 ? "none" : "scale(1.25)", transition: "opacity 700ms ease-in-out, transform 900ms ease-in-out", pointerEvents: "none" }}
-          >
-            <p lang="mr" className="font-marathi" style={{ fontSize: "6cqw", color: MAROON, fontWeight: 600, letterSpacing: ".02em" }}>शुभमंगल सावधान</p>
-            <div
-              className="zv-anim"
-              style={{
-                marginTop: "5cqw",
-                width: "26cqw",
-                height: "26cqw",
-                borderRadius: "50%",
-                background: "radial-gradient(circle at 35% 30%, #f6d98a, #c9963a 55%, #8f5f14)",
-                border: "1.6cqw double rgba(255,236,180,.9)",
-                boxShadow: "0 6px 18px rgba(90,40,10,.35)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                animation: "zv-pulse 2.4s ease-in-out infinite",
-              }}
-            >
-              <span lang="mr" className="font-marathi" style={{ fontSize: "11cqw", color: "#6b1624", fontWeight: 600, lineHeight: 1 }}>श्री</span>
+          {/* ---------- scene 3 text + button ---------- */}
+          <div style={{ opacity: stage === 2 ? 1 : 0, transition: "opacity 500ms ease-in-out" }}>
+            <InviteText show={on(2)} />
+            <div className="absolute inset-x-0 flex justify-center" style={{ top: "calc(50cqw + 93cqw)" }}>
+              <button
+                onClick={meet}
+                tabIndex={on(2) && btnReady ? 0 : -1}
+                className="zv-anim"
+                style={{
+                  padding: "2.6cqw 6.5cqw",
+                  borderRadius: 999,
+                  border: "1px solid #e2b24f",
+                  background: "linear-gradient(180deg, #8a1f32, #5e1020)",
+                  color: "#fbe9b8",
+                  boxShadow: "0 4px 14px rgba(94,16,32,.35)",
+                  opacity: btnReady && stage === 2 ? 1 : 0,
+                  transition: "opacity 900ms ease-in-out",
+                  animation: btnReady ? "zv-pulse 2.4s ease-in-out infinite" : "none",
+                  pointerEvents: btnReady && stage === 2 ? "auto" : "none",
+                }}
+              >
+                <span lang="mr" className="font-marathi" style={{ display: "block", fontSize: "4.6cqw", fontWeight: 600 }}>वधू-वर पाहा</span>
+                <span style={{ display: "block", fontFamily: '"Cormorant Garamond", serif', fontSize: "3.6cqw", opacity: 0.9 }}>Meet the Couple</span>
+              </button>
             </div>
-            <p lang="mr" className="font-marathi" style={{ marginTop: "5cqw", fontSize: "6cqw", color: MAROON, fontWeight: 600 }}>निमंत्रण उघडा</p>
-            <p className="font-body uppercase" style={{ marginTop: "1.5cqw", fontSize: "3cqw", letterSpacing: ".3em", color: "#8a6a3a" }}>Tap to open</p>
           </div>
 
-          {/* scene 2 copy + button */}
+          {/* ---------- scene 4 text + scroll cue (also the start of the scroll scene) ---------- */}
+          <CoupleText show={on(3)} cueShow={on(4)} onCue={enter} />
+
+          {/* ---------- scene 0: seal ---------- */}
+          {/* faint lotus line-art fills the lower area */}
+          <svg viewBox="0 0 200 110" style={{ position: "absolute", left: "50%", bottom: "6%", width: "62cqw", transform: "translateX(-50%)", opacity: stage === 0 && ready ? 0.15 : 0, transition: "opacity 700ms", pointerEvents: "none" }} fill="none" stroke={MAROON} strokeWidth="1.4" strokeLinecap="round" aria-hidden>
+            <path d="M100 8 C122 34 122 64 100 88 C78 64 78 34 100 8Z" />
+            <path d="M100 88 C70 86 46 68 40 38 C66 40 90 58 100 88Z M100 88 C130 86 154 68 160 38 C134 40 110 58 100 88Z" />
+            <path d="M100 88 C60 94 28 80 14 56 C40 58 76 66 100 88Z M100 88 C140 94 172 80 186 56 C160 58 124 66 100 88Z" />
+            <path d="M20 98 C60 108 140 108 180 98" />
+          </svg>
+
+
           <div
-            className="absolute inset-x-0 text-center"
-            style={{ top: "31%", padding: "0 9cqw", opacity: stage === 2 ? 1 : 0, transition: `opacity ${on(3) ? 700 : 900}ms ease-in-out`, pointerEvents: stage === 2 ? "auto" : "none" }}
+            className="absolute inset-x-0"
+            style={{ top: "42%", transform: "translateY(-50%)", pointerEvents: "none" }}
+            aria-hidden={stage !== 0}
           >
-            <p lang="mr" className="font-marathi" style={{ fontSize: "7.4cqw", color: MAROON, fontWeight: 600, ...fade(on(2), 1600) }}>सस्नेह निमंत्रण...</p>
-            <p lang="mr" className="font-marathi" style={{ marginTop: "4cqw", fontSize: "5.2cqw", lineHeight: 1.65, color: "#4a2a1c", ...fade(on(2), 2100) }}>
-              आमच्या लाडक्या चि. <strong style={{ color: MAROON }}>{groom}</strong> आणि चि. सौ. कां. <strong style={{ color: MAROON }}>{bride}</strong> यांच्या शुभविवाहास उपस्थित राहून आशीर्वाद द्यावेत.
-            </p>
-            <button
-              onClick={meet}
-              tabIndex={on(2) && btnReady ? 0 : -1}
-              className="zv-anim"
-              style={{
-                marginTop: "6cqw",
-                padding: "3cqw 7cqw",
-                borderRadius: 999,
-                border: "1px solid #e2b24f",
-                background: "linear-gradient(180deg, #8a1f32, #5e1020)",
-                color: "#fbe9b8",
-                boxShadow: "0 4px 14px rgba(94,16,32,.35)",
-                opacity: btnReady && stage === 2 ? 1 : 0,
-                transition: "opacity 900ms ease-in-out",
-                animation: btnReady ? "zv-pulse 2.4s ease-in-out infinite" : "none",
-                pointerEvents: btnReady && stage === 2 ? "auto" : "none",
-              }}
-            >
-              <span lang="mr" className="font-marathi" style={{ display: "block", fontSize: "5cqw", fontWeight: 600 }}>वधू-वरांना भेटा</span>
-              <span className="font-body uppercase" style={{ display: "block", fontSize: "2.6cqw", letterSpacing: ".22em", opacity: 0.85 }}>Meet the Couple</span>
-            </button>
+            <div className="flex flex-col items-center text-center" style={{ opacity: stage === 0 && ready ? 1 : 0, transform: stage === 0 ? "none" : "scale(1.2)", transition: "opacity 600ms ease-in-out, transform 600ms ease-in-out" }}>
+              <p lang="mr" className="font-marathi" style={{ fontSize: 26, lineHeight: 1.3, color: MAROON, fontWeight: 600 }}>शुभमंगल सावधान</p>
+
+              <div style={{ position: "relative", marginTop: "6cqw", width: SEAL, height: SEAL }}>
+                {rippling &&
+                  [0, 1, 2].map((i) => (
+                    <span key={i} className="zv-anim" style={{ position: "absolute", left: "50%", top: "50%", width: "100%", height: "100%", borderRadius: "50%", border: "2px solid #e2b24f", animation: `zv-ripple 1000ms ease-out ${i * 220}ms both` }} />
+                  ))}
+                <div
+                  className="zv-anim"
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    borderRadius: "50%",
+                    background: "radial-gradient(circle at 35% 30%, #f6d98a, #c9963a 55%, #8f5f14)",
+                    border: "min(2.4cqw, 9px) double rgba(255,236,180,.9)",
+                    boxShadow: "0 6px 18px rgba(90,40,10,.35)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    animation: "zv-seal 2.5s ease-in-out infinite",
+                  }}
+                >
+                  <span lang="mr" className="font-marathi" style={{ fontSize: "min(60px, 19cqw)", color: "#6b1624", fontWeight: 600, lineHeight: 1 }}>श्री</span>
+                </div>
+              </div>
+
+              <p lang="mr" className="font-marathi" style={{ marginTop: "6cqw", fontSize: 22, lineHeight: 1.3, color: MAROON, fontWeight: 600 }}>निमंत्रण उघडा</p>
+              <p className="zv-anim uppercase" style={{ marginTop: "2.5cqw", fontFamily: "Lato, system-ui, sans-serif", fontSize: 14, letterSpacing: "0.2em", color: "#6d0f1b", fontWeight: 600, animation: "zv-hint 2s ease-in-out infinite" }}>
+                Tap to open
+              </p>
+            </div>
           </div>
 
-          {/* scene 3 + 4: names, date, venue, caption, scroll cue (same component the scene uses) */}
-          <CoupleHero show={on(3)} cueShow={on(4)} onCue={enter} />
+          {/* Skip + sound, inside the inner frame: never over the border or the notch */}
+          {stage < 4 && (
+            <button onClick={skip} style={pill}>
+              Skip
+            </button>
+          )}
+          {hasAudio && (
+            <button
+              onClick={() => setSoundOn((s) => !s)}
+              aria-pressed={soundOn}
+              aria-label={soundOn ? "Mute shehnai music" : "Play shehnai music"}
+              style={{ ...pill, right: "auto", left: 12 }}
+            >
+              {soundOn ? "Sound on" : "Sound off"}
+            </button>
+          )}
         </SceneFrame>
       </div>
 
-      {stage === 0 && <button autoFocus onClick={open} aria-label="Open the invitation. Tap anywhere to begin." className="absolute inset-0 cursor-pointer" />}
-
-      {hasAudio && (
-        <button
-          onClick={() => setSoundOn((s) => !s)}
-          aria-pressed={soundOn}
-          aria-label={soundOn ? "Mute shehnai music" : "Play shehnai music"}
-          className="absolute left-4 top-14 z-20 rounded-full px-3 py-1.5 font-body text-xs uppercase tracking-widest lg:top-12"
-          style={{ color: MAROON, background: "rgba(251,245,232,.88)" }}
-        >
-          {soundOn ? "Sound on" : "Sound off"}
-        </button>
-      )}
-      {stage < 4 && (
-        <button onClick={skip} className="absolute right-4 top-14 z-20 rounded-full px-3 py-1.5 font-body text-xs uppercase tracking-widest underline-offset-4 hover:underline lg:top-12" style={{ color: MAROON, background: "rgba(251,245,232,.88)" }}>
-          Skip Animation
-        </button>
+      {/* the whole screen is tappable while waiting */}
+      {stage === 0 && (
+        <button autoFocus disabled={!ready} onClick={open} aria-label="Open the invitation. Tap anywhere to begin." className="absolute inset-0 cursor-pointer" style={{ outlineOffset: -8 }} />
       )}
     </div>
   );

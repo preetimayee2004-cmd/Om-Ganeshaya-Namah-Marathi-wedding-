@@ -48,11 +48,11 @@ export default function Reveal({
         ? "translate-x-8"
         : from === "zoom"
           ? "scale-90"
-          : "translate-y-4";
+          : "translate-y-6";
   return (
     <div
       ref={ref}
-      className={`transition-all duration-700 ease-out ${
+      className={`transition-all duration-[800ms] ease-out ${
         seen ? "translate-x-0 translate-y-0 scale-100 opacity-100" : `${hidden} opacity-0`
       } ${className}`}
       style={{ transitionDelay: `${delay}ms`, ...style }}

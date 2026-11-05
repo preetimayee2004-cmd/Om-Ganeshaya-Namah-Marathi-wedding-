@@ -66,13 +66,55 @@ export function ArtLayer({ src, anchor, height, mask, alt = "", style }: { src: 
   );
 }
 
-export const MAROON = "#7a1a2a";
+/** palace + couple art: inset from the frame so the border always draws on top of it */
+const ART_W = "calc(100% - 40px)";
+const ART_H = "calc((100cqw - 40px) * 0.7226)"; // 456 / 631
+const hFade = "linear-gradient(to right, transparent 0, #000 6%, #000 88%, transparent 100%)";
+const WIPE = "linear-gradient(to right, transparent 0%, transparent 34%, #000 50%, #000 100%)";
 
+/** wipe: undefined = no wipe; false = hidden; true = revealed from the right */
+export function SceneArt({ src, alt = "", wipe, style }: { src: string; alt?: string; wipe?: boolean; style?: CSSProperties }) {
+  const masks = wipe === undefined ? [vFade("top", 14), hFade] : [vFade("top", 14), hFade, WIPE];
+  const size = wipe === undefined ? "100% 100%, 100% 100%" : "100% 100%, 100% 100%, 300% 100%";
+  const pos = wipe === undefined ? "0 0, 0 0" : `0 0, 0 0, ${wipe ? "100% 0" : "0% 0"}`;
+  return (
+    <img
+      src={src}
+      alt={alt}
+      draggable={false}
+      style={{
+        position: "absolute",
+        left: 10,
+        bottom: 0,
+        width: ART_W,
+        height: ART_H,
+        display: "block",
+        userSelect: "none",
+        WebkitMaskImage: masks.join(","),
+        maskImage: masks.join(","),
+        WebkitMaskComposite: "source-in",
+        maskComposite: "intersect",
+        WebkitMaskSize: size,
+        maskSize: size,
+        WebkitMaskRepeat: "no-repeat",
+        maskRepeat: "no-repeat",
+        WebkitMaskPosition: pos,
+        maskPosition: pos,
+        ...style,
+      }}
+    />
+  );
+}
+
+export const MAROON = "#6d0f1b";
+
+/** names: maroon to bronze, both >= 4.5:1 on the cream canvas; the stroke thickens the thin script */
 export const goldText: CSSProperties = {
-  backgroundImage: "linear-gradient(180deg, #e2b24f 0%, #a06a14 100%)",
+  backgroundImage: "linear-gradient(180deg, #6d0f1b 0%, #8a5a12 100%)",
   WebkitBackgroundClip: "text",
   backgroundClip: "text",
   WebkitTextFillColor: "transparent",
+  WebkitTextStroke: "0.8px #6d0f1b",
   color: "transparent",
 };
 

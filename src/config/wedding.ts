@@ -20,6 +20,11 @@ export const wedding = {
     bride: { heading: "Daughter of", names: "Mr. & Mrs. Bride Parents" },
     groom: { heading: "Son of", names: "Mr. & Mrs. Groom Parents" },
   },
+  // Parents as given in the storyboard (Marathi).
+  parentsMr: {
+    groom: "श्री. अनिल व सौ. सुनीता",
+    bride: "श्री. विजय व सौ. मंगल",
+  },
   invitationMessage:
     "With the blessings of Lord Ganesha and the love of our families, we joyfully invite you to celebrate the beginning of our forever.",
   // Our Story: PLACEHOLDER copy. Replace each `text` (and optional `when` / `photo`) with the

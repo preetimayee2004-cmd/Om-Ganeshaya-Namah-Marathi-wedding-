@@ -60,3 +60,11 @@
 @keyframes zv-pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(184, 134, 47, .45) } 50% { box-shadow: 0 0 0 10px rgba(184, 134, 47, 0) } }
 @keyframes zv-chevron { 0%, 100% { transform: translateY(0) } 50% { transform: translateY(7px) } }
 @media (prefers-reduced-motion: reduce) { .zv-anim { animation: none !important } }
+
+button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid #6d0f1b; outline-offset: 3px; }
+/* Devanagari: never letter-space or uppercase (it breaks conjuncts like स्क्र) */
+:lang(mr), .font-marathi { letter-spacing: normal !important; text-transform: none !important; font-family: "Tiro Devanagari Marathi", "Noto Serif Devanagari", serif; }
+@keyframes zv-ripple { 0% { transform: translate(-50%, -50%) scale(1); opacity: .65 } 100% { transform: translate(-50%, -50%) scale(4.2); opacity: 0 } }
+@keyframes zv-seal { 0%, 100% { transform: scale(1); box-shadow: 0 6px 18px rgba(90, 40, 10, .35), 0 0 0 0 rgba(226, 178, 79, .35) } 50% { transform: scale(1.05); box-shadow: 0 8px 26px rgba(90, 40, 10, .4), 0 0 28px 6px rgba(226, 178, 79, .45) } }
+@keyframes zv-hint { 0%, 100% { opacity: .6 } 50% { opacity: 1 } }
+@keyframes zv-petal-low { 0% { transform: translate(0, -10px) rotate(0deg); opacity: 0 } 15% { opacity: .9 } 100% { transform: translate(-14px, 120px) rotate(300deg); opacity: .4 } }

@@ -18,7 +18,7 @@ export default {
         // Exactly two Latin families + a Devanagari fallback. No ad hoc fonts per section.
         script: ['"Great Vibes"', "cursive"], // headings & couple names
         body: ["Lato", "system-ui", "sans-serif"], // all body copy
-        marathi: ['"Mukta"', '"Noto Sans Devanagari"', "sans-serif"],
+        marathi: ['"Tiro Devanagari Marathi"', '"Noto Serif Devanagari"', "serif"],
       },
       keyframes: { fadeIn: { from: { opacity: "0" }, to: { opacity: "1" } } },
       // Mobile-first. `lg` is the only point where the phone mockup activates.
