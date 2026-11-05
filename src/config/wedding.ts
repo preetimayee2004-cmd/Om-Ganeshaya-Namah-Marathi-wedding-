@@ -2,8 +2,10 @@
 // Change names, dates and photos here; no component should hard-code them.
 export const wedding = {
   couple: {
-    bride: "Preeti",
-    groom: "Shivasish",
+    bride: "Sayeli",
+    groom: "Sreyash",
+    // Which name is shown first on the invitation, footer and thank-you.
+    showFirst: "groom" as "bride" | "groom",
   },
   coupleHeading: "The People Behind the Celebration",
   coupleMessage:
@@ -130,7 +132,7 @@ export const wedding = {
   thankYouMessage:
     "Your presence, love and blessings mean more to us than words can express. We cannot wait to celebrate this beautiful beginning with you.",
   finalNote: "Until we celebrate together, with all our love.",
-  hashtag: "#PreetiWedsShivasish",
+  hashtag: "#SreyashWedsSayeli",
   // Placeholder contacts. Use digits with country code, no spaces (e.g. +919876543210).
   contacts: [
     { name: "Contact Person 1", role: "Bride's family", phone: "+910000000011" },
@@ -161,3 +163,9 @@ export const wedding = {
   guestParam: "guest", // ?guest=Priya+Sharma
   guestFallback: "Guest",
 } as const;
+
+/** [first, second] names in the order they appear on the invitation. */
+export const coupleOrder: readonly [string, string] =
+  wedding.couple.showFirst === "groom"
+    ? [wedding.couple.groom, wedding.couple.bride]
+    : [wedding.couple.bride, wedding.couple.groom];

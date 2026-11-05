@@ -1,5 +1,5 @@
 import { useGuest } from "../../context/GuestContext";
-import { wedding } from "../../config/wedding";
+import { wedding, coupleOrder } from "../../config/wedding";
 import Reveal, { useInView } from "../Layout/Reveal";
 import { useScrollRoot } from "../Layout/ScrollRoot";
 
@@ -111,9 +111,9 @@ export default function Invitation() {
 
           <Reveal delay={900}>
             <p className="font-script text-5xl leading-tight text-wine">
-              {wedding.couple.bride}
+              {coupleOrder[0]}
               <span className="mx-2 text-3xl text-gold">&amp;</span>
-              {wedding.couple.groom}
+              {coupleOrder[1]}
             </p>
           </Reveal>
 

@@ -1,4 +1,4 @@
-import { wedding } from "../../config/wedding";
+import { wedding, coupleOrder } from "../../config/wedding";
 import Reveal, { useInView } from "../Layout/Reveal";
 
 // Placeholder couple portrait: stands in for the custom illustration asset.
@@ -81,6 +81,12 @@ function Lotus({ className }: { className: string }) {
 export default function Couple() {
   const [archRef, archSeen] = useInView<HTMLDivElement>(0.25);
   const { bride, groom } = wedding.couple;
+  const [first, second] = coupleOrder;
+  const bios = (
+    wedding.couple.showFirst === "groom"
+      ? [[groom, wedding.bios.groom], [bride, wedding.bios.bride]]
+      : [[bride, wedding.bios.bride], [groom, wedding.bios.groom]]
+  ) as [string, string][];
 
   return (
     <section
@@ -140,7 +146,7 @@ export default function Couple() {
               transitionDelay: "1100ms",
             }}
           >
-            {bride}
+            {first}
           </span>
           <span className="text-3xl text-gold">&amp;</span>
           <span
@@ -150,7 +156,7 @@ export default function Couple() {
               transitionDelay: "1100ms",
             }}
           >
-            {groom}
+            {second}
           </span>
         </div>
       </div>
@@ -162,12 +168,7 @@ export default function Couple() {
       </Reveal>
 
       <div className="mx-auto mt-10 grid max-w-xs grid-cols-2 gap-5">
-        {(
-          [
-            [bride, wedding.bios.bride],
-            [groom, wedding.bios.groom],
-          ] as const
-        ).map(([name, bio], i) => (
+        {bios.map(([name, bio], i) => (
           <Reveal key={name} delay={i * 150}>
             <h3 className="text-3xl">{name}</h3>
             <p className="mt-1 font-body text-[13px] leading-relaxed text-espresso/80">

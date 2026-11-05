@@ -1,4 +1,4 @@
-import { wedding } from "../../config/wedding";
+import { wedding, coupleOrder } from "../../config/wedding";
 import { useInView } from "../Layout/Reveal";
 import { useScrollRoot } from "../Layout/ScrollRoot";
 
@@ -36,7 +36,7 @@ export default function Footer() {
 
       <div style={{ opacity: seen ? 1 : 0, transition: "opacity 1600ms ease 900ms" }}>
         <p className="mt-6 font-script text-3xl text-zari">
-          {wedding.couple.bride} &amp; {wedding.couple.groom}
+          {coupleOrder[0]} &amp; {coupleOrder[1]}
         </p>
         <p className="mt-1 font-body text-xs uppercase tracking-[0.3em] text-ivory/80">{date}</p>
         <p className="mt-3 font-body text-sm text-ivory/70">{wedding.hashtag}</p>

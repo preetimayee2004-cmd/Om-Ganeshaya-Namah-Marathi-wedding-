@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
-import { wedding } from "../../config/wedding";
+import { wedding, coupleOrder } from "../../config/wedding";
 import { useScrollRoot } from "../Layout/ScrollRoot";
 
 /**
@@ -123,7 +123,7 @@ export default function Intro() {
   const pw = Math.max(0, Math.min(box.w, 480, ((box.h - 130) * 1) / INVITE_RATIO));
   const ph = pw * INVITE_RATIO;
 
-  const { bride, groom } = wedding.couple;
+  const [bride, groom] = coupleOrder;
   const nameSize = (s: string, base: number) => `${base * Math.min(1, 9 / Math.max(s.length, 1))}cqw`;
   const rise = (i: number): CSSProperties => ({
     opacity: on(4) ? 1 : 0,
