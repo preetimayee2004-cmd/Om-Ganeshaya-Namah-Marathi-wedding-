@@ -974,9 +974,9 @@ export default function Intro() {
           }}
         >
           {/* Top Zone: Clean English Invitation Typography in clear peach sky */}
-          <div className="relative z-10 px-6 pt-11 sm:pt-14 text-center flex flex-col items-center">
+          <div className="relative z-10 px-6 pt-24 sm:pt-28 text-center flex flex-col items-center">
             {/* Soft, gentle warm radiant glow to ensure high-contrast luxury readability */}
-            <div className="pointer-events-none absolute left-1/2 top-2 -translate-x-1/2 h-[220px] w-[90%] max-w-[340px] rounded-full bg-gradient-to-b from-[#FFFDF7]/65 via-[#FAF1E0]/45 to-transparent blur-xl" />
+            <div className="pointer-events-none absolute left-1/2 top-1 -translate-x-1/2 h-[260px] w-[94%] max-w-[360px] rounded-full bg-gradient-to-b from-[#FFFDF7]/80 via-[#FAF1E0]/55 to-transparent blur-2xl" />
 
             {/* Ganesh Line & Heading */}
             <div
@@ -987,17 +987,17 @@ export default function Intro() {
                 transition: `opacity 500ms ${EASE_PRIMARY}, transform 500ms ${EASE_PRIMARY}`,
               }}
             >
-              <p lang="mr" className="font-marathi text-xs sm:text-sm font-semibold tracking-wide text-[#6d0f1b]">
+              <p lang="mr" className="font-marathi text-xs sm:text-sm font-semibold tracking-widest text-[#6d0f1b]">
                 ॥ श्री गणेशाय नमः ॥
               </p>
-              <h2 className="mt-2.5 font-serif text-lg sm:text-xl font-medium tracking-wide text-[#6d0f1b]">
+              <h2 className="mt-1.5 font-serif text-lg sm:text-xl font-medium tracking-wide text-[#6d0f1b]">
                 With Joyful Hearts, We Invite You
               </h2>
             </div>
 
-            {/* Couple's Names: Sreyash & Sayeli (Preserving script title exactly) */}
+            {/* Couple's Names: Sreyash & Sayeli (Preserving script title exactly, balanced gap) */}
             <div
-              className="relative z-10 mt-6 sm:mt-8 py-0.5"
+              className="relative z-10 mt-2.5 sm:mt-3 py-0.5"
               style={{
                 opacity: s4Lines[0] ? 1 : 0,
                 transform: s4Lines[0] ? "scale(1)" : "scale(0.96)",
@@ -1007,6 +1007,22 @@ export default function Intro() {
               <p className="font-script text-4xl sm:text-5xl font-normal leading-tight text-[#6d0f1b]">
                 {first} <span className="font-serif text-2xl sm:text-3xl font-light text-[#a8741a]">&amp;</span> {second}
               </p>
+            </div>
+
+            {/* Delicate Gold Floral Flourish to anchor and balance the invitation space */}
+            <div
+              className="relative z-10 mt-2 flex items-center justify-center gap-2"
+              style={{
+                opacity: s4Lines[0] ? 1 : 0,
+                transform: s4Lines[0] ? "scale(1)" : "scale(0.9)",
+                transition: `opacity 600ms 150ms ${EASE_PRIMARY}, transform 600ms 150ms ${EASE_PRIMARY}`,
+              }}
+            >
+              <span className="h-px w-10 sm:w-14 bg-gradient-to-r from-transparent via-[#a8741a]/60 to-[#a8741a]" />
+              <svg viewBox="0 0 24 16" className="h-3.5 w-5 text-[#a8741a] fill-current" aria-hidden="true">
+                <path d="M12 1 C10 5, 6 7, 2 7 C5 9, 8 11, 12 15 C16 11, 19 9, 22 7 C18 7, 14 5, 12 1 Z" opacity="0.85" />
+              </svg>
+              <span className="h-px w-10 sm:w-14 bg-gradient-to-l from-transparent via-[#a8741a]/60 to-[#a8741a]" />
             </div>
           </div>
 
