@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from "react";
 import { wedding } from "../../config/wedding";
 import { useScrollRoot } from "../Layout/ScrollRoot";
 
@@ -8,34 +8,8 @@ import { useScrollRoot } from "../Layout/ScrollRoot";
  * around an ivory canvas. Art layers are anchored to the top or bottom of the canvas, so
  * the opening and the scroll scene line up exactly.
  */
-/** design unit: u = min(screen width, 430px) / 390. Every size in the spec is a multiple of u. */
-export const u = (n: number) => `calc(var(--u, 1px) * ${n})`;
-export const BORDER = u(22);
-
-/** attach to the element that is the screen column: it defines --u for everything inside */
-export function useUnit<T extends HTMLElement>() {
-  const ref = useRef<T>(null);
-  const [scale, setScale] = useState(1);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const read = () => setScale(Math.min(el.clientWidth, 430) / 390);
-    read();
-    const ro = new ResizeObserver(read);
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
-  return { ref, style: { ["--u" as string]: `${scale}px` } as CSSProperties };
-}
-
-/** a layer whose coordinates are SCREEN coordinates (it sits over the frame's border area but is clipped by the inner frame) */
-export function ScreenSpace({ children, style }: { children: ReactNode; style?: CSSProperties }) {
-  return (
-    <div style={{ position: "absolute", left: `calc(-1 * ${BORDER})`, top: `calc(-1 * ${BORDER})`, width: `calc(100% + 2 * ${BORDER})`, height: `calc(100% + 2 * ${BORDER})`, ...style }}>
-      {children}
-    </div>
-  );
-}
+export const BORDER = "8.85cqw";
+export const u = (val: number) => `calc(${val} * min(100cqw, 430px) / 390)`;
 
 /** the peacock frame + ivory paper; repeats down any height, so it can wrap a scrolling page */
 export const frameStyle: CSSProperties = {
@@ -45,20 +19,38 @@ export const frameStyle: CSSProperties = {
   backgroundClip: "padding-box",
   backgroundColor: "#f5efe3",
   backgroundImage: "radial-gradient(ellipse at 50% 20%, #f8f3e8 0%, #f3ecdc 100%)",
+  containerType: "inline-size",
 };
 
 export default function SceneFrame({ children, style }: { children: ReactNode; style?: CSSProperties }) {
   return (
-    <div style={{ position: "absolute", inset: 0, ...style }}>
-      <div style={{ position: "absolute", inset: 0, overflow: "hidden", ...frameStyle }}>{children}</div>
+    <div style={{ position: "absolute", inset: 0, containerType: "inline-size", ...style }}>
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          boxSizing: "border-box",
+          border: `${BORDER} solid transparent`,
+          borderImage: `url(/intro/frame.webp) 99 104 96 102 / ${BORDER} round`,
+          backgroundClip: "padding-box",
+          backgroundColor: "#f5efe3",
+          backgroundImage: "radial-gradient(ellipse at 50% 35%, #f8f3e8 0%, #f3ecdc 100%)",
+          overflow: "hidden",
+          containerType: "inline-size",
+        }}
+      >
+        {children}
+      </div>
     </div>
   );
 }
 
-/** heights of the cut-out art */
+/** heights of the cut-out art, in cqw of the canvas width (source px / 631) */
 export const H = {
-  arch: u(230.3), // 346u wide at the reference size (420 / 631 of the width)
-  scene: u(210),
+  arch: `${(420 / 631) * 100}cqw`,
+  scene: `${(456 / 631) * 100}cqw`, // palace (+ couple)
+  ganTop: `${(380 / 631) * 100}cqw`,
+  ganMain: `${(906 / 631) * 100}cqw`,
 };
 
 export const vFade = (edge: "top" | "bottom", pct = 14) =>
@@ -87,7 +79,7 @@ export function ArtLayer({ src, anchor, height, mask, alt = "", style }: { src: 
 }
 
 /** palace + couple art: inset from the frame so the border always draws on top of it */
-const ART_H = u(210); // 346u x 210u building, anchored to the ground line inside the border
+const ART_H = "89cqw"; // ~40% taller than before; full width so the art meets the border
 const WIPE = "linear-gradient(to right, transparent 0%, transparent 34%, #000 50%, #000 100%)";
 
 /** wipe: undefined = no wipe; false = hidden; true = revealed from the right */
@@ -107,7 +99,7 @@ export function SceneArt({ src, alt = "", wipe, style }: { src: string; alt?: st
         width: "100%",
         height: ART_H,
         objectFit: "cover",
-        objectPosition: "50% 78%",
+        objectPosition: "85% 50%",
         display: "block",
         userSelect: "none",
         WebkitMaskImage: masks.join(","),

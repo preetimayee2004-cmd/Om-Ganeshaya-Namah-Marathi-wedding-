@@ -26,13 +26,25 @@ export default function Layout({ children }: { children: ReactNode }) {
   return (
     <div
       className="fixed inset-0 flex items-center justify-center overflow-hidden"
-      style={{ backgroundColor: "#f1e3c2", backgroundImage: 'url("/bg/stage.jpg")', backgroundSize: "cover", backgroundPosition: "center" }}
+      style={{
+        backgroundColor: "#FAF6EF",
+        backgroundImage: 'url("/bg/stage.jpg")',
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
     >
 
       {/* Phone: slim bezel, nearly full viewport height (94.3%), 414:860 as measured on the reference */}
       <div
         className="relative rounded-[3.3rem] bg-[#2b1f27] p-[8px] shadow-[0_30px_70px_-20px_rgba(60,40,20,0.55)]"
-        style={{ height: "min(94.3vh, 960px)", aspectRatio: "414 / 860", minWidth: 0, flex: "none" }}
+        style={{
+          height: "min(94.3vh, 960px)",
+          aspectRatio: "414 / 860",
+          width: "calc(min(94.3vh, 960px) * 414 / 860)",
+          maxWidth: "100vw",
+          minWidth: 0,
+          flex: "none",
+        }}
       >
         {/* side buttons */}
         <span className="absolute -left-[3px] top-[120px] h-8 w-[3px] rounded-l bg-[#2b1f27]" />

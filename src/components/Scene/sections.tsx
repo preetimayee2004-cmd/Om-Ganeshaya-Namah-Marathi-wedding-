@@ -4,17 +4,13 @@ import Reveal from "../Layout/Reveal";
 import { useScrollRoot } from "../Layout/ScrollRoot";
 import RSVP from "../RSVP/RSVP";
 import WishingWall from "../WishingWall/WishingWall";
-import { MAROON, u } from "./SceneFrame";
+import { MAROON } from "./SceneFrame";
 
 /** A parchment card that scrolls over the pinned scene and fades up as it enters. */
 export function SceneCard({ children, delay = 0, id }: { children: ReactNode; delay?: number; id?: string }) {
   return (
     <Reveal delay={delay}>
-      <section
-        id={id}
-        className="text-center"
-        style={{ padding: u(16), border: `${u(1)} solid #f0b44c`, borderRadius: 14, background: "rgba(251,245,232,.95)", boxShadow: "0 10px 30px -12px rgba(60,30,10,.45)", fontSize: u(17), lineHeight: 1.5, color: "#4b0f16" }}
-      >
+      <section id={id} className="rounded-2xl border border-gold/40 bg-[#fbf5e8]/95 px-5 py-7 text-center shadow-[0_10px_30px_-12px_rgba(60,30,10,.45)] backdrop-blur-[1px]">
         {children}
       </section>
     </Reveal>
@@ -23,10 +19,24 @@ export function SceneCard({ children, delay = 0, id }: { children: ReactNode; de
 
 function Heading({ marathi, english }: { marathi: string; english: string }) {
   return (
-    <header style={{ marginBottom: u(24) }}>
-      <p lang="mr" className="font-marathi" style={{ fontSize: u(28), lineHeight: 1.25, fontWeight: 600, color: MAROON }}>{marathi}</p>
-      <p style={{ marginTop: u(8), fontFamily: '"Cormorant Garamond", Georgia, serif', fontStyle: "italic", fontSize: u(18), lineHeight: 1.25, color: "#7a3a2a" }}>{english}</p>
+    <header className="mb-5">
+      <p lang="mr" className="font-marathi text-[26px] font-semibold leading-tight" style={{ color: MAROON }}>{marathi}</p>
+      <p className="font-body text-[10px] uppercase tracking-[0.35em] text-gold">{english}</p>
     </header>
+  );
+}
+
+export function StoryCard() {
+  const lines = wedding.story.slice(0, 3);
+  return (
+    <SceneCard>
+      <Heading marathi="आमची गोष्ट" english="Our Story" />
+      <div className="space-y-3">
+        {lines.map((l) => (
+          <p key={l.title} className="font-body text-[15px] font-light leading-relaxed text-espresso">{l.text}</p>
+        ))}
+      </div>
+    </SceneCard>
   );
 }
 

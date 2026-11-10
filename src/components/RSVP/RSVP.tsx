@@ -54,11 +54,11 @@ export default function RSVP({ inScene = false }: { inScene?: boolean }) {
   const attending = (previous?.attending ?? values.attending) === "yes";
 
   return (
-    <section id="rsvp" aria-labelledby="rsvp-title" className={inScene ? "px-0 py-8" : "weave bg-maroon px-5 py-20 text-ivory"}>
+    <section id="rsvp" aria-labelledby="rsvp-title" className="px-5 py-20 text-[#4b0f16]">
       <Reveal className="text-center">
-        <p className={`font-body text-[10px] uppercase tracking-[0.35em] ${inScene ? "text-gold" : "text-zari"}`}>Kindly reply</p>
-        <h2 id="rsvp-title" className={`mt-2 text-5xl ${inScene ? "" : "!text-zari"}`}>RSVP</h2>
-        <p className={`mx-auto mt-3 max-w-[18rem] font-body text-sm font-light ${inScene ? "text-espresso/80" : "text-ivory/80"}`}>
+        <p className="font-body text-[10px] uppercase tracking-[0.35em] text-[#a8741a]">Kindly reply</p>
+        <h2 id="rsvp-title" className="mt-2 text-5xl text-[#6d0f1b]">RSVP</h2>
+        <p className="mx-auto mt-3 max-w-[18rem] font-body text-sm font-light text-[#4b0f16]/80">
           Your presence would mean the world to us. Please let us know if you can join the celebration.
         </p>
       </Reveal>

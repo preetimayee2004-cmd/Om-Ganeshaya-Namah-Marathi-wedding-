@@ -13,7 +13,7 @@ function Rings() {
 }
 
 function FamilyCard({ f }: { f: Family }) {
-  const [ref, seen] = useInView<HTMLDivElement>(0.2);
+  const [ref, seen] = useInView<HTMLDivElement>(0.1);
   return (
     <div ref={ref}>
       <article

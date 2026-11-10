@@ -1,45 +1,186 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { useScrollRoot } from "../Layout/ScrollRoot";
-import SceneFrame, { ArtLayer, H, MAROON, SceneArt, ScreenSpace, u, useUnit, vFade } from "../Scene/SceneFrame";
-import { CoupleText, InviteText } from "../Scene/Texts";
+import { wedding, coupleOrder } from "../../config/wedding";
 
 /**
- * Opening (tap-driven). Sizes follow the design spec in u (u = min(screen width, 430px) / 390):
- *  0  seal     140u gold seal, group centred at 42% of the screen height, Skip, whole screen taps
- *  1  Ganpati  toran 326u wide at top 36u; Ganesh 240u x 270u centred at 46%; 300u halo;
- *              diyas 46u x 150u, 26u from the border, bottom 70u; calligraphy bottom 56u
- *  2  palace   Ganpati fades out; 346u x 210u building on the ground line; invitation text from y = 212u
- *  3  couple   the couple appears; couple text replaces the invitation text in the same zone
- *  4  cue      "Scroll down"; tap or scroll to enter the page
- *  5 leaving, 6 gone
+ * MASTER MOTION TIMING — CINEMATIC MARATHI WEDDING OPENING
+ * 
+ * SCENE 1 — Envelope Opening (2.8s)
+ * SCENE 2 — Ganpati Bappa Reveal (3.4s) [Eyes open 0.9s-1.7s, Blessing hand 1.4s-2.3s]
+ * SCENE 3 — Ganpati to Invitation Transition (2.4s)
+ * SCENE 4 — Invitation Screen Reveal (2.8s) [Line by line 180ms, drawing divider, wada courtyard]
+ * SCENE 5 — Invitation to Couple Transition (2.2s) [Triggered on scroll/tap]
+ * SCENE 6 — Couple Section Reveal (2.8s) [Bride 0.35-1.3s, Groom 0.65-1.5s, settling, quotation]
+ * 
+ * Global Easings:
+ *  - Primary: cubic-bezier(0.22, 1, 0.36, 1)
+ *  - Secondary: cubic-bezier(0.4, 0, 0.2, 1)
+ *  - Soft Exit: cubic-bezier(0.16, 1, 0.3, 1)
  */
-const FADE_MS = 900;
-const IMAGES = ["frame.webp", "toran.jpg", "ganesh.jpg", "diya-l.jpg", "diya-r.jpg", "calli.jpg", "arch.jpg", "palace.jpg", "couple.jpg"].map((n) => `/intro/${n}`);
-const SAFE_TOP = "env(safe-area-inset-top, 0px)";
-const PETALS = [
-  { l: 8, d: 0, t: 5.5, s: 11 }, { l: 24, d: 1.2, t: 6.5, s: 9 }, { l: 38, d: 0.4, t: 5, s: 12 },
-  { l: 52, d: 2.1, t: 6.8, s: 10 }, { l: 66, d: 0.8, t: 5.8, s: 11 }, { l: 78, d: 1.6, t: 6.2, s: 9 },
-  { l: 90, d: 0.2, t: 6.9, s: 12 },
+
+const EASE_PRIMARY = "cubic-bezier(0.22, 1, 0.36, 1)";
+const EASE_SECONDARY = "cubic-bezier(0.4, 0, 0.2, 1)";
+const EASE_SOFT_EXIT = "cubic-bezier(0.16, 1, 0.3, 1)";
+
+const IMAGES = [
+  "/intro/royal-door.jpg",
+  "/intro/ganesh-closed.jpg",
+  "/intro/ganesh-blessing.jpg",
+  "/intro/invitation-wada.jpg",
+  "/intro/couple-mandap.jpg",
 ];
-// melts each cut-out's paper edge into the canvas (rectangle fade on all four sides)
-const edge = "linear-gradient(to right, transparent 0, #000 14%, #000 86%, transparent 100%), linear-gradient(to bottom, transparent 0, #000 10%, #000 90%, transparent 100%)";
-const soft: CSSProperties = { WebkitMaskImage: edge, maskImage: edge, WebkitMaskComposite: "source-in", maskComposite: "intersect" };
+
+const MAROON = "#6d0f1b";
+
+interface Particle {
+  id: number;
+  tx: number;
+  ty: number;
+  size: number;
+  color: string;
+}
+
+// Falling Rose & Marigold Petals data matching the user's video (negative delays so they are already mid-flight)
+const ROSE_PETALS = [
+  { id: 1, left: "12%", delay: "-0.5s", duration: "5.5s", size: 19, rot: 15, isMarigold: false },
+  { id: 2, left: "26%", delay: "-2.8s", duration: "4.8s", size: 23, rot: -25, isMarigold: true },
+  { id: 3, left: "42%", delay: "-1.2s", duration: "5.8s", size: 17, rot: 35, isMarigold: false },
+  { id: 4, left: "59%", delay: "-3.5s", duration: "4.6s", size: 21, rot: -15, isMarigold: false },
+  { id: 5, left: "76%", delay: "-0.8s", duration: "5.2s", size: 18, rot: 28, isMarigold: true },
+  { id: 6, left: "88%", delay: "-2.2s", duration: "5.0s", size: 16, rot: -30, isMarigold: false },
+  { id: 7, left: "18%", delay: "-4.1s", duration: "5.4s", size: 22, rot: 20, isMarigold: false },
+  { id: 8, left: "70%", delay: "-1.7s", duration: "4.9s", size: 15, rot: -20, isMarigold: false },
+  { id: 9, left: "50%", delay: "-3.0s", duration: "5.6s", size: 24, rot: 40, isMarigold: true },
+];
+
+// Authentic Multi-Lobed Watercolor Paint Splash Vector Path matching video frame 00:04
+const WATERCOLOR_SPLASH_PATH =
+  "M 500,60 " +
+  "C 580,55 650,95 700,150 " +
+  "C 755,210 820,230 865,290 " +
+  "C 915,355 940,430 925,510 " +
+  "C 910,595 865,665 820,730 " +
+  "C 770,800 710,855 635,890 " +
+  "C 555,925 470,930 395,905 " +
+  "C 320,880 255,835 200,770 " +
+  "C 145,705 105,630 100,545 " +
+  "C 95,455 130,375 180,305 " +
+  "C 230,235 295,185 365,135 " +
+  "C 425,90 460,62 500,60 Z";
+
+// Radiating Watercolor Splatter Droplets
+const SPLASH_DROPLETS = [
+  { id: 1, angle: 15, dist: 130, size: 14, dx: 110, dy: -25 },
+  { id: 2, angle: 42, dist: 155, size: 9, dx: 135, dy: 75 },
+  { id: 3, angle: 68, dist: 140, size: 16, dx: 105, dy: 130 },
+  { id: 4, angle: 95, dist: 165, size: 8, dx: 30, dy: 160 },
+  { id: 5, angle: 125, dist: 150, size: 13, dx: -80, dy: 145 },
+  { id: 6, angle: 155, dist: 170, size: 10, dx: -150, dy: 90 },
+  { id: 7, angle: 185, dist: 145, size: 15, dx: -160, dy: -15 },
+  { id: 8, angle: 215, dist: 160, size: 7, dx: -130, dy: -95 },
+  { id: 9, angle: 245, dist: 150, size: 12, dx: -70, dy: -145 },
+  { id: 10, angle: 280, dist: 175, size: 16, dx: 25, dy: -170 },
+  { id: 11, angle: 315, dist: 155, size: 11, dx: 115, dy: -125 },
+  { id: 12, angle: 345, dist: 140, size: 8, dx: 140, dy: -50 },
+  { id: 13, angle: 30, dist: 190, size: 6, dx: 170, dy: 60 },
+  { id: 14, angle: 110, dist: 195, size: 7, dx: -45, dy: 185 },
+  { id: 15, angle: 200, dist: 185, size: 6, dx: -175, dy: -55 },
+  { id: 16, angle: 295, dist: 190, size: 8, dx: 70, dy: -180 },
+];
 
 export default function Intro() {
-  const [stage, setStage] = useState(0);
+  // Stages:
+  // 0: Initial closed envelope (waiting for tap)
+  // 1: Scene 1 — Envelope Opening (2.8s)
+  // 2: Scene 2 — Ganpati Bappa Reveal (3.4s)
+  // 3: Scene 3 — Ganpati to Invitation Transition (2.4s)
+  // 4: Scene 4 — Invitation Screen Reveal (2.8s) -> then holds for user scroll/tap
+  // 5: Scene 5 — Invitation to Couple Transition (2.2s)
+  // 6: Scene 6 — Couple Section Reveal (2.8s)
+  // 7: Completed (hands off to main scroll root)
+  const getInitialStage = () => {
+    if (typeof window === "undefined") return 0;
+    const p = new URLSearchParams(window.location.search).get("scene");
+    if (p === "ganpati" || p === "2") return 2;
+    if (p === "splash" || p === "3") return 3;
+    if (p === "invitation" || p === "4") return 4;
+    if (p === "couple" || p === "6") return 6;
+    if (p === "done" || p === "7") return 7;
+    return 0;
+  };
+
+  const [stage, setStage] = useState<number>(getInitialStage);
   const [ready, setReady] = useState(false);
-  const [rippling, setRippling] = useState(false);
-  const [btnReady, setBtnReady] = useState(false);
+  const [particles, setParticles] = useState<Particle[]>([]);
+
+  // Micro-timings for Scene 1 (Royal Temple Double Doors Opening)
+  const [s1Scale, setS1Scale] = useState(false);
+  const [s1DoorUnlock, setS1DoorUnlock] = useState(false);
+  const [s1DoorOpen, setS1DoorOpen] = useState(false);
+
+  // Micro-timings for Scene 2 (Smooth Divine Ganpati Reveal matching video)
+  const [s2Silhouette, setS2Silhouette] = useState(() => getInitialStage() === 2);
+  const [s2KenBurns, setS2KenBurns] = useState(() => getInitialStage() === 2);
+  const [s2MantraGlow, setS2MantraGlow] = useState(() => getInitialStage() === 2);
+  const [s2Halo, setS2Halo] = useState(() => getInitialStage() === 2);
+  const [s2GlowAwaken, setS2GlowAwaken] = useState(() => getInitialStage() === 2);
+  const [s2BlessingMurti, setS2BlessingMurti] = useState(() => getInitialStage() === 2);
+  const [s2Settle, setS2Settle] = useState(() => getInitialStage() === 2);
+
+  // Micro-timings for Scene 3
+  const [s3SplashStart, setS3SplashStart] = useState(() => getInitialStage() === 3);
+  const [s3SplashSpread, setS3SplashSpread] = useState(() => getInitialStage() === 3);
+  const [s3GaneshDissolve, setS3GaneshDissolve] = useState(() => getInitialStage() >= 4);
+  const [s3WadaAppear, setS3WadaAppear] = useState(() => getInitialStage() >= 3);
+  const [s3DetailsReveal, setS3DetailsReveal] = useState(() => getInitialStage() >= 4);
+
+  // Micro-timings for Scene 4
+  const [s4Heading, setS4Heading] = useState(() => getInitialStage() === 4);
+  const [s4Lines, setS4Lines] = useState<boolean[]>(() =>
+    getInitialStage() === 4 ? [true, true, true, true, true, true, true] : [false, false, false, false, false, false, false]
+  );
+  const [s4Dividers, setS4Dividers] = useState(() => getInitialStage() === 4);
+  const [s4Temple, setS4Temple] = useState(() => getInitialStage() === 4);
+  const [s4Hold, setS4Hold] = useState(() => getInitialStage() === 4);
+
+  // Micro-timings for Scene 5
+  const [s5SplashUp, setS5SplashUp] = useState(false);
+  const [s5TextDissolve, setS5TextDissolve] = useState(false);
+  const [s5CoupleBg, setS5CoupleBg] = useState(() => getInitialStage() >= 6);
+
+  // Micro-timings for Scene 6
+  const [s6Landscape, setS6Landscape] = useState(() => getInitialStage() === 6);
+  const [s6Bride, setS6Bride] = useState(() => getInitialStage() === 6);
+  const [s6Groom, setS6Groom] = useState(() => getInitialStage() === 6);
+  const [s6BothSettle, setS6BothSettle] = useState(() => getInitialStage() === 6);
+  const [s6Names, setS6Names] = useState(() => getInitialStage() === 6);
+  const [s6Divider, setS6Divider] = useState(() => getInitialStage() === 6);
+  const [s6Quotation, setS6Quotation] = useState(() => getInitialStage() === 6);
+  const [s6Finished, setS6Finished] = useState(false);
+
+  // Audio & Controls
   const [hasAudio, setHasAudio] = useState(false);
   const [soundOn, setSoundOn] = useState(false);
-  const scroller = useScrollRoot();
-  const unit = useUnit<HTMLDivElement>();
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const timers = useRef<number[]>([]);
-  const touchY = useRef<number | null>(null);
-  const gone = stage >= 6;
 
-  // preload every layer before the seal screen is shown (with a safety timeout)
+  const scroller = useScrollRoot();
+  const timers = useRef<number[]>([]);
+  const touchStartY = useRef<number | null>(null);
+
+  const later = (fn: () => void, ms: number) => {
+    const t = window.setTimeout(fn, ms);
+    timers.current.push(t);
+    return t;
+  };
+
+  const clearAllTimers = () => {
+    timers.current.forEach(clearTimeout);
+    timers.current = [];
+  };
+
+  const [first, second] = coupleOrder;
+
+  // Preload all 5 master images
   useEffect(() => {
     let done = false;
     const finish = () => {
@@ -52,35 +193,24 @@ export default function Intro() {
       IMAGES.map(
         (src) =>
           new Promise<void>((res) => {
-            const i = new Image();
-            i.onload = i.onerror = () => res();
-            i.src = src;
-          }),
-      ),
+            const img = new Image();
+            img.onload = img.onerror = () => res();
+            img.src = src;
+          })
+      )
     ).then(finish);
-    const t = window.setTimeout(finish, 3000);
-    return () => clearTimeout(t);
+    const timeout = window.setTimeout(finish, 2500);
+    return () => clearTimeout(timeout);
   }, []);
 
-  useEffect(() => {
-    if (gone) return;
-    const el = scroller ?? document.body;
-    const prev = el.style.overflow;
-    el.style.overflow = "hidden";
-    scroller?.scrollTo(0, 0);
-    return () => {
-      el.style.overflow = prev;
-    };
-  }, [gone, scroller]);
-
-  useEffect(() => () => timers.current.forEach(clearTimeout), []);
-
+  // Check audio availability
   useEffect(() => {
     fetch("/audio/shehnai.mp3", { method: "HEAD" })
       .then((r) => setHasAudio(r.ok && (r.headers.get("content-type") ?? "").startsWith("audio")))
       .catch(() => {});
   }, []);
 
+  // Manage Shehnai audio
   useEffect(() => {
     if (!hasAudio) return;
     if (!audioRef.current) {
@@ -93,276 +223,1038 @@ export default function Intro() {
     return () => a.pause();
   }, [soundOn, hasAudio]);
 
-  const later = (fn: () => void, ms: number) => timers.current.push(window.setTimeout(fn, ms));
-  const reduced = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // Lock scroll while intro animation is playing (unlocked on Scene 6 for natural scrolling)
+  useEffect(() => {
+    if (stage >= 6) return;
+    const el = scroller ?? document.body;
+    const prev = el.style.overflow;
+    el.style.overflow = "hidden";
+    scroller?.scrollTo(0, 0);
+    return () => {
+      el.style.overflow = prev;
+    };
+  }, [stage, scroller]);
 
-  const open = () => {
+  // Cleanup timers on unmount
+  useEffect(() => () => clearAllTimers(), []);
+
+  // Fast-forward / Skip to end (settles permanently on the Couple section)
+  const skip = () => {
+    clearAllTimers();
+    setStage(6);
+    setS6Landscape(true);
+    setS6Bride(true);
+    setS6Groom(true);
+    setS6BothSettle(true);
+    setS6Names(true);
+    setS6Divider(true);
+    setS6Quotation(true);
+    setS6Finished(true);
+  };
+
+  useEffect(() => {
+    const w = window as unknown as {
+      __skipIntro?: () => void;
+      __goToInvitation?: () => void;
+      __goToCouple?: () => void;
+    };
+    w.__skipIntro = skip;
+    w.__goToInvitation = triggerBackToInvitation;
+    w.__goToCouple = triggerCoupleTransition;
+  }, []);
+
+  // Check reduced motion
+  const reduced = () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // -------------------------------------------------------------
+  // SCENE 1: ROYAL TEMPLE DOUBLE DOORS (OPENS TO REVEAL GANPATI)
+  // -------------------------------------------------------------
+  const handleDoorTap = () => {
     if (stage !== 0 || !ready) return;
+
     if (reduced()) {
-      setStage(4);
-      setBtnReady(true);
+      skip();
       return;
     }
-    setRippling(true);
-    later(() => setRippling(false), 1300);
+
     setStage(1);
-    later(() => setStage(2), 4200); // 3s of Ganpati + a 1.2s hold
-    later(() => setBtnReady(true), 4200 + 4400);
+
+    // 0.00s: subtle tactile scale press feedback 1 -> 1.02
+    setS1Scale(true);
+
+    // 0.15s: divine golden light burst & particles from the central "श्री" medallion
+    later(() => {
+      setS1DoorUnlock(true);
+      // Generate radial golden particles
+      const p: Particle[] = [];
+      const colors = ["#ffd780", "#ffecb4", "#e2a84b", "#ffffff", "#f6d98a", "#d4af37"];
+      for (let i = 0; i < 28; i++) {
+        const angle = (i * (360 / 28) * Math.PI) / 180 + (Math.random() * 0.25 - 0.12);
+        const dist = 30 + Math.random() * 70;
+        p.push({
+          id: i,
+          tx: Math.cos(angle) * dist,
+          ty: Math.sin(angle) * dist,
+          size: 3 + Math.random() * 4,
+          color: colors[i % colors.length],
+        });
+      }
+      setParticles(p);
+    }, 150);
+
+    // 0.25s: The double doors swing open smoothly in 3D perspective
+    later(() => setS1DoorOpen(true), 250);
+
+    // 0.85s: Doors are open wide -> directly flow into Ganpati Bappa Divine Awakening!
+    later(() => runScene2(), 850);
   };
 
-  const meet = () => {
-    if (stage !== 2 || !btnReady) return;
+  // -------------------------------------------------------------
+  // SCENE 2: GANPATI BAPPA DIVINE REVEAL
+  // Directly visible under the opening flaps, awakens smoothly
+  // -------------------------------------------------------------
+  const runScene2 = () => {
+    setStage(2);
+    setS2Silhouette(true);
+    setS2KenBurns(true);
+    setS2MantraGlow(true);
+
+    // 0.35s: Divine golden sunburst halo begins rotating behind crown
+    later(() => setS2Halo(true), 350);
+
+    // 0.85s: Warm golden prana radiance bloom bathes Bappa's chest & crown
+    later(() => setS2GlowAwaken(true), 850);
+
+    // 1.25s: Under the veil of warm golden light, eyes open & hand raises into Abhaya Mudra blessing
+    later(() => setS2BlessingMurti(true), 1250);
+
+    // 2.20s: Prana light bloom gently settles into golden halo, presenting full blessing murti
+    later(() => setS2Settle(true), 2200);
+
+    // 4.30s: Hold complete blessing darshan, then smoothly flow into the watercolor splash transition!
+    later(() => runScene3(), 4300);
+  };
+
+  // -------------------------------------------------------------
+  // SCENE 3: GANPATI TO INVITATION WATERCOLOR SPLASH TRANSITION
+  // -------------------------------------------------------------
+  const runScene3 = () => {
     setStage(3);
-    later(() => setStage(4), 3600);
+
+    // 0.00s: Organic watercolor splash begins from center
+    setS3SplashStart(true);
+
+    // 0.15s: Watercolor splash spreads outward with fluid bleed edges & splatter droplets
+    later(() => setS3SplashSpread(true), 150);
+
+    // 0.45s: Wada courtyard scene appears inside the expanding watercolor splash
+    later(() => setS3WadaAppear(true), 450);
+
+    // 0.85s: Ganpati Bappa gradually dissolves into the watercolor paper texture
+    later(() => setS3GaneshDissolve(true), 850);
+
+    // 1.45s: Watercolor wash reaches full coverage, temple/wada details reveal cleanly
+    later(() => setS3DetailsReveal(true), 1450);
+
+    // 2.25s: End of Scene 3 -> Trigger Scene 4 at 2.25s
+    later(() => runScene4(), 2250);
   };
 
-  const enter = () => {
-    if (stage < 4) return;
-    timers.current.forEach(clearTimeout);
+  // -------------------------------------------------------------
+  // SCENE 4: INVITATION SCREEN REVEAL
+  // -------------------------------------------------------------
+  const runScene4 = () => {
+    setStage(4);
+
+    // 0.00s – 0.50s: Ganesh line & invitation heading fade in
+    setS4Heading(true);
+
+    // 0.35s: Couple names fade in
+    later(() => {
+      setS4Lines((prev) => {
+        const next = [...prev];
+        next[0] = true;
+        return next;
+      });
+    }, 350);
+
+    // 0.75s: Slim "See Couple ›" glass button reveals, holds cleanly
+    later(() => setS4Hold(true), 750);
+    // Holds permanently on Invitation so guests can read at leisure, then click glass button to open Couple section
+  };
+
+  // -------------------------------------------------------------
+  // TRANSITION BACK TO INVITATION FROM COUPLE SECTION
+  // -------------------------------------------------------------
+  const triggerBackToInvitation = () => {
+    // Scroll smoothly to top if user had scrolled down
+    if (scroller) {
+      scroller.scrollTo({ top: 0, behavior: "instant" });
+    } else {
+      window.scrollTo({ top: 0, behavior: "instant" });
+    }
+
+    setStage(4);
+    setS4Heading(true);
+    setS4Lines([true, true, true, true, true, true, true]);
+    setS4Dividers(true);
+    setS4Temple(true);
+    setS4Hold(true);
+
+    // Reset Scene 5 transition states
+    setS5SplashUp(false);
+    setS5TextDissolve(false);
+    setS5CoupleBg(false);
+  };
+
+  // -------------------------------------------------------------
+  // SCENE 5: INVITATION TO COUPLE TRANSITION
+  // Continuous cinematic flow into Couple Section
+  // -------------------------------------------------------------
+  const triggerCoupleTransition = () => {
+    if (s6Finished) {
+      setStage(6);
+      setS6Landscape(true);
+      setS6Bride(true);
+      setS6Groom(true);
+      setS6BothSettle(true);
+      setS6Names(true);
+      setS6Divider(true);
+      setS6Quotation(true);
+      return;
+    }
+
     setStage(5);
-    later(() => setStage(6), FADE_MS);
+
+    // 0.10s: Organic watercolor splash blooms upward
+    later(() => setS5SplashUp(true), 100);
+
+    // 0.40s: Invitation text dissolves into watercolor wash
+    later(() => setS5TextDissolve(true), 400);
+
+    // 0.65s: Couple section background gradually emerges through the splash
+    later(() => setS5CoupleBg(true), 650);
+
+    // End of Scene 5 -> Trigger Scene 6 smoothly at 1.40s
+    later(() => runScene6(), 1400);
   };
 
-  const skip = () => {
-    timers.current.forEach(clearTimeout);
-    setStage(6); // lands on the end of the opening: couple text + cue, scroll unlocked
+  // -------------------------------------------------------------
+  // SCENE 6: COUPLE SECTION REVEAL
+  // Final resting state of the invitation
+  // -------------------------------------------------------------
+  const runScene6 = () => {
+    setStage(6);
+
+    // 0.00s – 0.50s: watercolor landscape appears
+    setS6Landscape(true);
+
+    // 0.25s – 0.90s: bride illustration reveals through soft watercolor mask
+    later(() => setS6Bride(true), 250);
+
+    // 0.45s – 1.10s: groom illustration reveals (overlaps bride)
+    later(() => setS6Groom(true), 450);
+
+    // 0.80s – 1.30s: both illustrations settle into final positions
+    later(() => setS6BothSettle(true), 800);
+
+    // 1.00s – 1.50s: bride and groom names fade in with elegant typography
+    later(() => setS6Names(true), 1000);
+
+    // 1.25s – 1.65s: ornamental divider draws itself
+    later(() => setS6Divider(true), 1250);
+
+    // 1.45s – 1.90s: romantic quotation fades in, couple section settles
+    later(() => setS6Quotation(true), 1450);
+
+    // 1.90s: Settled on the Couple section permanently! Natural scrolling active.
+    later(() => setS6Finished(true), 1900);
   };
 
-  if (gone) return null;
+  // Wheel and Touch detection on Scene 4 to trigger Scene 5 (Invitation to Couple)
+  const handleWheel = (e: React.WheelEvent) => {
+    if (stage === 4 && s4Hold && e.deltaY > 10) {
+      triggerCoupleTransition();
+    }
+  };
 
-  const on = (n: number) => stage >= n;
-  const multiply: CSSProperties = { position: "absolute", mixBlendMode: "multiply", userSelect: "none" };
-  const g1 = on(1) && !on(2); // Ganpati scene is on screen
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartY.current = e.touches[0].clientY;
+  };
 
-  const pill: CSSProperties = {
-    position: "absolute",
-    right: u(34),
-    top: `calc(${SAFE_TOP} + ${u(stage === 1 ? 96 : 58)})`,
-    zIndex: 40,
-    padding: `${u(7)} ${u(14)}`,
-    borderRadius: 999,
-    fontSize: u(13),
-    lineHeight: 1.2,
-    letterSpacing: "0.12em",
-    color: MAROON,
-    background: "rgba(247,230,186,.9)",
-    border: "1px solid rgba(109,15,27,.25)",
-    transition: "top 600ms ease-in-out",
-    fontFamily: "Lato, system-ui, sans-serif",
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (touchStartY.current === null) return;
+    const diff = touchStartY.current - e.touches[0].clientY;
+    if (stage === 4 && s4Hold && diff > 20) {
+      touchStartY.current = null;
+      triggerCoupleTransition();
+    }
   };
 
   return (
-    <div
-      role="dialog"
-      aria-label="Opening invitation"
-      className="z-[90] overflow-hidden"
-      style={{
-        position: scroller ? "absolute" : "fixed",
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: scroller ? scroller.clientHeight : "100dvh",
-        inset: scroller ? undefined : 0,
-        background: "#5c1421",
-        opacity: stage === 5 ? 0 : 1,
-        transition: `opacity ${FADE_MS}ms ease-in-out`,
-      }}
-      onWheel={(e) => e.deltaY > 8 && enter()}
-      onTouchStart={(e) => (touchY.current = e.touches[0].clientY)}
-      onTouchMove={(e) => {
-        if (touchY.current !== null && touchY.current - e.touches[0].clientY > 24) {
-          touchY.current = null;
-          enter();
-        }
-      }}
+    <section
+      id="couple"
+      aria-label="Maharashtrian Wedding Cinematic Invitation"
+      className={
+        stage >= 6
+          ? "relative h-screen min-h-[100dvh] w-full select-none overflow-hidden bg-[#F8DFBF]"
+          : "fixed inset-0 z-[95] select-none overflow-hidden bg-[#F8DFBF]"
+      }
+      onWheel={handleWheel}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
     >
-      <div ref={unit.ref} style={{ ...unit.style, position: "relative", height: "100%", maxWidth: 430, margin: "0 auto" }}>
-        <SceneFrame>
-          {/* ---------- screen 3 / 4 art (canvas coordinates, anchored to the ground line) ---------- */}
-          <ArtLayer src="/intro/arch.jpg" anchor="top" height={H.arch} mask={vFade("bottom", 14)} style={{ opacity: on(2) ? 1 : 0, transition: "opacity 1600ms ease-in-out 600ms" }} />
-          <SceneArt src="/intro/palace.jpg" style={{ opacity: on(2) ? 1 : 0, transition: "opacity 1500ms ease-out 700ms" }} />
-          <SceneArt
-            src="/intro/couple.jpg"
-            alt="The bride and groom in traditional Maharashtrian attire, looking at the palace"
-            wipe={on(3)}
-            style={{
-              transform: on(3) ? "translateX(0)" : "translateX(60px)",
-              transition: "mask-position 1600ms ease-in-out, -webkit-mask-position 1600ms ease-in-out, transform 1400ms ease-out",
-            }}
-          />
+      {/* SVG Filters & Gradients for Watercolor and Sacred FX */}
+      <svg className="pointer-events-none absolute h-0 w-0" aria-hidden>
+        <defs>
+          <filter id="mm-watercolor-filter" x="-25%" y="-25%" width="150%" height="150%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="4" result="noise" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="26" xChannelSelector="R" yChannelSelector="G" />
+          </filter>
+          <linearGradient id="mm-rose-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#d92b3f" />
+            <stop offset="45%" stopColor="#a81525" />
+            <stop offset="100%" stopColor="#5e0912" />
+          </linearGradient>
+          <linearGradient id="mm-marigold-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#ffb326" />
+            <stop offset="60%" stopColor="#e87609" />
+            <stop offset="100%" stopColor="#aa3e00" />
+          </linearGradient>
+        </defs>
+      </svg>
 
-          {/* ---------- everything below is placed in SCREEN coordinates (u) ---------- */}
-          <ScreenSpace>
-            {/* screen 2: Ganpati */}
-            <div style={{ position: "absolute", inset: 0, opacity: g1 ? 1 : 0, transition: on(2) ? "opacity 1800ms ease-in-out" : "opacity 900ms ease-in-out 400ms", pointerEvents: "none" }}>
-              {/* golden halo, 300u across, centred behind Ganesh */}
+      {/* Mobile Viewport Stage */}
+      <div className="relative mx-auto h-full w-full overflow-hidden bg-[#F8DFBF]">
+        {/* ========================================================= */}
+        {/* SCENE 1: ROYAL TEMPLE DOUBLE DOORS (OPENS TO REVEAL GANPATI) */}
+        {/* ========================================================= */}
+        <div
+          className="absolute inset-0 z-20 flex flex-col items-center justify-center transition-all"
+          style={{
+            opacity: stage <= 1 ? 1 : 0,
+            pointerEvents: stage === 0 ? "auto" : "none",
+            transition: `opacity 650ms ${EASE_SOFT_EXIT}`,
+          }}
+          onClick={handleDoorTap}
+        >
+          <div
+            className="relative h-full w-full overflow-hidden"
+            style={{
+              transform: s1Scale ? "scale(1.02)" : "scale(1)",
+              transition: `transform 300ms ${EASE_PRIMARY}`,
+            }}
+          >
+            {/* 3D Perspective Double Doors (Left & Right leaves swinging open) */}
+            <div className="absolute inset-0 pointer-events-none" style={{ perspective: "1400px" }}>
+              {/* LEFT DOOR LEAF */}
               <div
+                className="absolute left-0 top-0 bottom-0 w-1/2 overflow-hidden"
                 style={{
-                  position: "absolute",
-                  left: "50%",
-                  top: "46%",
-                  width: u(300),
-                  height: u(300),
-                  borderRadius: "50%",
-                  background: "radial-gradient(circle, rgba(242,163,58,.95) 0%, rgba(242,163,58,.35) 40%, rgba(242,163,58,0) 68%)",
-                  transform: `translate(-50%, -50%) scale(${g1 ? 1.15 : 0.8})`,
-                  opacity: g1 ? 0.5 : 0,
-                  transition: "transform 2200ms ease-out 300ms, opacity 1600ms ease-out 300ms",
+                  transformOrigin: "left center",
+                  transform: s1DoorOpen ? "rotateY(-100deg) translateX(-4%)" : "rotateY(0deg) translateX(0)",
+                  opacity: s1DoorOpen ? 0 : 1,
+                  transition: `transform 1200ms ${EASE_PRIMARY}, opacity 700ms 450ms ${EASE_PRIMARY}`,
+                  filter: "drop-shadow(12px 0 28px rgba(30,15,5,0.65))",
                 }}
-              />
-              {/* marigold toran with the header: full inner width, drops in and settles */}
-              <img
-                src="/intro/toran.jpg"
-                alt="Marigold toran: Shri Ganeshaya Namah"
-                draggable={false}
-                style={{
-                  ...multiply,
-                  left: u(32),
-                  width: u(326),
-                  top: u(36),
-                  height: u(326 * (565 / 1175)),
-                  WebkitMaskImage: "linear-gradient(to bottom, #000 82%, transparent 100%)",
-                  maskImage: "linear-gradient(to bottom, #000 82%, transparent 100%)",
-                  transform: on(1) ? "translateY(0)" : "translateY(calc(var(--u, 1px) * -120))",
-                  transition: "transform 1500ms cubic-bezier(.34,1.3,.5,1)",
-                }}
-              />
-              {/* Ganesh on the lotus: 240u x 270u, centred at 46% of the screen height */}
-              <img
-                src="/intro/ganesh.jpg"
-                alt="Lord Ganesha seated on a lotus"
-                draggable={false}
-                style={{
-                  ...multiply,
-                  left: "50%",
-                  top: "46%",
-                  width: u(270 * (790 / 1080)),
-                  height: u(270),
-                  ...soft,
-                  transform: `translate(-50%, -50%) scale(${on(1) ? 1 : 0.9})`,
-                  opacity: on(1) ? 1 : 0,
-                  transition: "transform 1300ms ease-out 400ms, opacity 1200ms ease-out 400ms",
-                }}
-              />
-              {/* the two brass diyas: 46u x 150u, 26u from the border, bottom 70u */}
-              {(["l", "r"] as const).map((side) => (
+              >
+                {/* Left Door Image: pinned to left edge, width 200% */}
                 <img
-                  key={side}
-                  src={`/intro/diya-${side}.jpg`}
-                  alt=""
+                  src="/intro/royal-door.jpg"
+                  alt="Royal Maharashtrian Palace Temple Door Left"
+                  className="absolute left-0 top-0 h-full w-[200%] max-w-none object-cover"
                   draggable={false}
+                />
+                {/* Dynamic 3D lighting shadow as leaf swings */}
+                <div
+                  className="absolute inset-0 bg-gradient-to-r from-black/55 via-transparent to-black/25"
                   style={{
-                    ...multiply,
-                    [side === "l" ? "left" : "right"]: u(22 + 26),
-                    bottom: u(70),
-                    width: u(46),
-                    height: u(150),
-                    ...soft,
-                    opacity: on(1) ? 1 : 0,
-                    transition: "opacity 1200ms ease-out 900ms",
+                    opacity: s1DoorOpen ? 0.75 : 0,
+                    transition: `opacity 850ms ${EASE_PRIMARY}`,
+                  }}
+                />
+              </div>
+
+              {/* RIGHT DOOR LEAF */}
+              <div
+                className="absolute right-0 top-0 bottom-0 w-1/2 overflow-hidden"
+                style={{
+                  transformOrigin: "right center",
+                  transform: s1DoorOpen ? "rotateY(100deg) translateX(4%)" : "rotateY(0deg) translateX(0)",
+                  opacity: s1DoorOpen ? 0 : 1,
+                  transition: `transform 1200ms ${EASE_PRIMARY}, opacity 700ms 450ms ${EASE_PRIMARY}`,
+                  filter: "drop-shadow(-12px 0 28px rgba(30,15,5,0.65))",
+                }}
+              >
+                {/* Right Door Image: pinned to right edge, width 200% */}
+                <img
+                  src="/intro/royal-door.jpg"
+                  alt="Royal Maharashtrian Palace Temple Door Right"
+                  className="absolute right-0 top-0 h-full w-[200%] max-w-none object-cover"
+                  draggable={false}
+                />
+                {/* Dynamic 3D lighting shadow as leaf swings */}
+                <div
+                  className="absolute inset-0 bg-gradient-to-l from-black/55 via-transparent to-black/25"
+                  style={{
+                    opacity: s1DoorOpen ? 0.75 : 0,
+                    transition: `opacity 850ms ${EASE_PRIMARY}`,
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Glowing Golden Light Seam & Burst along the Centerline */}
+            {s1DoorUnlock && (
+              <div
+                className="pointer-events-none absolute inset-y-0 left-1/2 z-25 -translate-x-1/2 w-8"
+                style={{
+                  background: "radial-gradient(ellipse 20px 80% at 50% 50%, rgba(255,245,190,0.95) 0%, rgba(245,190,55,0.65) 45%, transparent 75%)",
+                  animation: "mm-crack-glow 650ms ease-out forwards",
+                }}
+              />
+            )}
+
+            {/* Subtle floating gold embers around the royal door */}
+            {stage === 0 && (
+              <div className="pointer-events-none absolute inset-0 overflow-hidden">
+                {[...Array(14)].map((_, i) => (
+                  <span
+                    key={i}
+                    className="absolute rounded-full bg-[#fcd475]"
+                    style={{
+                      left: `${10 + (i * 23) % 80}%`,
+                      top: `${15 + (i * 31) % 70}%`,
+                      width: 3 + (i % 3),
+                      height: 3 + (i % 3),
+                      opacity: 0.75,
+                      boxShadow: "0 0 8px #fcd475",
+                      animation: `mm-float ${3 + (i % 3)}s ease-in-out ${i * 0.35}s infinite`,
+                    }}
+                  />
+                ))}
+              </div>
+            )}
+
+            {/* Animated Finger Tapping Hint over Central "श्री" Medallion */}
+            {stage === 0 && (
+              <div
+                className="pointer-events-none absolute left-1/2 top-[50%] z-30 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center"
+                style={{
+                  opacity: s1Scale ? 0 : 1,
+                  transform: s1Scale ? "translate(-50%, -50%) scale(0.7)" : "translate(-50%, -50%) scale(1)",
+                  transition: `opacity 250ms ${EASE_PRIMARY}, transform 250ms ${EASE_PRIMARY}`,
+                }}
+              >
+                {/* Expanding soft golden ripples around "श्री" */}
+                <span
+                  className="absolute h-20 w-20 rounded-full border border-[#fde188]/80 bg-[#ffecb4]/20"
+                  style={{ animation: "mm-tap-ripple 1.8s cubic-bezier(0, 0.2, 0.8, 1) infinite" }}
+                />
+                <span
+                  className="absolute h-12 w-12 rounded-full bg-[#f6d98a]/30"
+                  style={{ animation: "mm-tap-ripple 1.8s cubic-bezier(0, 0.2, 0.8, 1) 0.6s infinite" }}
+                />
+
+                {/* Gentle tapping hand pointer icon */}
+                <div
+                  className="relative"
+                  style={{ animation: "mm-hand-tap 1.5s ease-in-out infinite" }}
+                >
+                  <svg
+                    width="38"
+                    height="38"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    style={{
+                      filter: "drop-shadow(0 4px 10px rgba(50,20,5,0.6)) drop-shadow(0 0 12px rgba(255,235,160,0.95))",
+                    }}
+                  >
+                    <path
+                      d="M12 2a1.5 1.5 0 0 0-1.5 1.5v7.2l-1.3-1.3a1.5 1.5 0 0 0-2.1 0 1.5 1.5 0 0 0 0 2.1l3.5 3.5c1 1 2.2 1.7 3.5 1.7h2.4a4.5 4.5 0 0 0 4.5-4.5V9.5a1.5 1.5 0 0 0-3 0v1a1.5 1.5 0 0 0-3 0V9a1.5 1.5 0 0 0-3 0v-5.5A1.5 1.5 0 0 0 12 2z"
+                      fill="#FFFDF7"
+                      stroke="#6d0f1b"
+                      strokeWidth="1.4"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </div>
+              </div>
+            )}
+
+            {/* Normal Text: Tap on door (Placed cleanly below the medallion) */}
+            {stage === 0 && (
+              <div
+                className="pointer-events-none absolute left-1/2 top-[69%] z-30 -translate-x-1/2 text-center"
+                style={{
+                  opacity: s1Scale ? 0 : 1,
+                  transform: s1Scale ? "translate(-50%, 6px)" : "translate(-50%, 0)",
+                  transition: `opacity 250ms ${EASE_PRIMARY}, transform 250ms ${EASE_PRIMARY}`,
+                }}
+              >
+                <p className="font-body text-[12px] font-medium uppercase tracking-[0.25em] text-[#FFFDF7] drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)]">
+                  Tap on door
+                </p>
+              </div>
+            )}
+
+            {/* Bursting Ornamental Golden Particles on Tap */}
+            {particles.length > 0 && (
+              <div className="pointer-events-none absolute left-1/2 top-[52%] z-30 -translate-x-1/2 -translate-y-1/2">
+                {particles.map((pt) => (
+                  <span
+                    key={pt.id}
+                    className="absolute rounded-full"
+                    style={{
+                      width: pt.size,
+                      height: pt.size,
+                      backgroundColor: pt.color,
+                      boxShadow: `0 0 8px ${pt.color}`,
+                      animation: "mm-sparkle 650ms ease-out forwards",
+                      ["--tx" as any]: `${pt.tx}px`,
+                      ["--ty" as any]: `${pt.ty}px`,
+                    }}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* ========================================================= */}
+        {/* SCENE 2: GANPATI BAPPA DIVINE REVEAL                       */}
+        {/* Sits directly underneath the opening envelope flaps        */}
+        {/* ========================================================= */}
+        <div
+          className="absolute inset-0 z-10 overflow-hidden"
+          style={{
+            opacity: stage <= 2 || (stage === 3 && !s3GaneshDissolve) ? 1 : 0,
+            pointerEvents: "none",
+            transition: `opacity 900ms ${EASE_SOFT_EXIT}`,
+          }}
+        >
+          {/* Zooming Bappa Murti Container (Ken Burns Slow Push-In like video) */}
+          <div
+            className="absolute inset-0"
+            style={{
+              transform: s2KenBurns ? "scale(1.055)" : "scale(1.0)",
+              transition: "transform 4500ms cubic-bezier(0.25, 1, 0.5, 1)",
+            }}
+          >
+            {/* Base Layer: Meditative Ganpati with Closed Eyes & Namaskar (ganesh-closed) */}
+            <div className="absolute inset-0">
+              <img
+                src="/intro/ganesh-closed.jpg"
+                alt="Lord Ganesha in peaceful meditation"
+                className="h-full w-full object-cover"
+                draggable={false}
+              />
+            </div>
+
+            {/* Awakening Murti: Lord Ganesha Eyes Open & Blessing Abhaya Mudra Hand (ganesh-blessing) */}
+            <div
+              className="absolute inset-0"
+              style={{
+                opacity: s2BlessingMurti ? 1 : 0,
+                transition: "opacity 900ms cubic-bezier(0.4, 0, 0.2, 1)",
+              }}
+            >
+              <img
+                src="/intro/ganesh-blessing.jpg"
+                alt="Lord Ganesha with divine blessing"
+                className="h-full w-full object-cover"
+                draggable={false}
+              />
+            </div>
+
+            {/* Divine Golden Halo / Tejo-valay Radiating behind Mukut */}
+            <div
+              className="pointer-events-none absolute left-1/2 top-[31%] -translate-x-1/2 -translate-y-1/2 rounded-full"
+              style={{
+                width: "260px",
+                height: "260px",
+                background: "radial-gradient(circle, rgba(255,230,120,0.65) 0%, rgba(245,180,45,0.3) 45%, rgba(220,130,20,0.08) 65%, transparent 75%)",
+                opacity: s2Halo ? 0.95 : 0,
+                transform: s2Halo ? "translate(-50%, -50%) scale(1.15)" : "translate(-50%, -50%) scale(0.65)",
+                transition: `opacity 900ms ${EASE_PRIMARY}, transform 1100ms ${EASE_PRIMARY}`,
+              }}
+            />
+
+            {/* Divine Golden Awakening Prana Light Bloom across Chest & Face */}
+            <div
+              className="pointer-events-none absolute left-1/2 top-[41%] -translate-x-1/2 -translate-y-1/2 rounded-full"
+              style={{
+                width: "320px",
+                height: "320px",
+                background: "radial-gradient(circle at 50% 50%, rgba(255,248,205,0.95) 0%, rgba(255,215,80,0.7) 35%, rgba(226,170,50,0.25) 60%, transparent 80%)",
+                mixBlendMode: "screen",
+                opacity: s2GlowAwaken && !s2Settle ? 0.95 : s2Settle ? 0.25 : 0,
+                transform: s2GlowAwaken ? "translate(-50%, -50%) scale(1.3)" : "translate(-50%, -50%) scale(0.4)",
+                transition: "opacity 750ms ease-out, transform 850ms cubic-bezier(0.2, 0.9, 0.3, 1)",
+              }}
+            />
+
+            {/* Subtle Divine Golden Aura beneath ॥ श्री गणेशाय नमः ॥ */}
+            <div
+              className="pointer-events-none absolute left-1/2 top-[64.2%] z-20 -translate-x-1/2 -translate-y-1/2 rounded-full"
+              style={{
+                width: "280px",
+                height: "50px",
+                background: "radial-gradient(ellipse at center, rgba(255,225,120,0.3) 0%, transparent 70%)",
+                opacity: s2MantraGlow ? 1 : 0,
+                transition: `opacity 800ms ${EASE_PRIMARY}`,
+              }}
+            />
+          </div>
+
+          {/* Floating Falling Rose & Marigold Petals (Drifting downward like in the video) */}
+          {(stage === 1 || stage === 2 || (stage === 3 && !s3GaneshDissolve)) && (
+            <div className="pointer-events-none absolute inset-0 overflow-hidden z-20">
+              {ROSE_PETALS.map((p) => (
+                <svg
+                  key={p.id}
+                  className="pointer-events-none absolute"
+                  style={{
+                    left: p.left,
+                    top: "-30px",
+                    width: p.size,
+                    height: p.size * 1.3,
+                    animation: `mm-rose-petal ${p.duration} ease-in-out ${p.delay} infinite`,
+                    filter: "drop-shadow(0 4px 6px rgba(60, 10, 15, 0.35))",
+                  }}
+                  viewBox="0 0 24 30"
+                  fill="none"
+                >
+                  <path
+                    d="M 12,2 C 18,5 23,12 21,20 C 19,26 14,29 12,29 C 10,29 5,26 3,20 C 1,12 6,5 12,2 Z"
+                    fill={p.isMarigold ? "url(#mm-marigold-gradient)" : "url(#mm-rose-gradient)"}
+                  />
+                  <path
+                    d="M 12,5 C 15,9 17,15 15,22 C 14,25 13,27 12,28"
+                    stroke={p.isMarigold ? "rgba(255, 235, 180, 0.45)" : "rgba(255, 180, 190, 0.35)"}
+                    strokeWidth="0.8"
+                    fill="none"
+                  />
+                </svg>
+              ))}
+            </div>
+          )}
+
+          {/* Floating Sacred Golden Embers & Prana Sparks */}
+          {(stage === 1 || stage === 2) && (
+            <div className="pointer-events-none absolute inset-0 overflow-hidden z-15">
+              {[...Array(16)].map((_, i) => (
+                <span
+                  key={i}
+                  className="absolute rounded-full bg-[#fde188]"
+                  style={{
+                    left: `${15 + (i * 21) % 72}%`,
+                    top: `${20 + (i * 27) % 65}%`,
+                    width: 3 + (i % 3),
+                    height: 3 + (i % 3),
+                    opacity: 0.85,
+                    boxShadow: "0 0 8px #fde188",
+                    animation: `mm-float ${3 + (i % 3)}s ease-in-out ${i * 0.25}s infinite`,
                   }}
                 />
               ))}
-              {/* petals stay in the bottom strip, behind the calligraphy */}
-              <div className="pointer-events-none absolute inset-x-0 overflow-hidden" style={{ bottom: u(22), height: u(110) }}>
-                {PETALS.map((p, i) => (
-                  <svg key={i} viewBox="0 0 10 14" className="zv-anim absolute" style={{ left: `${p.l}%`, top: 0, width: p.s, animation: on(1) ? `zv-petal-low ${p.t}s ease-in ${p.d}s infinite` : "none" }} aria-hidden>
-                    <path d="M5 0 C9 3 10 9 5 14 C0 9 1 3 5 0Z" fill={i % 3 === 0 ? "#e9a23b" : "#d96a82"} opacity=".85" />
-                  </svg>
-                ))}
-              </div>
-              {/* "शुभ विवाह निमंत्रण": centred, bottom 56u, clear of the diya bases */}
-              <img
-                src="/intro/calli.jpg"
-                alt="शुभ विवाह निमंत्रण"
-                draggable={false}
-                style={{
-                  ...multiply,
-                  left: "50%",
-                  bottom: u(56),
-                  width: u(190),
-                  transform: "translateX(-50%)",
-                  ...soft,
-                  opacity: on(1) ? 1 : 0,
-                  transition: "opacity 1200ms ease-out 700ms",
-                }}
+            </div>
+          )}
+        </div>
+
+        {/* ========================================================= */}
+        {/* WADA COURTYARD LAYER (Revealed via Organic Splash)        */}
+        {/* ========================================================= */}
+        <div
+          className="absolute inset-0 z-24 overflow-hidden pointer-events-none"
+          style={{
+            opacity: stage >= 3 && stage <= 5 ? (s5TextDissolve ? 0 : 1) : 0,
+            WebkitMaskImage: stage === 3
+              ? (s3SplashSpread
+                  ? "radial-gradient(circle at 50% 46%, black 75%, transparent 100%)"
+                  : "radial-gradient(circle at 50% 46%, black 0%, transparent 15%)")
+              : undefined,
+            maskImage: stage === 3
+              ? (s3SplashSpread
+                  ? "radial-gradient(circle at 50% 46%, black 75%, transparent 100%)"
+                  : "radial-gradient(circle at 50% 46%, black 0%, transparent 15%)")
+              : undefined,
+            WebkitMaskSize: stage === 3 ? (s3SplashSpread ? "340% 340%" : "15% 15%") : undefined,
+            maskSize: stage === 3 ? (s3SplashSpread ? "340% 340%" : "15% 15%") : undefined,
+            WebkitMaskPosition: "center 46%",
+            maskPosition: "center 46%",
+            WebkitMaskRepeat: "no-repeat",
+            maskRepeat: "no-repeat",
+            transition: `mask-size 1350ms ${EASE_PRIMARY}, -webkit-mask-size 1350ms ${EASE_PRIMARY}, opacity 700ms ${EASE_SOFT_EXIT}`,
+          }}
+        >
+          <img
+            src="/intro/invitation-wada.jpg"
+            alt="Traditional Maharashtrian Wada Courtyard"
+            className="h-full w-full object-cover"
+            draggable={false}
+          />
+        </div>
+
+        {/* ========================================================= */}
+        {/* SCENE 3: GANPATI TO INVITATION WATERCOLOR SPLASH OVERLAY   */}
+        {/* Matching exact video watercolor splash wipe (frame 00:04) */}
+        {/* ========================================================= */}
+        <div
+          className="pointer-events-none absolute inset-0 z-26 overflow-hidden"
+          style={{
+            opacity: stage === 3 ? (s3DetailsReveal ? 0 : 1) : 0,
+            transition: "opacity 650ms ease-out",
+          }}
+        >
+          {/* Multi-Lobed Watercolor Paint Splash Splatter Bloom */}
+          <div
+            className="absolute left-1/2 top-[46%] -translate-x-1/2 -translate-y-1/2"
+            style={{
+              width: "480px",
+              height: "480px",
+              transform: s3SplashSpread
+                ? "translate(-50%, -50%) scale(3.5)"
+                : "translate(-50%, -50%) scale(0.08)",
+              opacity: s3SplashSpread ? 1 : 0,
+              transition: `transform 1400ms ${EASE_PRIMARY}, opacity 600ms ease-out`,
+            }}
+          >
+            {/* Organic SVG Watercolor Ink Bleed & Splatter Wash */}
+            <svg
+              viewBox="0 0 1000 1000"
+              className="h-full w-full"
+              style={{
+                filter: "url(#mm-watercolor-filter) drop-shadow(0 0 16px rgba(226, 178, 79, 0.7)) drop-shadow(0 0 35px rgba(247, 233, 205, 0.9))",
+              }}
+            >
+              {/* Outer Translucent Watercolor Amber Fringe */}
+              <path
+                d={WATERCOLOR_SPLASH_PATH}
+                fill="rgba(235, 192, 105, 0.55)"
+                transform="scale(1.05) translate(-25, -25)"
               />
+              {/* Inner Rich Watercolor Paper Wash */}
+              <path
+                d={WATERCOLOR_SPLASH_PATH}
+                fill="rgba(251, 245, 232, 0.98)"
+              />
+              {/* Radiating Satellite Splatter Paint Droplets */}
+              {SPLASH_DROPLETS.map((d) => (
+                <circle
+                  key={d.id}
+                  cx={500 + Math.cos((d.angle * Math.PI) / 180) * d.dist * 2.3}
+                  cy={500 + Math.sin((d.angle * Math.PI) / 180) * d.dist * 2.3}
+                  r={d.size}
+                  fill="rgba(247, 233, 205, 0.95)"
+                  stroke="rgba(226, 178, 79, 0.6)"
+                  strokeWidth="2"
+                  style={{
+                    transform: s3SplashSpread ? `translate(${d.dx}px, ${d.dy}px) scale(1)` : "translate(0, 0) scale(0.1)",
+                    opacity: s3SplashSpread ? 0.9 : 0,
+                    transition: `transform 1200ms ${EASE_PRIMARY}, opacity 800ms ease-out`,
+                  }}
+                />
+              ))}
+            </svg>
+          </div>
+        </div>
+
+        {/* ========================================================= */}
+        {/* SCENE 4: INVITATION SCREEN REVEAL                          */}
+        {/* ========================================================= */}
+        <div
+          className="absolute inset-0 z-30 flex flex-col justify-between overflow-hidden"
+          style={{
+            opacity: stage === 4 ? (s5TextDissolve ? 0 : 1) : 0,
+            pointerEvents: stage === 4 && s4Hold ? "auto" : "none",
+            transition: `opacity 700ms ${EASE_SOFT_EXIT}`,
+          }}
+        >
+          {/* Top Zone: Clean English Invitation Typography in clear peach sky */}
+          <div className="relative z-10 px-6 pt-11 sm:pt-14 text-center flex flex-col items-center">
+            {/* Soft, gentle warm radiant glow to ensure high-contrast luxury readability */}
+            <div className="pointer-events-none absolute left-1/2 top-2 -translate-x-1/2 h-[220px] w-[90%] max-w-[340px] rounded-full bg-gradient-to-b from-[#FFFDF7]/65 via-[#FAF1E0]/45 to-transparent blur-xl" />
+
+            {/* Ganesh Line & Heading */}
+            <div
+              className="relative z-10"
+              style={{
+                opacity: s4Heading ? 1 : 0,
+                transform: s4Heading ? "translateY(0)" : "translateY(8px)",
+                transition: `opacity 500ms ${EASE_PRIMARY}, transform 500ms ${EASE_PRIMARY}`,
+              }}
+            >
+              <p lang="mr" className="font-marathi text-xs sm:text-sm font-semibold tracking-wide text-[#6d0f1b]">
+                ॥ श्री गणेशाय नमः ॥
+              </p>
+              <h2 className="mt-2.5 font-serif text-lg sm:text-xl font-medium tracking-wide text-[#6d0f1b]">
+                With Joyful Hearts, We Invite You
+              </h2>
             </div>
 
-            {/* screen 3: invitation text + button (fades out when the couple arrives) */}
-            <div style={{ position: "absolute", inset: 0, opacity: stage === 2 ? 1 : 0, transition: "opacity 500ms ease-in-out" }}>
-              <InviteText show={on(2)} meetReady={btnReady && stage === 2} onMeet={meet} />
+            {/* Couple's Names: Sreyash & Sayeli (Preserving script title exactly) */}
+            <div
+              className="relative z-10 mt-6 sm:mt-8 py-0.5"
+              style={{
+                opacity: s4Lines[0] ? 1 : 0,
+                transform: s4Lines[0] ? "scale(1)" : "scale(0.96)",
+                transition: `opacity 500ms ${EASE_PRIMARY}, transform 500ms ${EASE_PRIMARY}`,
+              }}
+            >
+              <p className="font-script text-4xl sm:text-5xl font-normal leading-tight text-[#6d0f1b]">
+                {first} <span className="font-serif text-2xl sm:text-3xl font-light text-[#a8741a]">&amp;</span> {second}
+              </p>
             </div>
+          </div>
 
-            {/* screen 4: couple text + scroll cue (same component the page uses) */}
-            <CoupleText show={on(3)} cueShow={on(4)} onCue={enter} />
+          {/* Slim Frosted Glass Button to View Couple Section */}
+          <div
+            className="relative z-20 flex flex-col items-center pb-8 pt-2"
+            style={{
+              opacity: s4Hold ? 1 : 0,
+              transform: s4Hold ? "translateY(0)" : "translateY(10px)",
+              transition: `opacity 500ms 100ms ${EASE_PRIMARY}, transform 500ms 100ms ${EASE_PRIMARY}`,
+            }}
+          >
+            <button
+              onClick={triggerCoupleTransition}
+              aria-label="See Couple"
+              className="group inline-flex h-[46px] w-auto items-center justify-center gap-1.5 rounded-full border border-[#d4af37]/45 bg-white/50 px-6 shadow-[0_4px_20px_rgba(75,15,22,0.14),inset_0_1px_1px_rgba(255,255,255,0.9)] backdrop-blur-md transition-all duration-300 hover:scale-105 hover:bg-white/65 hover:border-[#d4af37]/65 active:scale-95"
+            >
+              <span className="font-serif text-[15px] sm:text-base font-semibold tracking-wide text-[#6d0f1b]">
+                See Couple
+              </span>
+              <span className="font-serif text-[17px] font-bold text-[#6d0f1b] transition-transform duration-300 group-hover:translate-x-0.5">
+                ›
+              </span>
+            </button>
+          </div>
+        </div>
 
-            {/* screen 1: seal group, centred at 42% of the screen height */}
-            <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }} aria-hidden={stage !== 0}>
-              <svg viewBox="0 0 200 110" style={{ position: "absolute", left: "50%", bottom: u(44), width: u(240), transform: "translateX(-50%)", opacity: stage === 0 && ready ? 0.15 : 0, transition: "opacity 700ms" }} fill="none" stroke={MAROON} strokeWidth="1.4" strokeLinecap="round" aria-hidden>
-                <path d="M100 8 C122 34 122 64 100 88 C78 64 78 34 100 8Z" />
-                <path d="M100 88 C70 86 46 68 40 38 C66 40 90 58 100 88Z M100 88 C130 86 154 68 160 38 C134 40 110 58 100 88Z" />
-                <path d="M100 88 C60 94 28 80 14 56 C40 58 76 66 100 88Z M100 88 C140 94 172 80 186 56 C160 58 124 66 100 88Z" />
-                <path d="M20 98 C60 108 140 108 180 98" />
-              </svg>
+        {/* ========================================================= */}
+        {/* SCENE 5: INVITATION TO COUPLE WATERCOLOR SPLASH TRANSITION  */}
+        {/* Matching exact video watercolor splash wipe (frame 00:17) */}
+        {/* ========================================================= */}
+        <div
+          className="pointer-events-none absolute inset-0 z-35 overflow-hidden"
+          style={{
+            opacity: stage === 5 ? 1 : 0,
+            transition: `opacity 500ms ${EASE_PRIMARY}`,
+          }}
+        >
+          {/* Multi-Lobed Watercolor Paint Splash Bloom to Couple Mandap */}
+          <div
+            className="absolute left-1/2 bottom-0 -translate-x-1/2"
+            style={{
+              width: "520px",
+              height: "520px",
+              transform: s5SplashUp
+                ? "translate(-50%, 15%) scale(3.5)"
+                : "translate(-50%, 65%) scale(0.1)",
+              opacity: s5SplashUp ? 1 : 0,
+              transition: `transform 1300ms ${EASE_PRIMARY}, opacity 600ms ease-out`,
+            }}
+          >
+            <svg
+              viewBox="0 0 1000 1000"
+              className="h-full w-full"
+              style={{
+                filter: "url(#mm-watercolor-filter) drop-shadow(0 0 18px rgba(226, 178, 79, 0.7)) drop-shadow(0 0 40px rgba(247, 233, 205, 0.9))",
+              }}
+            >
+              {/* Outer Translucent Watercolor Amber Fringe */}
+              <path
+                d={WATERCOLOR_SPLASH_PATH}
+                fill="rgba(235, 192, 105, 0.55)"
+                transform="scale(1.05) translate(-25, -25)"
+              />
+              {/* Inner Rich Watercolor Paper Wash */}
+              <path
+                d={WATERCOLOR_SPLASH_PATH}
+                fill="rgba(251, 245, 232, 0.98)"
+              />
+              {/* Radiating Satellite Splatter Paint Droplets */}
+              {SPLASH_DROPLETS.map((d) => (
+                <circle
+                  key={d.id}
+                  cx={500 + Math.cos((d.angle * Math.PI) / 180) * d.dist * 2.3}
+                  cy={500 + Math.sin((d.angle * Math.PI) / 180) * d.dist * 2.3}
+                  r={d.size}
+                  fill="rgba(247, 233, 205, 0.95)"
+                  stroke="rgba(226, 178, 79, 0.6)"
+                  strokeWidth="2"
+                  style={{
+                    transform: s5SplashUp ? `translate(${d.dx}px, ${d.dy}px) scale(1)` : "translate(0, 0) scale(0.1)",
+                    opacity: s5SplashUp ? 0.9 : 0,
+                    transition: `transform 1100ms ${EASE_PRIMARY}, opacity 700ms ease-out`,
+                  }}
+                />
+              ))}
+            </svg>
+          </div>
+        </div>
 
-              <div
-                style={{ position: "absolute", left: 0, right: 0, top: "42%", transform: stage === 0 ? "translateY(-50%)" : "translateY(-50%) scale(1.2)", opacity: stage === 0 && ready ? 1 : 0, transition: "opacity 600ms ease-in-out, transform 600ms ease-in-out", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}
+        {/* ========================================================= */}
+        {/* SCENE 6: COUPLE SECTION REVEAL (2.8s)                      */}
+        {/* ========================================================= */}
+        <div
+          className="absolute inset-0 z-40 overflow-hidden"
+          style={{
+            opacity: stage >= 6 ? 1 : 0,
+            pointerEvents: stage >= 6 ? "auto" : "none",
+            transition: `opacity 600ms ${EASE_PRIMARY}`,
+          }}
+        >
+          {/* Glass Back Button to Invitation (Top-Left Corner) */}
+          {stage >= 6 && (
+            <button
+              onClick={triggerBackToInvitation}
+              aria-label="Back to Invitation"
+              className="group absolute left-4 top-4 z-50 flex items-center gap-1.5 rounded-full border border-white/75 bg-white/45 px-3.5 py-1.5 shadow-[0_4px_20px_rgba(75,15,22,0.18),inset_0_1px_1px_rgba(255,255,255,0.85)] backdrop-blur-md transition-all duration-300 hover:scale-105 hover:bg-white/65 active:scale-95"
+            >
+              <svg
+                className="h-4 w-4 text-[#6d0f1b] transition-transform duration-300 group-hover:-translate-x-0.5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth="2.5"
               >
-                <p lang="mr" className="font-marathi" style={{ fontSize: u(26), lineHeight: 1.2, color: MAROON, fontWeight: 600 }}>शुभमंगल सावधान</p>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+              </svg>
+              <span className="font-body text-[11px] font-semibold tracking-wider text-[#4b0f16]">
+                निमंत्रण
+              </span>
+            </button>
+          )}
+          {/* Base Couple Mandap Illustration */}
+          <div
+            className="absolute inset-0"
+            style={{
+              opacity: s6Landscape || stage >= 6 ? 1 : 0,
+              transform: s6BothSettle ? "scale(1)" : "scale(1.025)",
+              transition: `opacity 800ms ${EASE_PRIMARY}, transform 900ms ${EASE_PRIMARY}`,
+            }}
+          >
+            <img
+              src="/intro/couple-mandap.jpg"
+              alt="The Maharashtrian Bride and Groom in Traditional Attire"
+              className="h-full w-full object-cover"
+              draggable={false}
+            />
+          </div>
 
-                {/* 180u soft ring around the 140u seal; 20u above/16u below the text */}
-                <div style={{ position: "relative", marginTop: u(20), width: u(180), height: u(180), display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <span style={{ position: "absolute", inset: 0, borderRadius: "50%", border: `${u(1.5)} solid rgba(226,178,79,.55)`, background: "radial-gradient(circle, rgba(246,217,138,.28) 40%, rgba(246,217,138,0) 72%)" }} />
-                  {rippling &&
-                    [0, 1, 2].map((i) => (
-                      <span key={i} className="zv-anim" style={{ position: "absolute", left: "50%", top: "50%", width: u(140), height: u(140), borderRadius: "50%", border: "2px solid #e2b24f", animation: `zv-ripple 1000ms ease-out ${i * 220}ms both` }} />
-                    ))}
-                  <div
-                    className="zv-anim"
-                    style={{
-                      width: u(140),
-                      height: u(140),
-                      borderRadius: "50%",
-                      background: "radial-gradient(circle at 35% 30%, #f6d98a, #c9963a 55%, #8f5f14)",
-                      border: `${u(5)} double rgba(255,236,180,.9)`,
-                      boxSizing: "border-box",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      animation: "zv-seal 2.5s ease-in-out infinite",
-                    }}
-                  >
-                    <span lang="mr" className="font-marathi" style={{ fontSize: u(56), color: "#6d0f1b", fontWeight: 600, lineHeight: 1 }}>श्री</span>
-                  </div>
-                </div>
+          {/* Soft Watercolor Mask Revealing Bride (0.35s – 1.30s) */}
+          <div
+            className="absolute inset-0"
+            style={{
+              opacity: s6Bride ? 1 : 0,
+              WebkitMaskImage: "radial-gradient(ellipse 42% 55% at 42% 65%, black 45%, transparent 95%)",
+              maskImage: "radial-gradient(ellipse 42% 55% at 42% 65%, black 45%, transparent 95%)",
+              transition: `opacity 950ms ${EASE_PRIMARY}`,
+            }}
+          >
+            <img
+              src="/intro/couple-mandap.jpg"
+              alt="Bride in Paithani Nauvari"
+              className="h-full w-full object-cover"
+              draggable={false}
+            />
+          </div>
 
-                <p lang="mr" className="font-marathi" style={{ marginTop: u(16), fontSize: u(22), lineHeight: 1.2, color: MAROON, fontWeight: 600 }}>निमंत्रण उघडा</p>
-                <p className="zv-anim uppercase" style={{ marginTop: u(12), fontFamily: "Lato, system-ui, sans-serif", fontSize: u(14), letterSpacing: "0.2em", color: MAROON, fontWeight: 600, animation: "zv-hint 2s ease-in-out infinite" }}>
-                  Tap to open
-                </p>
-              </div>
+          {/* Soft Watercolor Mask Revealing Groom (0.65s – 1.50s) */}
+          <div
+            className="absolute inset-0"
+            style={{
+              opacity: s6Groom ? 1 : 0,
+              WebkitMaskImage: "radial-gradient(ellipse 42% 55% at 58% 62%, black 45%, transparent 95%)",
+              maskImage: "radial-gradient(ellipse 42% 55% at 58% 62%, black 45%, transparent 95%)",
+              transition: `opacity 850ms ${EASE_PRIMARY}`,
+            }}
+          >
+            <img
+              src="/intro/couple-mandap.jpg"
+              alt="Groom in Kurta Dhoti and Pheta"
+              className="h-full w-full object-cover"
+              draggable={false}
+            />
+          </div>
+
+          {/* Top Sky Region: Couple Names, Romantic Marathi Quotation, Parents */}
+          <div className="relative z-10 px-6 pt-14 text-center">
+            {/* Marathi Romantic Quotation (2.20s – 2.80s) */}
+            <div
+              style={{
+                opacity: s6Quotation ? 1 : 0,
+                transform: s6Quotation ? "translateY(0)" : "translateY(10px)",
+                transition: `opacity 600ms ${EASE_PRIMARY}, transform 600ms ${EASE_PRIMARY}`,
+              }}
+            >
+              <p lang="mr" className="font-marathi text-2xl font-bold text-[#6d0f1b]">
+                दोन मने, एक गाठ
+              </p>
+              <p className="font-serif text-xs italic tracking-wider text-[#7a3a2a]">
+                Two hearts, one knot
+              </p>
             </div>
-          </ScreenSpace>
-        </SceneFrame>
 
-        {/* Skip + sound sit above the frame, 12u inside the border and below the notch */}
-        {stage < 4 && (
-          <button onClick={skip} style={pill}>
-            Skip
-          </button>
-        )}
-        {hasAudio && (
-          <button onClick={() => setSoundOn((s) => !s)} aria-pressed={soundOn} aria-label={soundOn ? "Mute shehnai music" : "Play shehnai music"} style={{ ...pill, right: "auto", left: u(34) }}>
-            {soundOn ? "Sound on" : "Sound off"}
-          </button>
-        )}
+            {/* Names (1.50s – 2.10s) */}
+            <div
+              className="mt-3"
+              style={{
+                opacity: s6Names ? 1 : 0,
+                transform: s6Names ? "translateY(0)" : "translateY(10px)",
+                transition: `opacity 600ms ${EASE_PRIMARY}, transform 600ms ${EASE_PRIMARY}`,
+              }}
+            >
+              <p className="font-script text-4xl text-[#6d0f1b]">
+                {wedding.couple.groom}{" "}
+                <span className="text-2xl text-[#a8741a]">&amp;</span>{" "}
+                {wedding.couple.bride}
+              </p>
+            </div>
+
+            {/* Ornamental Divider (1.90s – 2.40s) */}
+            <div className="my-2 flex justify-center">
+              <svg
+                viewBox="0 0 160 12"
+                className="h-3 w-36 text-[#a8741a]"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.2"
+                strokeLinecap="round"
+              >
+                <path
+                  d="M10 6 L65 6 M95 6 L150 6"
+                  strokeDasharray="160"
+                  strokeDashoffset={s6Divider ? "0" : "160"}
+                  style={{ transition: `stroke-dashoffset 500ms ${EASE_PRIMARY}` }}
+                />
+                <circle cx="80" cy="6" r="3" fill="#6d0f1b" opacity={s6Divider ? 1 : 0} />
+              </svg>
+            </div>
+
+            {/* Parents' Blessings (2.20s – 2.80s) */}
+            <div
+              className="space-y-0.5"
+              style={{
+                opacity: s6Quotation ? 1 : 0,
+                transform: s6Quotation ? "translateY(0)" : "translateY(8px)",
+                transition: `opacity 600ms ${EASE_PRIMARY}, transform 600ms ${EASE_PRIMARY}`,
+              }}
+            >
+              <p lang="mr" className="font-marathi text-xs text-[#4b0f16]">
+                सुपुत्र {wedding.parentsMr.groom}
+              </p>
+              <p lang="mr" className="font-marathi text-xs text-[#4b0f16]">
+                सुकन्या {wedding.parentsMr.bride}
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
-
-      {/* the whole screen is tappable while waiting */}
-      {stage === 0 && (
-        <button autoFocus disabled={!ready} onClick={open} aria-label="Open the invitation. Tap anywhere to begin." className="absolute inset-0 cursor-pointer" style={{ outlineOffset: -8 }} />
-      )}
-    </div>
+    </section>
   );
 }

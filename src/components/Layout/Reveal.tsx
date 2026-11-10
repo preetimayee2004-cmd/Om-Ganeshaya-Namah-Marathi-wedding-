@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 
 import { useScrollRoot } from "./ScrollRoot";
 
 /** Fires once when the element enters the (mockup-aware) scroll viewport. */
-export function useInView<T extends Element>(threshold = 0.2) {
+export function useInView<T extends Element>(threshold = 0.05) {
   const ref = useRef<T>(null);
   const [seen, setSeen] = useState(false);
   const root = useScrollRoot();
@@ -10,6 +10,20 @@ export function useInView<T extends Element>(threshold = 0.2) {
   useEffect(() => {
     const el = ref.current;
     if (!el || seen) return;
+
+    // Check if already in viewport immediately
+    const checkRect = () => {
+      const rect = el.getBoundingClientRect();
+      const vh = root ? root.clientHeight : (window.innerHeight || document.documentElement.clientHeight);
+      if (rect.top < vh + 100 && rect.bottom > -100) {
+        setSeen(true);
+        return true;
+      }
+      return false;
+    };
+
+    if (checkRect()) return;
+
     const io = new IntersectionObserver(
       ([e]) => {
         if (e.isIntersecting) {
@@ -17,10 +31,24 @@ export function useInView<T extends Element>(threshold = 0.2) {
           io.disconnect();
         }
       },
-      { root, threshold },
+      { root: root ?? null, threshold, rootMargin: "60px 0px 60px 0px" },
     );
     io.observe(el);
-    return () => io.disconnect();
+
+    // Also listen to scroll event as a resilient fallback
+    const target = root ?? window;
+    const onScroll = () => {
+      if (checkRect()) {
+        io.disconnect();
+        target.removeEventListener("scroll", onScroll);
+      }
+    };
+    target.addEventListener("scroll", onScroll, { passive: true });
+
+    return () => {
+      io.disconnect();
+      target.removeEventListener("scroll", onScroll);
+    };
   }, [root, seen, threshold]);
 
   return [ref, seen] as const;

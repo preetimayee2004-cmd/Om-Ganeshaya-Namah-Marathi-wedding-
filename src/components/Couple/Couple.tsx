@@ -1,15 +1,15 @@
 import { wedding, coupleOrder } from "../../config/wedding";
 import Reveal, { useInView } from "../Layout/Reveal";
 
-// The couple in front of the heritage palace, from the supplied artwork.
+// The couple in traditional Maharashtrian wedding attire under the mandap
 export function CouplePlaceholder() {
   return (
     <img
-      src="/intro/couple.jpg"
-      alt="The bride and groom in traditional Maharashtrian attire, looking at a heritage palace"
+      src="/intro/couple-mandap.jpg"
+      alt="The bride and groom in traditional Maharashtrian wedding attire"
       draggable={false}
       className="h-full w-full object-cover"
-      style={{ objectPosition: "90% 50%" }}
+      style={{ objectPosition: "50% 50%" }}
     />
   );
 }

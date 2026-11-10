@@ -31,16 +31,16 @@ export default function TravelStay() {
   const { venue, travel, stays } = wedding;
 
   return (
-    <section id="venue" aria-labelledby="venue-title" className="px-5 py-20">
+    <section id="venue" aria-labelledby="venue-title" className="px-5 py-20 text-[#4b0f16]">
       <Reveal className="text-center">
-        <p className="font-body text-[10px] uppercase tracking-[0.35em] text-olive">Venue &amp; stay</p>
-        <h2 id="venue-title" className="mt-2 text-5xl">Getting Here</h2>
+        <p className="font-body text-[10px] uppercase tracking-[0.35em] text-[#a8741a]">Venue &amp; stay</p>
+        <h2 id="venue-title" className="mt-2 text-5xl text-[#6d0f1b]">Getting Here</h2>
       </Reveal>
 
       <Reveal className="mt-8 rounded-xl border border-gold/50 bg-[#fbf5e8] px-6 py-8 text-center" delay={100}>
         <RouteDraw />
-        <p lang="mr" className="mt-3 text-sm text-gold">{venue.marathi}</p>
-        <h3 className="text-4xl leading-none">{venue.name}</h3>
+        <p lang="mr" className="mt-3 text-sm font-semibold text-[#a8741a]">{venue.marathi}</p>
+        <h3 className="text-4xl leading-none text-[#6d0f1b]">{venue.name}</h3>
         <address className="mt-3 font-body text-sm not-italic leading-relaxed text-espresso/80">
           {venue.address}
         </address>

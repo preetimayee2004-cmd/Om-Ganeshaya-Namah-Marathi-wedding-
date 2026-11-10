@@ -19,6 +19,7 @@ export default {
         script: ['"Great Vibes"', "cursive"], // headings & couple names
         body: ["Lato", "system-ui", "sans-serif"], // all body copy
         marathi: ['"Tiro Devanagari Marathi"', '"Noto Serif Devanagari"', "serif"],
+        serif: ['"Cormorant Garamond"', "Georgia", "serif"],
       },
       keyframes: { fadeIn: { from: { opacity: "0" }, to: { opacity: "1" } } },
       // Mobile-first. `lg` is the only point where the phone mockup activates.
