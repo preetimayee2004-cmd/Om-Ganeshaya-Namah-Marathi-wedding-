@@ -973,9 +973,9 @@ export default function Intro() {
             transition: `opacity 700ms ${EASE_SOFT_EXIT}`,
           }}
         >
-          {/* Top Zone: Clean English Invitation Typography positioned in clear sky below illustrated Ganesha */}
-          <div className="relative z-10 px-6 pt-[16vh] sm:pt-[15%] text-center flex flex-col items-center">
-            {/* Sacred Ganesha Mantra & Invitation Line */}
+          {/* Top Zone: Clean English Invitation Typography positioned in clear sunset sky */}
+          <div className="relative z-10 px-6 pt-[17vh] sm:pt-[16%] text-center flex flex-col items-center">
+            {/* Invitation Heading */}
             <div
               className="relative z-10 flex flex-col items-center"
               style={{
@@ -984,17 +984,14 @@ export default function Intro() {
                 transition: `opacity 600ms ${EASE_PRIMARY}, transform 600ms ${EASE_PRIMARY}`,
               }}
             >
-              <p lang="mr" className="font-marathi text-xs sm:text-sm font-semibold tracking-widest text-[#6d0f1b] drop-shadow-[0_1px_3px_rgba(255,255,255,0.95)]">
-                ॥ श्री गणेशाय नमः ॥
-              </p>
-              <h2 className="mt-1 font-serif text-[14px] sm:text-[15px] font-medium tracking-wide text-[#6d0f1b] leading-snug drop-shadow-[0_1px_3px_rgba(255,255,255,0.95)]">
+              <h2 className="font-serif text-[15px] sm:text-base font-medium tracking-wide text-[#6d0f1b] leading-snug drop-shadow-[0_1px_3px_rgba(255,255,255,0.95)]">
                 With Joyful Hearts,<br />We Invite You
               </h2>
             </div>
 
             {/* Couple's Names: Vertically Aligned Shreyash & Sayeli with refined, balanced spacing */}
             <div
-              className="relative z-10 mt-2 flex flex-col items-center"
+              className="relative z-10 mt-2.5 flex flex-col items-center"
               style={{
                 opacity: s4Lines[0] ? 1 : 0,
                 transform: s4Lines[0] ? "scale(1)" : "scale(0.96)",
@@ -1010,16 +1007,11 @@ export default function Intro() {
               <p className="font-script text-4xl sm:text-[44px] font-normal leading-tight text-[#6d0f1b] drop-shadow-[0_1px_2px_rgba(255,255,255,0.7)]">
                 {second}
               </p>
-
-              {/* Increased readability for date & location line in clear sky */}
-              <p className="mt-1.5 font-serif text-[13.5px] sm:text-[14.5px] font-bold tracking-[0.06em] text-[#5A0B16] drop-shadow-[0_1px_2px_rgba(255,255,255,0.9)]">
-                28 February 2027 · Pune
-              </p>
             </div>
 
             {/* Delicate Antique-Gold Line Ornamental Divider */}
             <div
-              className="relative z-10 mt-1.5 flex items-center justify-center gap-2"
+              className="relative z-10 mt-2 flex items-center justify-center gap-2"
               style={{
                 opacity: s4Lines[0] ? 1 : 0,
                 transform: s4Lines[0] ? "scale(1)" : "scale(0.9)",
@@ -1032,7 +1024,7 @@ export default function Intro() {
             </div>
           </div>
 
-          {/* Refined Frosted Cream Pill Button: width reduced by 8%, height slightly reduced, thin gold border, maroon serif typography, smaller arrow */}
+          {/* Refined Slim Pill Button: chota aur patla, thin gold border, maroon serif typography, smaller arrow */}
           <div
             className="relative z-20 flex flex-col items-center pb-6 sm:pb-7 pt-2"
             style={{
@@ -1045,12 +1037,12 @@ export default function Intro() {
               type="button"
               onClick={triggerCoupleTransition}
               aria-label="Open Invitation"
-              className="group cursor-pointer inline-flex h-[40px] sm:h-[42px] items-center justify-center gap-1.5 rounded-full border border-[#D4AF37]/75 bg-[#FFFDF8]/95 px-5 sm:px-6 shadow-[0_5px_18px_rgba(109,15,27,0.18),inset_0_1px_2px_rgba(255,255,255,0.95)] backdrop-blur-md transition-all duration-300 hover:scale-105 hover:bg-[#FFF9EE] active:scale-95"
+              className="group cursor-pointer inline-flex h-[34px] sm:h-[36px] items-center justify-center gap-1.5 rounded-full border border-[#D4AF37]/65 bg-[#FFFDF8]/90 px-4 sm:px-5 shadow-[0_3px_12px_rgba(109,15,27,0.12),inset_0_1px_1px_rgba(255,255,255,0.95)] backdrop-blur-md transition-all duration-300 hover:scale-105 hover:bg-[#FFF9EE] active:scale-95"
             >
-              <span className="font-serif text-[13px] sm:text-[14px] font-semibold tracking-[0.14em] uppercase text-[#6d0f1b]">
+              <span className="font-serif text-[11.5px] sm:text-[12.5px] font-semibold tracking-[0.14em] uppercase text-[#6d0f1b]">
                 Open Invitation
               </span>
-              <span className="text-[#C9963A] text-xs sm:text-[13px] leading-none transition-transform duration-300 group-hover:translate-y-0.5 animate-bounce">
+              <span className="text-[#C9963A] text-[10px] sm:text-[11px] leading-none transition-transform duration-300 group-hover:translate-y-0.5 animate-bounce">
                 ↓
               </span>
             </button>
@@ -1202,8 +1194,8 @@ export default function Intro() {
             />
           </div>
 
-          {/* Top Sky Region: Couple Names, Romantic Marathi Quotation, Parents */}
-          <div className="relative z-10 px-6 pt-14 text-center">
+          {/* Top Sky Region: Couple Names, Romantic Marathi Quotation, Parents (positioned below floral toran to prevent overlap) */}
+          <div className="relative z-10 px-6 pt-28 sm:pt-32 text-center">
             {/* Marathi Romantic Quotation (2.20s – 2.80s) */}
             <div
               style={{
