@@ -974,7 +974,7 @@ export default function Intro() {
           }}
         >
           {/* Top Zone: Clean English Invitation Typography positioned in clear sky below illustrated Ganesha */}
-          <div className="relative z-10 px-6 pt-[21vh] sm:pt-[20%] text-center flex flex-col items-center">
+          <div className="relative z-10 px-6 pt-[16vh] sm:pt-[15%] text-center flex flex-col items-center">
             {/* Sacred Ganesha Mantra & Invitation Line */}
             <div
               className="relative z-10 flex flex-col items-center"
@@ -984,59 +984,57 @@ export default function Intro() {
                 transition: `opacity 600ms ${EASE_PRIMARY}, transform 600ms ${EASE_PRIMARY}`,
               }}
             >
-              <p lang="mr" className="font-marathi text-xs sm:text-sm font-semibold tracking-widest text-[#6d0f1b] drop-shadow-[0_1px_2px_rgba(255,255,255,0.85)]">
+              <p lang="mr" className="font-marathi text-xs sm:text-sm font-semibold tracking-widest text-[#6d0f1b] drop-shadow-[0_1px_3px_rgba(255,255,255,0.95)]">
                 ॥ श्री गणेशाय नमः ॥
               </p>
-              <h2 className="mt-1 font-serif text-[15px] sm:text-base font-medium tracking-wide text-[#6d0f1b] leading-snug drop-shadow-[0_1px_2px_rgba(255,255,255,0.85)]">
+              <h2 className="mt-1 font-serif text-[14px] sm:text-[15px] font-medium tracking-wide text-[#6d0f1b] leading-snug drop-shadow-[0_1px_3px_rgba(255,255,255,0.95)]">
                 With Joyful Hearts,<br />We Invite You
               </h2>
             </div>
 
-            {/* Couple's Names: Vertically Aligned Sreyash & Sayeli */}
+            {/* Couple's Names: Vertically Aligned Shreyash & Sayeli with refined, balanced spacing */}
             <div
-              className="relative z-10 mt-2.5 sm:mt-3 flex flex-col items-center"
+              className="relative z-10 mt-2 flex flex-col items-center"
               style={{
                 opacity: s4Lines[0] ? 1 : 0,
                 transform: s4Lines[0] ? "scale(1)" : "scale(0.96)",
                 transition: `opacity 500ms ${EASE_PRIMARY}, transform 500ms ${EASE_PRIMARY}`,
               }}
             >
-              <p className="font-script text-4xl sm:text-5xl font-normal leading-none text-[#6d0f1b]">
+              <p className="font-script text-4xl sm:text-[44px] font-normal leading-tight text-[#6d0f1b] drop-shadow-[0_1px_2px_rgba(255,255,255,0.7)]">
                 {first}
               </p>
-              <p className="my-0.5 font-serif text-2xl sm:text-3xl font-light text-[#a8741a] leading-none">
+              <p className="my-0 font-serif italic text-base sm:text-lg font-light text-[#C9963A] leading-none opacity-90">
                 &amp;
               </p>
-              <p className="font-script text-4xl sm:text-5xl font-normal leading-none text-[#6d0f1b]">
+              <p className="font-script text-4xl sm:text-[44px] font-normal leading-tight text-[#6d0f1b] drop-shadow-[0_1px_2px_rgba(255,255,255,0.7)]">
                 {second}
               </p>
 
-              {/* Small date & location line in clear sky area under Sayeli */}
-              <p className="mt-1.5 font-serif text-[14px] sm:text-[15px] font-semibold tracking-wide text-[#6d0f1b]">
+              {/* Increased readability for date & location line in clear sky */}
+              <p className="mt-1.5 font-serif text-[13.5px] sm:text-[14.5px] font-bold tracking-[0.06em] text-[#5A0B16] drop-shadow-[0_1px_2px_rgba(255,255,255,0.9)]">
                 28 February 2027 · Pune
               </p>
             </div>
 
-            {/* Delicate Gold Floral Flourish to anchor and balance the invitation space */}
+            {/* Delicate Antique-Gold Line Ornamental Divider */}
             <div
-              className="relative z-10 mt-2 flex items-center justify-center gap-2"
+              className="relative z-10 mt-1.5 flex items-center justify-center gap-2"
               style={{
                 opacity: s4Lines[0] ? 1 : 0,
                 transform: s4Lines[0] ? "scale(1)" : "scale(0.9)",
                 transition: `opacity 600ms 150ms ${EASE_PRIMARY}, transform 600ms 150ms ${EASE_PRIMARY}`,
               }}
             >
-              <span className="h-px w-10 sm:w-14 bg-gradient-to-r from-transparent via-[#a8741a]/60 to-[#a8741a]" />
-              <svg viewBox="0 0 24 16" className="h-3.5 w-5 text-[#a8741a] fill-current" aria-hidden="true">
-                <path d="M12 1 C10 5, 6 7, 2 7 C5 9, 8 11, 12 15 C16 11, 19 9, 22 7 C18 7, 14 5, 12 1 Z" opacity="0.85" />
-              </svg>
-              <span className="h-px w-10 sm:w-14 bg-gradient-to-l from-transparent via-[#a8741a]/60 to-[#a8741a]" />
+              <span className="h-[0.8px] w-12 sm:w-16 bg-gradient-to-r from-transparent via-[#C9963A] to-[#C9963A]" />
+              <span className="text-[#C9963A] text-[9px] leading-none opacity-85">❖</span>
+              <span className="h-[0.8px] w-12 sm:w-16 bg-gradient-to-l from-transparent via-[#C9963A] to-[#C9963A]" />
             </div>
           </div>
 
-          {/* Frosted Cream Pill Button: 46px tall, thin gold border, maroon 14-15px text, 28px above bottom */}
+          {/* Refined Frosted Cream Pill Button: width reduced by 8%, height slightly reduced, thin gold border, maroon serif typography, smaller arrow */}
           <div
-            className="relative z-20 flex flex-col items-center pb-7 pt-2"
+            className="relative z-20 flex flex-col items-center pb-6 sm:pb-7 pt-2"
             style={{
               opacity: s4Hold ? 1 : 0,
               transform: s4Hold ? "translateY(0)" : "translateY(10px)",
@@ -1047,12 +1045,12 @@ export default function Intro() {
               type="button"
               onClick={triggerCoupleTransition}
               aria-label="Open Invitation"
-              className="group cursor-pointer inline-flex h-[46px] items-center justify-center gap-2 rounded-full border border-[#D4AF37] bg-[#FFFBF0]/95 px-7 shadow-[0_6px_22px_rgba(109,15,27,0.22),inset_0_1px_2px_rgba(255,255,255,0.95)] backdrop-blur-md transition-all duration-300 hover:scale-105 hover:bg-[#FFFDF7] active:scale-95"
+              className="group cursor-pointer inline-flex h-[40px] sm:h-[42px] items-center justify-center gap-1.5 rounded-full border border-[#D4AF37]/75 bg-[#FFFDF8]/95 px-5 sm:px-6 shadow-[0_5px_18px_rgba(109,15,27,0.18),inset_0_1px_2px_rgba(255,255,255,0.95)] backdrop-blur-md transition-all duration-300 hover:scale-105 hover:bg-[#FFF9EE] active:scale-95"
             >
-              <span className="font-serif text-[14px] sm:text-[15px] font-bold tracking-[0.15em] uppercase text-[#6d0f1b]">
+              <span className="font-serif text-[13px] sm:text-[14px] font-semibold tracking-[0.14em] uppercase text-[#6d0f1b]">
                 Open Invitation
               </span>
-              <span className="text-[#a8741a] text-base leading-none transition-transform duration-300 group-hover:translate-y-0.5 animate-bounce">
+              <span className="text-[#C9963A] text-xs sm:text-[13px] leading-none transition-transform duration-300 group-hover:translate-y-0.5 animate-bounce">
                 ↓
               </span>
             </button>
@@ -1204,18 +1202,75 @@ export default function Intro() {
             />
           </div>
 
-          {/* Top Sky Region Typography: Provided directly within the couple illustration (kept sr-only for accessibility & SEO) */}
-          <div className="sr-only">
-            <div>
-              <p lang="mr">दोन मने, एक गाठ</p>
-              <p>Two hearts, one knot</p>
+          {/* Top Sky Region: Couple Names, Romantic Marathi Quotation, Parents */}
+          <div className="relative z-10 px-6 pt-14 text-center">
+            {/* Marathi Romantic Quotation (2.20s – 2.80s) */}
+            <div
+              style={{
+                opacity: s6Quotation ? 1 : 0,
+                transform: s6Quotation ? "translateY(0)" : "translateY(10px)",
+                transition: `opacity 600ms ${EASE_PRIMARY}, transform 600ms ${EASE_PRIMARY}`,
+              }}
+            >
+              <p lang="mr" className="font-marathi text-2xl font-bold text-[#6d0f1b]">
+                दोन मने, एक गाठ
+              </p>
+              <p className="font-serif text-xs italic tracking-wider text-[#7a3a2a]">
+                Two hearts, one knot
+              </p>
             </div>
-            <div>
-              <p>{wedding.couple.groom} &amp; {wedding.couple.bride}</p>
+
+            {/* Names (1.50s – 2.10s) */}
+            <div
+              className="mt-3"
+              style={{
+                opacity: s6Names ? 1 : 0,
+                transform: s6Names ? "translateY(0)" : "translateY(10px)",
+                transition: `opacity 600ms ${EASE_PRIMARY}, transform 600ms ${EASE_PRIMARY}`,
+              }}
+            >
+              <p className="font-script text-4xl text-[#6d0f1b]">
+                {wedding.couple.groom}{" "}
+                <span className="text-2xl text-[#a8741a]">&amp;</span>{" "}
+                {wedding.couple.bride}
+              </p>
             </div>
-            <div>
-              <p>{wedding.parentsEn.groom}</p>
-              <p>{wedding.parentsEn.bride}</p>
+
+            {/* Ornamental Divider (1.90s – 2.40s) */}
+            <div className="my-2 flex justify-center">
+              <svg
+                viewBox="0 0 160 12"
+                className="h-3 w-36 text-[#a8741a]"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.2"
+                strokeLinecap="round"
+              >
+                <path
+                  d="M10 6 L65 6 M95 6 L150 6"
+                  strokeDasharray="160"
+                  strokeDashoffset={s6Divider ? "0" : "160"}
+                  style={{ transition: `stroke-dashoffset 500ms ${EASE_PRIMARY}` }}
+                />
+                <circle cx="80" cy="6" r="3" fill="#6d0f1b" opacity={s6Divider ? 1 : 0} />
+              </svg>
+            </div>
+
+            {/* Parents' Blessings (English) */}
+            <div
+              className="space-y-0.5"
+              style={{
+                opacity: s6Quotation ? 1 : 0,
+                transform: s6Quotation ? "translateY(0)" : "translateY(8px)",
+                transition: `opacity 600ms ${EASE_PRIMARY}, transform 600ms ${EASE_PRIMARY}`,
+              }}
+            >
+              <p className="font-serif text-[13px] sm:text-sm font-medium tracking-wide text-[#4b0f16]">
+                {wedding.parentsEn.groom}
+              </p>
+              <p className="font-serif text-[13px] sm:text-sm font-medium tracking-wide text-[#4b0f16]">
+                {wedding.parentsEn.bride}
+              </p>
             </div>
           </div>
         </div>

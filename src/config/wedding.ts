@@ -3,7 +3,7 @@
 export const wedding = {
   couple: {
     bride: "Sayeli",
-    groom: "Sreyash",
+    groom: "Shreyash",
     // Which name is shown first on the invitation, footer and thank-you.
     showFirst: "groom" as "bride" | "groom",
   },
