@@ -973,12 +973,9 @@ export default function Intro() {
             transition: `opacity 700ms ${EASE_SOFT_EXIT}`,
           }}
         >
-          {/* Top Zone: Clean English Invitation Typography in clear peach sky (shifted up 16px for roofline clearance) */}
-          <div className="relative z-10 px-6 pt-8 sm:pt-12 text-center flex flex-col items-center">
-            {/* Soft, gentle warm radiant glow positioned behind text for contrast without washing out the sky */}
-            <div className="pointer-events-none absolute left-1/2 top-10 -translate-x-1/2 h-[290px] w-[92%] max-w-[350px] rounded-full bg-gradient-to-b from-[#FFFDF7]/65 via-[#FAF1E0]/45 to-transparent blur-xl" />
-
-            {/* Sacred Ganesha Icon & Line */}
+          {/* Top Zone: Clean English Invitation Typography positioned in clear sky below illustrated Ganesha */}
+          <div className="relative z-10 px-6 pt-[21vh] sm:pt-[20%] text-center flex flex-col items-center">
+            {/* Sacred Ganesha Mantra & Invitation Line */}
             <div
               className="relative z-10 flex flex-col items-center"
               style={{
@@ -987,20 +984,10 @@ export default function Intro() {
                 transition: `opacity 600ms ${EASE_PRIMARY}, transform 600ms ${EASE_PRIMARY}`,
               }}
             >
-              {/* Traditional Auspicious Lord Ganesha Motif */}
-              <div className="mb-1.5 flex items-center justify-center">
-                <img
-                  src="/intro/ganesh-motif.png"
-                  alt="Lord Ganesha"
-                  className="h-13 w-auto sm:h-15 object-contain drop-shadow-[0_2px_8px_rgba(255,255,255,0.85)]"
-                  draggable={false}
-                />
-              </div>
-
-              <p lang="mr" className="font-marathi text-xs sm:text-sm font-semibold tracking-widest text-[#6d0f1b]">
+              <p lang="mr" className="font-marathi text-xs sm:text-sm font-semibold tracking-widest text-[#6d0f1b] drop-shadow-[0_1px_2px_rgba(255,255,255,0.85)]">
                 ॥ श्री गणेशाय नमः ॥
               </p>
-              <h2 className="mt-1 font-serif text-[15px] sm:text-base font-medium tracking-wide text-[#6d0f1b] leading-snug">
+              <h2 className="mt-1 font-serif text-[15px] sm:text-base font-medium tracking-wide text-[#6d0f1b] leading-snug drop-shadow-[0_1px_2px_rgba(255,255,255,0.85)]">
                 With Joyful Hearts,<br />We Invite You
               </h2>
             </div>
