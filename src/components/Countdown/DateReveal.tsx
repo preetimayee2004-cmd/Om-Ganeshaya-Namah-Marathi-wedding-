@@ -113,21 +113,12 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
     ctx.lineWidth = 0.8;
     ctx.strokeRect(12, 12, w - 24, h - 24);
 
-    // Gold Foiled Calligraphic Instructions on Scratch Foil
+    // Delicate Subtle Gold Center Accent on Scratch Foil
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-
-    ctx.fillStyle = "#FDF0D5";
-    ctx.font = "600 13px 'Tiro Devanagari Marathi', serif";
-    ctx.fillText("॥ शुभविवाह तारीख उलगडा ॥", w / 2, h / 2 - 20);
-
-    ctx.fillStyle = "#FFE8A3";
-    ctx.font = "italic 500 14px 'Cormorant Garamond', Georgia, serif";
-    ctx.fillText("Scratch to Reveal Our Wedding Date", w / 2, h / 2 + 6);
-
-    ctx.fillStyle = "rgba(255, 236, 180, 0.85)";
-    ctx.font = "400 11px Lato, sans-serif";
-    ctx.fillText("✦  तारीख पाहण्यासाठी हळूच स्क्रॅच करा  ✦", w / 2, h / 2 + 28);
+    ctx.fillStyle = "rgba(255, 236, 180, 0.35)";
+    ctx.font = "14px serif";
+    ctx.fillText("❖", w / 2, h / 2);
 
     ctx.restore();
   }, []);
@@ -454,37 +445,17 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
       </button>
 
       {/* CARD CONTENT HEADER */}
-      <div className="relative z-10 px-5 pt-3 pb-2 text-center">
-        {/* Sacred Ganesh Invocation Line */}
-        <p lang="mr" className="font-marathi text-xs font-semibold tracking-wider text-[#6d0f1b]">
-          ॥ श्री गणेशाय नमः ॥
-        </p>
-
-        {/* Lotus Ornament */}
-        <div className="my-1 flex items-center justify-center gap-2">
-          <span className="h-px w-10 bg-gradient-to-r from-transparent to-[#D4AF37]" />
-          <svg viewBox="0 0 24 16" className="h-3.5 w-5 text-[#8E1726]" fill="currentColor">
-            <path d="M12 0 C13 5 17 8 20 8 C16 9 14 13 12 16 C10 13 8 9 4 8 C7 8 11 5 12 0 Z" />
-          </svg>
-          <span className="h-px w-10 bg-gradient-to-l from-transparent to-[#D4AF37]" />
-        </div>
-
+      <div className="relative z-10 px-5 pt-5 pb-2 text-center">
         {/* SAVE THE DATE Heading */}
-        <p className="font-serif text-[11px] font-semibold tracking-[0.3em] text-[#8E1726]/85 uppercase">
+        <h2 className="font-serif text-2xl sm:text-3xl font-bold tracking-[0.2em] text-[#6d0f1b] uppercase">
           Save The Date
-        </p>
-
-        {/* Couple Names in Royal Script Font */}
-        <h3 className="mt-0.5 font-script text-3xl font-normal leading-tight text-[#6d0f1b] sm:text-4xl">
-          {wedding.couple.groom}{" "}
-          <span className="font-serif text-xl font-light text-[#a8741a]">&amp;</span>{" "}
-          {wedding.couple.bride}
-        </h3>
-
-        {/* Marathi Subtitle */}
-        <p lang="mr" className="mt-1 font-marathi text-xs font-medium text-[#6d0f1b]/90 leading-relaxed">
-          आमच्या लग्नसोहळ्याची तारीख लवकरच उलगडणार आहे...
-        </p>
+        </h2>
+        {/* Delicate Golden Divider */}
+        <div className="mx-auto mt-2 flex items-center justify-center gap-2">
+          <span className="h-px w-12 sm:w-16 bg-gradient-to-r from-transparent via-[#D4AF37] to-[#D4AF37]" />
+          <span className="text-[#D4AF37] text-xs">❖</span>
+          <span className="h-px w-12 sm:w-16 bg-gradient-to-l from-transparent via-[#D4AF37] to-[#D4AF37]" />
+        </div>
       </div>
 
       {/* ========================================================= */}
@@ -683,6 +654,25 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
               }}
             />
           ))}
+          {/* Animated Finger Scratch / Tap Hint over Scratch Box */}
+          {!hasInteracted && !isRevealed && (
+            <div
+              className="pointer-events-none absolute right-4 sm:right-8 top-1/2 z-20 -translate-y-1/2 flex items-center gap-1.5 transition-opacity duration-300"
+            >
+              <div className="relative flex items-center justify-center">
+                {/* Expanding glowing touch ripple ring */}
+                <span className="absolute -left-1 -top-1 h-6 w-6 rounded-full border-2 border-[#FFE8A3] animate-ping opacity-75" />
+                {/* Finger pointer icon */}
+                <svg
+                  viewBox="0 0 24 24"
+                  className="h-10 w-10 text-[#FFE8A3] drop-shadow-[0_2px_10px_rgba(0,0,0,0.7)] animate-bounce"
+                  fill="currentColor"
+                >
+                  <path d="M9 11.25V6.5a1.5 1.5 0 0 1 3 0v4.75m0 0V3.5a1.5 1.5 0 0 1 3 0v7.75m0 0V5.5a1.5 1.5 0 0 1 3 0v6.25m0 0a1.5 1.5 0 0 1 3 0v3.25a7 7 0 0 1-7 7H12a7 7 0 0 1-5.6-2.8l-3.2-4.4a1.5 1.5 0 0 1 2.4-1.8L7 15.5V11.25a1.5 1.5 0 0 1 2 0z" />
+                </svg>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -712,43 +702,26 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
         </div>
       ))}
 
-      {/* FOOTER CONTROLS & HINT */}
+      {/* FOOTER: Scratch to reveal */}
       <div className="relative z-10 flex flex-col items-center px-4 pt-3 pb-3 text-center">
         {!isRevealed ? (
-          <div className="flex flex-col items-center gap-1.5">
-            {/* Subtle Finger Tap / Scratch Icon with gentle pulse */}
-            <div className="flex items-center gap-2">
-              <svg
-                className="h-4 w-4 animate-bounce text-[#8E1726]"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11"
-                />
-              </svg>
-              <p className="font-serif text-xs font-semibold tracking-wider text-[#6d0f1b]">
-                Scratch to reveal our शुभविवाह तारीख
-              </p>
-            </div>
-
-            {/* Direct Tap-to-Reveal Accessible Fallback Button */}
-            <button
-              onClick={triggerCelebration}
-              className="mt-0.5 rounded-full border border-[#D4AF37]/50 bg-white/60 px-3.5 py-1 text-[11px] font-medium text-[#6d0f1b] shadow-sm backdrop-blur-sm transition-all hover:bg-white/90 active:scale-95"
+          <div className="flex items-center gap-2 text-[#6d0f1b]">
+            <svg
+              className="h-4 w-4 text-[#8E1726] animate-pulse"
+              viewBox="0 0 24 24"
+              fill="currentColor"
             >
-              ✨ किंवा थेट तारीख उघडा (Tap to Reveal)
-            </button>
+              <path d="M9 11.25V6.5a1.5 1.5 0 0 1 3 0v4.75m0 0V3.5a1.5 1.5 0 0 1 3 0v7.75m0 0V5.5a1.5 1.5 0 0 1 3 0v6.25m0 0a1.5 1.5 0 0 1 3 0v3.25a7 7 0 0 1-7 7H12a7 7 0 0 1-5.6-2.8l-3.2-4.4a1.5 1.5 0 0 1 2.4-1.8L7 15.5V11.25a1.5 1.5 0 0 1 2 0z" />
+            </svg>
+            <p className="font-serif text-sm sm:text-base italic font-semibold tracking-wider text-[#6d0f1b]">
+              Scratch to reveal
+            </p>
           </div>
         ) : (
-          <div className="flex items-center gap-1.5 py-1">
+          <div className="flex items-center gap-1.5 py-0.5">
             <span className="text-[#D4AF37]">✦</span>
-            <p className="font-serif text-xs font-bold tracking-wider text-[#6d0f1b]">
-              तारीख उलगडली · Save the Date!
+            <p className="font-serif text-xs sm:text-sm font-bold tracking-wider text-[#6d0f1b]">
+              Save the Date · 28 February 2027
             </p>
             <span className="text-[#D4AF37]">✦</span>
           </div>
