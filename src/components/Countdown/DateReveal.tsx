@@ -48,6 +48,7 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
 
   const lastPoint = useRef<{ x: number; y: number } | null>(null);
   const strokeCount = useRef(0);
+  const scratchDistanceRef = useRef(0);
   const animFrameRef = useRef<number | null>(null);
 
   // Toggle audio
@@ -125,44 +126,6 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
     return () => window.removeEventListener("resize", handleResize);
   }, [initCanvas, isRevealed]);
 
-  // Calculate Cleared Percentage (fast 20px sampling to eliminate frame drops)
-  const checkScratchPercentage = useCallback(() => {
-    const canvas = canvasRef.current;
-    if (!canvas || isRevealed) return;
-    const ctx = canvas.getContext("2d", { willReadFrequently: true });
-    if (!ctx) return;
-
-    const now = performance.now();
-    if (now - lastCheckTime.current < 150) return;
-    lastCheckTime.current = now;
-
-    const w = canvas.width;
-    const h = canvas.height;
-    const sampleSize = 20; // Fast sparse sampling
-    let cleared = 0;
-    let total = 0;
-
-    const imgData = ctx.getImageData(0, 0, w, h);
-    const data = imgData.data;
-
-    for (let y = 0; y < h; y += sampleSize) {
-      for (let x = 0; x < w; x += sampleSize) {
-        total++;
-        const alphaIndex = (y * w + x) * 4 + 3;
-        if (data[alphaIndex] < 50) {
-          cleared++;
-        }
-      }
-    }
-
-    const pct = Math.round((cleared / total) * 100);
-
-    // Threshold reached: trigger cinematic celebration
-    if (pct >= 36 && !isRevealed) {
-      triggerCelebration();
-    }
-  }, [isRevealed]);
-
   // Trigger Refined Celebration Sequence
   const triggerCelebration = useCallback(() => {
     if (isRevealed) return;
@@ -195,6 +158,44 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
       setPhase(3);
     }, 3000);
   }, [isRevealed, onRevealed]);
+
+  // Calculate Cleared Percentage (fast 20px sampling to eliminate frame drops)
+  const checkScratchPercentage = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas || isRevealed) return;
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
+    if (!ctx) return;
+
+    const now = performance.now();
+    if (now - lastCheckTime.current < 150) return;
+    lastCheckTime.current = now;
+
+    const w = canvas.width;
+    const h = canvas.height;
+    const sampleSize = 20; // Fast sparse sampling
+    let cleared = 0;
+    let total = 0;
+
+    const imgData = ctx.getImageData(0, 0, w, h);
+    const data = imgData.data;
+
+    for (let y = 0; y < h; y += sampleSize) {
+      for (let x = 0; x < w; x += sampleSize) {
+        total++;
+        const alphaIndex = (y * w + x) * 4 + 3;
+        if (data[alphaIndex] < 50) {
+          cleared++;
+        }
+      }
+    }
+
+    const pct = Math.round((cleared / total) * 100);
+
+    // "ek line scratch karne se pura ho jayega" - If even 5% cleared or single stroke drawn, reveal completely!
+    if ((pct >= 5 || scratchDistanceRef.current >= 40) && !isRevealed) {
+      triggerCelebration();
+    }
+  }, [isRevealed, triggerCelebration]);
 
   // Scratch Drawing
   const scratch = (clientX: number, clientY: number) => {
@@ -245,6 +246,7 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
 
     if (lastPoint.current) {
       const dist = Math.hypot(x - lastPoint.current.x, y - lastPoint.current.y);
+      scratchDistanceRef.current += dist;
       const steps = Math.max(1, Math.floor(dist / 4));
       for (let i = 0; i <= steps; i++) {
         const cx = lastPoint.current.x + ((x - lastPoint.current.x) * i) / steps;
@@ -276,7 +278,11 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
     lastPoint.current = { x, y };
     strokeCount.current++;
 
-    if (strokeCount.current % 12 === 0) {
+    // "jaise ek line scratch karne se pura ho jayega"
+    // As soon as one line is drawn (distance >= 45px or 5 stroke events), trigger full celebration!
+    if (scratchDistanceRef.current >= 45 || strokeCount.current >= 5) {
+      triggerCelebration();
+    } else if (strokeCount.current % 3 === 0) {
       checkScratchPercentage();
     }
   };
@@ -296,7 +302,12 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
   const handleMouseUp = () => {
     isScratchingRef.current = false;
     lastPoint.current = null;
-    checkScratchPercentage();
+    // If guest interacted with even a short flick/swipe, trigger complete reveal
+    if (hasInteractedRef.current && (scratchDistanceRef.current >= 15 || strokeCount.current >= 2)) {
+      triggerCelebration();
+    } else {
+      checkScratchPercentage();
+    }
   };
 
   // Touch Handlers (Mobile)
@@ -317,7 +328,12 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
   const handleTouchEnd = () => {
     isScratchingRef.current = false;
     lastPoint.current = null;
-    checkScratchPercentage();
+    // If guest interacted with even a short flick/swipe, trigger complete reveal
+    if (hasInteractedRef.current && (scratchDistanceRef.current >= 15 || strokeCount.current >= 2)) {
+      triggerCelebration();
+    } else {
+      checkScratchPercentage();
+    }
   };
 
   // Particle & Petal Animation Loop
@@ -366,16 +382,24 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
   return (
     <div
       ref={containerRef}
-      className="relative mx-auto w-full max-w-[430px] overflow-hidden rounded-3xl border-2 border-[#D4AF37]/60 bg-[#FFFDF7] shadow-[0_12px_45px_rgba(109,15,27,0.18),inset_0_1px_2px_rgba(255,255,255,0.95)]"
+      className="relative mx-auto w-full max-w-[430px] overflow-hidden rounded-3xl border-2 border-[#D4AF37]/60 shadow-[0_12px_45px_rgba(109,15,27,0.18),inset_0_1px_2px_rgba(255,255,255,0.95)]"
       style={{
         boxShadow: "0 16px 48px -8px rgba(109,15,27,0.22), 0 0 0 1px rgba(212,175,55,0.35)",
       }}
     >
-      {/* Background Vintage Royal Parchment Texture with Subtle Vignette */}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#FFFDF7] via-[#FAF3E4] to-[#F5EAD4] opacity-90" />
+      {/* Background Soft Peach Watercolor Sky matching the website theme */}
+      <div
+        className="pointer-events-none absolute inset-0 bg-[#F8DFBF]"
+        style={{
+          backgroundImage: `url("/bg/mandap-sky.jpg"), radial-gradient(ellipse at 50% 0%, #FFF8EE 0%, #FDEBD1 25%, #F8DFBF 60%, #EFE0C1 100%)`,
+          backgroundSize: "100% auto, 100% 100%",
+          backgroundRepeat: "repeat-y, no-repeat",
+          backgroundPosition: "center top, center center",
+        }}
+      />
 
       {/* TOP PEACOCK FLORAL BORDER STRIP */}
-      <div className="relative w-full overflow-hidden border-b border-[#D4AF37]/35 bg-[#FFFDF7]">
+      <div className="relative w-full overflow-hidden border-b border-[#D4AF37]/35 bg-[#FAF0DF]/90 backdrop-blur-sm">
         <img
           src="/border/peacock-border.png"
           alt="Traditional Royal Maharashtrian Peacock Floral Border"
@@ -434,7 +458,14 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
           {/* ======================================================= */}
           {/* UNDERNEATH LAYER: ONLY THE SACRED WEDDING DATE          */}
           {/* ======================================================= */}
-          <div className="relative flex h-full min-h-[136px] flex-col items-center justify-center rounded-xl bg-gradient-to-b from-[#FFFDF9] via-[#FCF5E8] to-[#F7EBD2] px-3 py-4 text-center">
+          <div
+            className="relative flex h-full min-h-[136px] flex-col items-center justify-center rounded-xl px-3 py-4 text-center bg-[#FAF0DF]"
+            style={{
+              backgroundImage: `url("/bg/mandap-sky.jpg"), radial-gradient(ellipse at 50% 30%, #FFF8EE 0%, #FDEBD1 40%, #F8DFBF 100%)`,
+              backgroundSize: "cover",
+              backgroundPosition: "center center",
+            }}
+          >
             {/* Delicate Traditional Marathi Wedding Mandala */}
             <div
               className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden"

@@ -1204,75 +1204,18 @@ export default function Intro() {
             />
           </div>
 
-          {/* Top Sky Region: Couple Names, Romantic Marathi Quotation, Parents */}
-          <div className="relative z-10 px-6 pt-14 text-center">
-            {/* Marathi Romantic Quotation (2.20s – 2.80s) */}
-            <div
-              style={{
-                opacity: s6Quotation ? 1 : 0,
-                transform: s6Quotation ? "translateY(0)" : "translateY(10px)",
-                transition: `opacity 600ms ${EASE_PRIMARY}, transform 600ms ${EASE_PRIMARY}`,
-              }}
-            >
-              <p lang="mr" className="font-marathi text-2xl font-bold text-[#6d0f1b]">
-                दोन मने, एक गाठ
-              </p>
-              <p className="font-serif text-xs italic tracking-wider text-[#7a3a2a]">
-                Two hearts, one knot
-              </p>
+          {/* Top Sky Region Typography: Provided directly within the couple illustration (kept sr-only for accessibility & SEO) */}
+          <div className="sr-only">
+            <div>
+              <p lang="mr">दोन मने, एक गाठ</p>
+              <p>Two hearts, one knot</p>
             </div>
-
-            {/* Names (1.50s – 2.10s) */}
-            <div
-              className="mt-3"
-              style={{
-                opacity: s6Names ? 1 : 0,
-                transform: s6Names ? "translateY(0)" : "translateY(10px)",
-                transition: `opacity 600ms ${EASE_PRIMARY}, transform 600ms ${EASE_PRIMARY}`,
-              }}
-            >
-              <p className="font-script text-4xl text-[#6d0f1b]">
-                {wedding.couple.groom}{" "}
-                <span className="text-2xl text-[#a8741a]">&amp;</span>{" "}
-                {wedding.couple.bride}
-              </p>
+            <div>
+              <p>{wedding.couple.groom} &amp; {wedding.couple.bride}</p>
             </div>
-
-            {/* Ornamental Divider (1.90s – 2.40s) */}
-            <div className="my-2 flex justify-center">
-              <svg
-                viewBox="0 0 160 12"
-                className="h-3 w-36 text-[#a8741a]"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.2"
-                strokeLinecap="round"
-              >
-                <path
-                  d="M10 6 L65 6 M95 6 L150 6"
-                  strokeDasharray="160"
-                  strokeDashoffset={s6Divider ? "0" : "160"}
-                  style={{ transition: `stroke-dashoffset 500ms ${EASE_PRIMARY}` }}
-                />
-                <circle cx="80" cy="6" r="3" fill="#6d0f1b" opacity={s6Divider ? 1 : 0} />
-              </svg>
-            </div>
-
-            {/* Parents' Blessings (English) */}
-            <div
-              className="space-y-0.5"
-              style={{
-                opacity: s6Quotation ? 1 : 0,
-                transform: s6Quotation ? "translateY(0)" : "translateY(8px)",
-                transition: `opacity 600ms ${EASE_PRIMARY}, transform 600ms ${EASE_PRIMARY}`,
-              }}
-            >
-              <p className="font-serif text-[13px] sm:text-sm font-medium tracking-wide text-[#4b0f16]">
-                {wedding.parentsEn.groom}
-              </p>
-              <p className="font-serif text-[13px] sm:text-sm font-medium tracking-wide text-[#4b0f16]">
-                {wedding.parentsEn.bride}
-              </p>
+            <div>
+              <p>{wedding.parentsEn.groom}</p>
+              <p>{wedding.parentsEn.bride}</p>
             </div>
           </div>
         </div>
