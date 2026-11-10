@@ -974,19 +974,29 @@ export default function Intro() {
           }}
         >
           {/* Top Zone: Clean English Invitation Typography in clear peach sky */}
-          <div className="relative z-10 px-6 pt-12 sm:pt-14 text-center flex flex-col items-center">
-            {/* Soft, gentle warm radiant glow to ensure high-contrast luxury readability */}
-            <div className="pointer-events-none absolute left-1/2 top-1 -translate-x-1/2 h-[300px] w-[94%] max-w-[360px] rounded-full bg-gradient-to-b from-[#FFFDF7]/85 via-[#FAF1E0]/60 to-transparent blur-2xl" />
+          <div className="relative z-10 px-6 pt-12 sm:pt-16 text-center flex flex-col items-center">
+            {/* Soft, gentle warm radiant glow positioned behind text for contrast without washing out the sky */}
+            <div className="pointer-events-none absolute left-1/2 top-14 -translate-x-1/2 h-[280px] w-[92%] max-w-[350px] rounded-full bg-gradient-to-b from-[#FFFDF7]/65 via-[#FAF1E0]/45 to-transparent blur-xl" />
 
-            {/* Ganesh Line & Heading */}
+            {/* Sacred Ganesha Icon & Line */}
             <div
-              className="relative z-10"
+              className="relative z-10 flex flex-col items-center"
               style={{
                 opacity: s4Heading ? 1 : 0,
                 transform: s4Heading ? "translateY(0)" : "translateY(8px)",
-                transition: `opacity 500ms ${EASE_PRIMARY}, transform 500ms ${EASE_PRIMARY}`,
+                transition: `opacity 600ms ${EASE_PRIMARY}, transform 600ms ${EASE_PRIMARY}`,
               }}
             >
+              {/* Traditional Auspicious Lord Ganesha Motif */}
+              <div className="mb-2 flex items-center justify-center">
+                <img
+                  src="/intro/ganesh-motif.png"
+                  alt="Lord Ganesha"
+                  className="h-14 w-auto sm:h-16 object-contain drop-shadow-[0_2px_8px_rgba(255,255,255,0.85)]"
+                  draggable={false}
+                />
+              </div>
+
               <p lang="mr" className="font-marathi text-xs sm:text-sm font-semibold tracking-widest text-[#6d0f1b]">
                 ॥ श्री गणेशाय नमः ॥
               </p>
@@ -1032,9 +1042,9 @@ export default function Intro() {
             </div>
           </div>
 
-          {/* Normally Highlighted "See Couple" cue (no button container) */}
+          {/* Normally Highlighted "Open Invitation" cue (no button frame) */}
           <div
-            className="relative z-20 flex flex-col items-center pb-8 pt-2"
+            className="relative z-20 flex flex-col items-center pb-6 sm:pb-8 pt-2"
             style={{
               opacity: s4Hold ? 1 : 0,
               transform: s4Hold ? "translateY(0)" : "translateY(10px)",
@@ -1042,15 +1052,26 @@ export default function Intro() {
             }}
           >
             <button
+              type="button"
               onClick={triggerCoupleTransition}
-              aria-label="See Couple"
-              className="group cursor-pointer inline-flex items-center gap-1.5 rounded-md bg-[#FFF6E3]/95 px-3.5 py-1 shadow-[0_2px_8px_rgba(109,15,27,0.14)] border-b-2 border-[#c9963a] backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:bg-white active:scale-95"
+              aria-label="Open Invitation"
+              className="group cursor-pointer inline-flex items-center gap-2 transition-all duration-300 hover:opacity-90 active:scale-95"
             >
-              <span className="font-serif text-[15px] sm:text-base font-bold tracking-wider text-[#6d0f1b]">
-                See Couple
+              <span
+                className="font-serif text-[15px] sm:text-base font-bold tracking-[0.22em] uppercase text-[#6d0f1b]"
+                style={{
+                  filter: "drop-shadow(0 0 8px rgba(255,255,255,1)) drop-shadow(0 0 16px rgba(255,255,255,0.95)) drop-shadow(0 1px 2px rgba(255,255,255,1))",
+                }}
+              >
+                Open Invitation
               </span>
-              <span className="font-serif text-base font-bold text-[#a8741a] transition-transform duration-300 group-hover:translate-x-1">
-                ›
+              <span
+                className="text-[#8E1726] text-xl leading-none animate-bounce font-bold"
+                style={{
+                  filter: "drop-shadow(0 0 8px rgba(255,255,255,1)) drop-shadow(0 0 16px rgba(255,255,255,0.95))",
+                }}
+              >
+                ↓
               </span>
             </button>
           </div>

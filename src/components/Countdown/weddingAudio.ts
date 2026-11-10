@@ -42,8 +42,8 @@ class WeddingAudioEngine {
 
   /**
    * Traditional brass temple bell (घंटा).
-   * Generates deep brass fundamental (~720Hz) with inharmonic metallic overtones
-   * and long exponential resonance.
+   * Soft, authentic temple bell with a natural resonant decay.
+   * Master gain lowered to 0.18 for a gentle, warm tone (no loud or jarring sound).
    */
   public playTempleBell() {
     const ctx = this.initCtx();
@@ -51,17 +51,16 @@ class WeddingAudioEngine {
 
     const now = ctx.currentTime;
     const masterGain = ctx.createGain();
-    masterGain.gain.setValueAtTime(0.35, now);
-    masterGain.gain.exponentialRampToValueAtTime(0.0001, now + 2.8);
+    masterGain.gain.setValueAtTime(0.18, now);
+    masterGain.gain.exponentialRampToValueAtTime(0.0001, now + 2.4);
     masterGain.connect(ctx.destination);
 
     // Temple bell overtone frequencies (inharmonic metallic ratio)
     const bellPartials = [
-      { freq: 740, gain: 0.6, decay: 2.6 },
-      { freq: 960, gain: 0.35, decay: 2.2 },
-      { freq: 1540, gain: 0.25, decay: 1.8 },
-      { freq: 2420, gain: 0.2, decay: 1.4 },
-      { freq: 3680, gain: 0.15, decay: 0.9 },
+      { freq: 740, gain: 0.5, decay: 2.2 },
+      { freq: 960, gain: 0.28, decay: 1.8 },
+      { freq: 1540, gain: 0.18, decay: 1.4 },
+      { freq: 2420, gain: 0.12, decay: 1.0 },
     ];
 
     bellPartials.forEach(({ freq, gain, decay }) => {
@@ -83,18 +82,18 @@ class WeddingAudioEngine {
   }
 
   /**
-   * Tactile scratch sound (subtle filtered noise burst).
-   * Throttled to avoid overwhelming the ear.
+   * Tactile scratch sound (subtle filtered low-volume whisper).
+   * Throttled to avoid lag or ear fatigue.
    */
   public playScratchSound() {
     const ctx = this.initCtx();
     if (!ctx) return;
 
     const now = ctx.currentTime;
-    if (now - this.lastScratchTime < 0.08) return;
+    if (now - this.lastScratchTime < 0.1) return;
     this.lastScratchTime = now;
 
-    const duration = 0.06;
+    const duration = 0.05;
     const bufferSize = Math.floor(ctx.sampleRate * duration);
     const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
     const data = buffer.getChannelData(0);
@@ -108,11 +107,11 @@ class WeddingAudioEngine {
 
     const filter = ctx.createBiquadFilter();
     filter.type = "bandpass";
-    filter.frequency.setValueAtTime(1400 + Math.random() * 600, now);
-    filter.Q.setValueAtTime(3.0, now);
+    filter.frequency.setValueAtTime(1200 + Math.random() * 400, now);
+    filter.Q.setValueAtTime(2.5, now);
 
     const gain = ctx.createGain();
-    gain.gain.setValueAtTime(0.04, now);
+    gain.gain.setValueAtTime(0.016, now);
     gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
 
     noise.connect(filter);
@@ -124,39 +123,8 @@ class WeddingAudioEngine {
   }
 
   /**
-   * Magical mandala shimmer (arpeggiated crystalline chimes).
-   */
-  public playMandalaShimmer() {
-    const ctx = this.initCtx();
-    if (!ctx) return;
-
-    const now = ctx.currentTime;
-    const notes = [880, 1108, 1320, 1661, 2217]; // Pentatonic shimmer
-
-    notes.forEach((freq, idx) => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      const noteTime = now + idx * 0.08;
-
-      osc.type = "sine";
-      osc.frequency.setValueAtTime(freq, noteTime);
-
-      gain.gain.setValueAtTime(0, noteTime);
-      gain.gain.linearRampToValueAtTime(0.12, noteTime + 0.02);
-      gain.gain.exponentialRampToValueAtTime(0.0001, noteTime + 0.9);
-
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-
-      osc.start(noteTime);
-      osc.stop(noteTime + 0.9);
-    });
-  }
-
-  /**
-   * Celebratory Shehnai wedding flourish (मंगल वाद्य शहनाई).
-   * Synthesizes the characteristic double-reed nasal timbre, glissando,
-   * and joyful Indian wedding celebration phrase (Raga Yaman / Bilawal notes).
+   * Short, soft, melodious Shehnai wedding flourish (मंगल वाद्य शहनाई).
+   * Warm, emotional, traditional, gentle volume (no loud blast, no overlapping).
    */
   public playShehnaiFlourish() {
     const ctx = this.initCtx();
@@ -164,23 +132,18 @@ class WeddingAudioEngine {
 
     const now = ctx.currentTime;
 
-    // Classic auspicious Shehnai phrase notes & durations
-    // Sa - Re - Ga - Ma - Pa - Dha - Ni - Taar Sa flourish
+    // Gentle 5-note auspicious traditional wedding flourish (Raga Yaman)
     const phrase = [
-      { freq: 440, dur: 0.18, slideTo: 493.88 }, // A4 -> B4
-      { freq: 493.88, dur: 0.16, slideTo: 554.37 }, // B4 -> C#5
-      { freq: 554.37, dur: 0.22, slideTo: 659.25 }, // C#5 -> E5
-      { freq: 659.25, dur: 0.26, slideTo: 739.99 }, // E5 -> F#5
-      { freq: 739.99, dur: 0.32, slideTo: 880.00 }, // F#5 -> A5 (crescendo)
-      { freq: 880.00, dur: 0.55, slideTo: 880.00 }, // A5 grand held note
-      { freq: 739.99, dur: 0.15, slideTo: 659.25 },
-      { freq: 880.00, dur: 0.70, slideTo: 880.00 }, // final bright celebration ring
+      { freq: 440.00, dur: 0.22, slideTo: 493.88 }, // A4 -> B4
+      { freq: 493.88, dur: 0.24, slideTo: 554.37 }, // B4 -> C#5
+      { freq: 554.37, dur: 0.32, slideTo: 659.25 }, // C#5 -> E5
+      { freq: 659.25, dur: 0.38, slideTo: 739.99 }, // E5 -> F#5
+      { freq: 739.99, dur: 0.65, slideTo: 739.99 }, // F#5 held serene finish
     ];
 
     let t = now + 0.05;
 
     phrase.forEach((note) => {
-      // Shehnai dual reed oscillators (sawtooth + triangle for rich nasal harmonics)
       const osc1 = ctx.createOscillator();
       const osc2 = ctx.createOscillator();
       const vibrato = ctx.createOscillator();
@@ -189,30 +152,30 @@ class WeddingAudioEngine {
       osc1.type = "sawtooth";
       osc2.type = "triangle";
 
-      // Vibrato LFO at 5.5 Hz for authentic human reed expression
-      vibrato.frequency.setValueAtTime(5.5, t);
-      vibratoGain.gain.setValueAtTime(8, t); // ~8 Hz vibrato depth
+      // Gentle subtle vibrato (5 Hz, soft depth)
+      vibrato.frequency.setValueAtTime(5.0, t);
+      vibratoGain.gain.setValueAtTime(5, t);
       vibrato.connect(osc1.frequency);
       vibrato.connect(osc2.frequency);
 
-      // Pitch and glissando portamento
+      // Pitch portamento
       osc1.frequency.setValueAtTime(note.freq, t);
       osc1.frequency.exponentialRampToValueAtTime(note.slideTo, t + note.dur * 0.7);
 
-      osc2.frequency.setValueAtTime(note.freq * 1.002, t); // slight chorus detune
-      osc2.frequency.exponentialRampToValueAtTime(note.slideTo * 1.002, t + note.dur * 0.7);
+      osc2.frequency.setValueAtTime(note.freq * 1.001, t);
+      osc2.frequency.exponentialRampToValueAtTime(note.slideTo * 1.001, t + note.dur * 0.7);
 
-      // Resonant bandpass filter to shape Shehnai reed horn resonance
+      // Warm acoustic bandpass filter
       const filter = ctx.createBiquadFilter();
       filter.type = "bandpass";
-      filter.frequency.setValueAtTime(1600, t);
-      filter.Q.setValueAtTime(2.8, t);
+      filter.frequency.setValueAtTime(1450, t);
+      filter.Q.setValueAtTime(2.2, t);
 
-      // Articulation envelope
+      // Soft volume envelope
       const noteGain = ctx.createGain();
       noteGain.gain.setValueAtTime(0, t);
-      noteGain.gain.linearRampToValueAtTime(0.18, t + 0.03);
-      noteGain.gain.setValueAtTime(0.18, t + note.dur - 0.04);
+      noteGain.gain.linearRampToValueAtTime(0.09, t + 0.04);
+      noteGain.gain.setValueAtTime(0.09, t + note.dur - 0.06);
       noteGain.gain.exponentialRampToValueAtTime(0.0001, t + note.dur);
 
       osc1.connect(filter);

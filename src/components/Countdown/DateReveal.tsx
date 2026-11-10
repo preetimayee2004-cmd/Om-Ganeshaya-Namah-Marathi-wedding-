@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
-import { wedding } from "../../config/wedding";
 import { weddingAudio } from "./weddingAudio";
 
 interface Particle {
@@ -26,13 +25,6 @@ interface Petal {
   opacity: number;
 }
 
-interface Ripple {
-  id: number;
-  x: number;
-  y: number;
-  size: number;
-}
-
 interface DateRevealProps {
   onRevealed?: () => void;
 }
@@ -42,16 +34,17 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   const isScratchingRef = useRef(false);
-  const [isScratching, setIsScratching] = useState(false);
+  const hasInteractedRef = useRef(false);
+  const lastParticleTime = useRef(0);
+  const lastCheckTime = useRef(0);
+
   const [isRevealed, setIsRevealed] = useState(false);
-  const [scratchPercent, setScratchPercent] = useState(0);
-  const [phase, setPhase] = useState<number>(0); // 0: initial, 1: dissolving, 2: date scale, 3: petals/diyas, 4: settled
+  const [phase, setPhase] = useState<number>(0); // 0: initial, 1: dissolving (600ms), 2: date/mandala (900ms-1500ms), 3: settled
   const [isMuted, setIsMuted] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
 
   const [particles, setParticles] = useState<Particle[]>([]);
   const [petals, setPetals] = useState<Petal[]>([]);
-  const [ripples, setRipples] = useState<Ripple[]>([]);
 
   const lastPoint = useRef<{ x: number; y: number } | null>(null);
   const strokeCount = useRef(0);
@@ -132,16 +125,20 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
     return () => window.removeEventListener("resize", handleResize);
   }, [initCanvas, isRevealed]);
 
-  // Calculate Cleared Percentage
+  // Calculate Cleared Percentage (fast 20px sampling to eliminate frame drops)
   const checkScratchPercentage = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas || isRevealed) return;
     const ctx = canvas.getContext("2d", { willReadFrequently: true });
     if (!ctx) return;
 
+    const now = performance.now();
+    if (now - lastCheckTime.current < 150) return;
+    lastCheckTime.current = now;
+
     const w = canvas.width;
     const h = canvas.height;
-    const sampleSize = 12; // Sample every 12 pixels for fast 60fps checks
+    const sampleSize = 20; // Fast sparse sampling
     let cleared = 0;
     let total = 0;
 
@@ -159,76 +156,44 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
     }
 
     const pct = Math.round((cleared / total) * 100);
-    setScratchPercent(pct);
 
     // Threshold reached: trigger cinematic celebration
-    if (pct >= 38 && !isRevealed) {
+    if (pct >= 36 && !isRevealed) {
       triggerCelebration();
     }
   }, [isRevealed]);
 
-  // Trigger Full Cinematic Celebration Sequence
+  // Trigger Refined Celebration Sequence
   const triggerCelebration = useCallback(() => {
     if (isRevealed) return;
     setIsRevealed(true);
-    setPhase(1); // 0.0s - 0.5s: Dissolving remaining texture
+    setPhase(1); // 0ms: Dissolving remaining texture over 600ms
 
     if (onRevealed) onRevealed();
 
-    // 0.0s: Spawn gold particle scatter burst from remaining surface
-    const burstParticles: Particle[] = [];
-    const colors = ["#FFD700", "#FFECB4", "#E2A84B", "#FFFFFF", "#F6D98A"];
-    for (let i = 0; i < 45; i++) {
-      const angle = Math.random() * Math.PI * 2;
-      const speed = 1.5 + Math.random() * 4.5;
-      burstParticles.push({
-        id: i,
-        x: 180 + Math.cos(angle) * (Math.random() * 80),
-        y: 65 + Math.sin(angle) * (Math.random() * 35),
-        vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed - 1.2,
-        size: 3 + Math.random() * 4,
-        color: colors[i % colors.length],
-        alpha: 1,
-        life: 1,
-      });
-    }
-    setParticles(burstParticles);
+    // Clear scratch dust particles
+    setParticles([]);
 
-    // 0.5s: Mandala forms behind the date + Shimmer chime
+    // 200ms: As surface dissolves, date becomes visible + gentle Shehnai flourish + mandala draws
     setTimeout(() => {
       setPhase(2);
-      weddingAudio.playMandalaShimmer();
-    }, 500);
-
-    // 1.5s: Date scale-up with golden glow + Melodious Shehnai wedding flourish
-    setTimeout(() => {
-      setPhase(3);
       weddingAudio.playShehnaiFlourish();
 
-      // Spawn falling marigold petals
-      const newPetals: Petal[] = [];
-      const petalColors = ["#FFA000", "#FFB300", "#FF8F00", "#E65100", "#F57C00"];
-      for (let i = 0; i < 24; i++) {
-        newPetals.push({
-          id: i,
-          x: Math.random() * 100, // percentage
-          y: -10 - Math.random() * 40,
-          speed: 1.2 + Math.random() * 1.8,
-          angle: Math.random() * 360,
-          spin: (Math.random() - 0.5) * 4,
-          size: 14 + Math.random() * 12,
-          color: petalColors[i % petalColors.length],
-          opacity: 0.85 + Math.random() * 0.15,
-        });
-      }
+      // Spawn exactly 4 softly drifting marigold petals (requirement: 3-5 petals)
+      const marigoldColors = ["#FFA000", "#FFB300", "#E65100", "#FF8F00"];
+      const newPetals: Petal[] = [
+        { id: 1, x: 20, y: -12, speed: 0.9, angle: 12, spin: 0.5, size: 14, color: marigoldColors[0], opacity: 0.85 },
+        { id: 2, x: 45, y: -24, speed: 1.1, angle: -18, spin: -0.4, size: 16, color: marigoldColors[1], opacity: 0.9 },
+        { id: 3, x: 72, y: -16, speed: 0.95, angle: 25, spin: 0.4, size: 13, color: marigoldColors[2], opacity: 0.85 },
+        { id: 4, x: 88, y: -28, speed: 1.05, angle: -12, spin: -0.5, size: 15, color: marigoldColors[3], opacity: 0.88 },
+      ];
       setPetals(newPetals);
-    }, 1500);
+    }, 200);
 
-    // 3.5s: All animations settle permanently
+    // 3000ms: Settle into completely still wedding invitation composition
     setTimeout(() => {
-      setPhase(4);
-    }, 3500);
+      setPhase(3);
+    }, 3000);
   }, [isRevealed, onRevealed]);
 
   // Scratch Drawing
@@ -242,32 +207,32 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
     const x = clientX - rect.left;
     const y = clientY - rect.top;
 
-    if (!hasInteracted) {
+    // 1. First interaction: one soft, authentic temple bell
+    if (!hasInteractedRef.current) {
+      hasInteractedRef.current = true;
       setHasInteracted(true);
       weddingAudio.playTempleBell();
     }
 
+    // 2. Scratch movement: very subtle scratch whisper (throttled)
     weddingAudio.playScratchSound();
 
-    // Create soft expanding gold touch ripple
-    if (Math.random() < 0.25) {
-      setRipples((prev) => [...prev.slice(-4), { id: Date.now() + Math.random(), x, y, size: 24 }]);
-    }
-
-    // Spawn tiny golden scratch flakes
-    if (Math.random() < 0.35) {
+    // 3. Subtle gold dust effect, very few particles (throttled to avoid any lag)
+    const now = performance.now();
+    if (now - lastParticleTime.current > 140) {
+      lastParticleTime.current = now;
       setParticles((prev) => [
-        ...prev.slice(-30),
+        ...prev.slice(-3),
         {
           id: Date.now() + Math.random(),
           x,
           y,
-          vx: (Math.random() - 0.5) * 2.2,
-          vy: (Math.random() - 0.5) * 2.2 - 0.5,
-          size: 2 + Math.random() * 3,
+          vx: (Math.random() - 0.5) * 1.5,
+          vy: (Math.random() - 0.5) * 1.5 - 0.4,
+          size: 2 + Math.random() * 2,
           color: "#E2A84B",
-          alpha: 1,
-          life: 0.6,
+          alpha: 0.85,
+          life: 0.5,
         },
       ]);
     }
@@ -279,7 +244,6 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
     const brushRadius = rect.width < 360 ? 26 : 32;
 
     if (lastPoint.current) {
-      // Connect line between previous and current touch point
       const dist = Math.hypot(x - lastPoint.current.x, y - lastPoint.current.y);
       const steps = Math.max(1, Math.floor(dist / 4));
       for (let i = 0; i <= steps; i++) {
@@ -312,7 +276,7 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
     lastPoint.current = { x, y };
     strokeCount.current++;
 
-    if (strokeCount.current % 6 === 0) {
+    if (strokeCount.current % 12 === 0) {
       checkScratchPercentage();
     }
   };
@@ -320,7 +284,6 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
   // Mouse Handlers
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
     isScratchingRef.current = true;
-    setIsScratching(true);
     lastPoint.current = null;
     scratch(e.clientX, e.clientY);
   };
@@ -332,7 +295,6 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
 
   const handleMouseUp = () => {
     isScratchingRef.current = false;
-    setIsScratching(false);
     lastPoint.current = null;
     checkScratchPercentage();
   };
@@ -341,7 +303,6 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
   const handleTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
     if (e.touches.length === 1) {
       isScratchingRef.current = true;
-      setIsScratching(true);
       lastPoint.current = null;
       scratch(e.touches[0].clientX, e.touches[0].clientY);
     }
@@ -349,14 +310,12 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
 
   const handleTouchMove = (e: React.TouchEvent<HTMLCanvasElement>) => {
     if (!isScratchingRef.current || e.touches.length !== 1) return;
-    // Prevent page scrolling while actively scratching the card
     e.preventDefault();
     scratch(e.touches[0].clientX, e.touches[0].clientY);
   };
 
   const handleTouchEnd = () => {
     isScratchingRef.current = false;
-    setIsScratching(false);
     lastPoint.current = null;
     checkScratchPercentage();
   };
@@ -366,37 +325,30 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
     let active = true;
 
     const loop = () => {
-      // Animate Sparkle Particles
+      // Animate Scratch Dust Particles
       setParticles((prev) =>
         prev
           .map((p) => ({
             ...p,
             x: p.x + p.vx,
             y: p.y + p.vy,
-            vy: p.vy + 0.08, // gravity
-            alpha: p.alpha - 0.025,
-            life: p.life - 0.03,
+            vy: p.vy + 0.05,
+            alpha: p.alpha - 0.03,
+            life: p.life - 0.035,
           }))
           .filter((p) => p.life > 0 && p.alpha > 0)
       );
 
-      // Animate Falling Marigold Petals
+      // Animate Falling Marigold Petals (gentle 2.5s drift)
       setPetals((prev) =>
         prev
           .map((p) => ({
             ...p,
-            y: p.y + p.speed * 0.45,
-            x: p.x + Math.sin(p.angle * (Math.PI / 180)) * 0.25,
+            y: p.y + p.speed * 0.4,
+            x: p.x + Math.sin(p.angle * (Math.PI / 180)) * 0.18,
             angle: p.angle + p.spin,
           }))
-          .filter((p) => p.y < 120) // remove after leaving container
-      );
-
-      // Clean up Ripples
-      setRipples((prev) =>
-        prev
-          .map((r) => ({ ...r, size: r.size + 1.8 }))
-          .filter((r) => r.size < 70)
+          .filter((p) => p.y < 125)
       );
 
       if (active) {
@@ -432,15 +384,16 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
         />
       </div>
 
-      {/* AUDIO MUTE / UNMUTE FLOATING PILL */}
+      {/* TINY CORNER BELL AUDIO BUTTON */}
       <button
+        type="button"
         onClick={handleToggleMute}
         aria-label={isMuted ? "Unmute Sound" : "Mute Sound"}
-        className="group absolute right-3.5 top-16 z-30 flex items-center gap-1 rounded-full border border-[#D4AF37]/50 bg-white/70 px-2.5 py-1 text-[11px] font-medium text-[#6d0f1b] shadow-sm backdrop-blur-md transition-all duration-200 hover:bg-white/90 active:scale-95"
+        title={isMuted ? "Unmute sound" : "Mute sound"}
+        className="group absolute right-3.5 top-3 z-30 flex h-7 w-7 items-center justify-center rounded-full border border-[#D4AF37]/50 bg-white/85 text-[#6d0f1b] shadow-sm backdrop-blur-sm transition-all duration-200 hover:bg-white hover:scale-105 active:scale-95"
       >
-        <span>{isMuted ? "🔇" : "🔔"}</span>
-        <span className="font-serif text-[11px] tracking-wider">
-          {isMuted ? "Muted" : "Sound"}
+        <span className="text-xs leading-none select-none">
+          {isMuted ? "🔇" : "🔔"}
         </span>
       </button>
 
@@ -479,129 +432,92 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
           <div className="pointer-events-none absolute right-2 bottom-2 h-4 w-4 border-r-2 border-b-2 border-[#FFE8A3]" />
 
           {/* ======================================================= */}
-          {/* UNDERNEATH LAYER: THE REVEALED SACRED WEDDING DATE      */}
+          {/* UNDERNEATH LAYER: ONLY THE SACRED WEDDING DATE          */}
           {/* ======================================================= */}
-          <div className="relative flex flex-col items-center justify-center rounded-xl bg-gradient-to-b from-[#FFFDF9] via-[#FCF5E8] to-[#F7EBD2] px-3 py-4 text-center">
-            {/* Traditional Gold Marathi Wedding Mandala (Forming on Reveal) */}
+          <div className="relative flex h-full min-h-[136px] flex-col items-center justify-center rounded-xl bg-gradient-to-b from-[#FFFDF9] via-[#FCF5E8] to-[#F7EBD2] px-3 py-4 text-center">
+            {/* Delicate Traditional Marathi Wedding Mandala */}
             <div
-              className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden transition-all duration-1000"
+              className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden"
               style={{
-                opacity: phase >= 2 ? (phase >= 4 ? 0.35 : 0.65) : 0,
-                transform: phase >= 2 ? "scale(1)" : "scale(0.7)",
+                opacity: phase >= 2 ? 0.38 : 0,
+                transition: "opacity 1200ms cubic-bezier(0.22, 1, 0.36, 1)",
               }}
             >
               <svg viewBox="0 0 200 200" className="h-44 w-44 text-[#C9963A]">
+                {/* Outer Ring (1.5s stroke drawing) */}
                 <circle
                   cx="100"
                   cy="100"
-                  r="75"
+                  r="72"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="1.2"
-                  strokeDasharray="470"
-                  strokeDashoffset={phase >= 2 ? "0" : "470"}
-                  style={{ transition: "stroke-dashoffset 1200ms ease-in-out" }}
+                  strokeDasharray="453"
+                  strokeDashoffset={phase >= 2 ? "0" : "453"}
+                  style={{ transition: "stroke-dashoffset 1500ms cubic-bezier(0.22, 1, 0.36, 1)" }}
                 />
+                {/* Inner Ring */}
                 <circle
                   cx="100"
                   cy="100"
-                  r="55"
+                  r="52"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="0.8"
-                  strokeDasharray="350"
-                  strokeDashoffset={phase >= 2 ? "0" : "350"}
-                  style={{ transition: "stroke-dashoffset 1000ms ease-in-out 200ms" }}
+                  strokeDasharray="327"
+                  strokeDashoffset={phase >= 2 ? "0" : "327"}
+                  style={{ transition: "stroke-dashoffset 1300ms cubic-bezier(0.22, 1, 0.36, 1) 200ms" }}
                 />
-                {/* Radiating 12 Lotus Petals */}
+                {/* 12 Auspicious Lotus Petals */}
                 {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map((deg) => (
                   <path
                     key={deg}
-                    d="M100 25 C108 50 115 65 100 85 C85 65 92 50 100 25 Z"
-                    fill="rgba(212,175,55,0.18)"
+                    d="M100 28 C107 50 114 65 100 84 C86 65 93 50 100 28 Z"
+                    fill="rgba(212,175,55,0.12)"
                     stroke="currentColor"
                     strokeWidth="0.8"
                     transform={`rotate(${deg} 100 100)`}
+                    style={{
+                      opacity: phase >= 2 ? 1 : 0,
+                      transition: `opacity 1000ms cubic-bezier(0.22, 1, 0.36, 1) ${300 + (deg / 30) * 40}ms`,
+                    }}
                   />
                 ))}
               </svg>
             </div>
 
-            {/* Brass Diyas at Left and Right (Flickering on celebration) */}
+            {/* Revealed Date Content: ONLY the wedding date (scale 0.96 to 1.0, 900ms) */}
             <div
-              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 transition-opacity duration-700"
-              style={{ opacity: phase >= 3 ? 1 : 0.2 }}
-            >
-              <div className="relative">
-                {/* Diya Flame */}
-                <div
-                  className="mx-auto h-2.5 w-1.5 rounded-full bg-gradient-to-t from-[#FF8F00] to-[#FFF176] shadow-[0_0_10px_#FFA000]"
-                  style={{ animation: phase >= 3 ? "mm-flame 1.2s ease-in-out infinite" : "none" }}
-                />
-                {/* Diya Base */}
-                <svg viewBox="0 0 24 16" className="h-3 w-5 text-[#C9963A]" fill="currentColor">
-                  <path d="M2 6 C6 16 18 16 22 6 C17 8 7 8 2 6 Z" />
-                </svg>
-              </div>
-            </div>
-
-            <div
-              className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 transition-opacity duration-700"
-              style={{ opacity: phase >= 3 ? 1 : 0.2 }}
-            >
-              <div className="relative">
-                {/* Diya Flame */}
-                <div
-                  className="mx-auto h-2.5 w-1.5 rounded-full bg-gradient-to-t from-[#FF8F00] to-[#FFF176] shadow-[0_0_10px_#FFA000]"
-                  style={{ animation: phase >= 3 ? "mm-flame 1.2s ease-in-out 0.3s infinite" : "none" }}
-                />
-                {/* Diya Base */}
-                <svg viewBox="0 0 24 16" className="h-3 w-5 text-[#C9963A]" fill="currentColor">
-                  <path d="M2 6 C6 16 18 16 22 6 C17 8 7 8 2 6 Z" />
-                </svg>
-              </div>
-            </div>
-
-            {/* Revealed Date Content (Scale-up + Golden Glow) */}
-            <div
-              className="relative z-10 transition-all duration-700"
+              className="relative z-10 flex flex-col items-center justify-center transition-all"
               style={{
-                transform: phase >= 3 ? "scale(1)" : phase >= 2 ? "scale(0.92)" : "scale(0.88)",
-                filter: phase >= 3 ? "drop-shadow(0 0 12px rgba(212,175,55,0.5))" : "none",
+                opacity: phase >= 2 ? 1 : 0,
+                transform: phase >= 2 ? "scale(1.0)" : "scale(0.96)",
+                transition: "opacity 900ms cubic-bezier(0.22, 1, 0.36, 1), transform 900ms cubic-bezier(0.22, 1, 0.36, 1)",
               }}
             >
               {/* Auspicious Shubh Vivah Date */}
-              <div className="flex items-center justify-center gap-2">
-                <span className="font-serif text-3xl font-bold tracking-wider text-[#6d0f1b] sm:text-4xl">
+              <div className="flex items-center justify-center gap-2.5 sm:gap-3">
+                <span className="font-serif text-3xl sm:text-4xl font-bold tracking-wider text-[#6d0f1b]">
                   28
                 </span>
                 <span className="text-[#a8741a] text-xl font-serif">♦</span>
-                <span className="font-serif text-3xl font-bold tracking-wider text-[#6d0f1b] sm:text-4xl">
+                <span className="font-serif text-3xl sm:text-4xl font-bold tracking-wider text-[#6d0f1b]">
                   02
                 </span>
                 <span className="text-[#a8741a] text-xl font-serif">♦</span>
-                <span className="font-serif text-3xl font-bold tracking-wider text-[#6d0f1b] sm:text-4xl">
+                <span className="font-serif text-3xl sm:text-4xl font-bold tracking-wider text-[#6d0f1b]">
                   2027
                 </span>
               </div>
 
-              {/* Day & Muhurat */}
-              <p className="mt-1 font-serif text-xs font-bold tracking-[0.25em] text-[#8E1726] uppercase">
-                Sunday · रविवार
-              </p>
-
-              <p lang="mr" className="mt-0.5 font-marathi text-[11px] font-semibold text-[#4B0A13]">
-                शुभमुहूर्त: सकाळी ११:३० वा.
-              </p>
-
-              <p className="mt-0.5 font-serif text-[11px] italic text-[#6d0f1b]/80">
-                Shree Mangal Karyalaya, Pune
+              <p className="mt-1 font-serif text-xs font-semibold tracking-[0.25em] text-[#8E1726] uppercase">
+                28 February 2027
               </p>
             </div>
           </div>
 
           {/* ======================================================= */}
-          {/* INTERACTIVE SCRATCH CANVAS (Disappears on threshold)    */}
+          {/* INTERACTIVE SCRATCH CANVAS (Dissolves over 600ms)       */}
           {/* ======================================================= */}
           <canvas
             ref={canvasRef}
@@ -613,14 +529,15 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
             aria-label="Scratch surface to reveal wedding date"
-            className="absolute inset-0 h-full w-full cursor-pointer touch-none select-none transition-opacity duration-500"
+            className="absolute inset-0 h-full w-full cursor-pointer touch-none select-none"
             style={{
               opacity: isRevealed ? 0 : 1,
               pointerEvents: isRevealed ? "none" : "auto",
+              transition: "opacity 600ms cubic-bezier(0.22, 1, 0.36, 1)",
             }}
           />
 
-          {/* Sparkling Scratch Particles */}
+          {/* Sparkling Scratch Particles (Subtle gold dust, max 4 flakes) */}
           {particles.map((p) => (
             <span
               key={p.id}
@@ -632,28 +549,12 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
                 height: `${p.size}px`,
                 backgroundColor: p.color,
                 opacity: p.alpha,
-                boxShadow: `0 0 6px ${p.color}`,
+                boxShadow: `0 0 4px ${p.color}`,
                 transform: "translate(-50%, -50%)",
               }}
             />
           ))}
 
-          {/* Golden Interaction Ripples */}
-          {ripples.map((r) => (
-            <span
-              key={r.id}
-              className="pointer-events-none absolute rounded-full border border-[#FFE8A3] bg-[#FFD700]/20"
-              style={{
-                left: `${r.x}px`,
-                top: `${r.y}px`,
-                width: `${r.size}px`,
-                height: `${r.size}px`,
-                transform: "translate(-50%, -50%)",
-                opacity: Math.max(0, 1 - r.size / 70),
-                transition: "width 250ms ease-out, height 250ms ease-out, opacity 250ms ease-out",
-              }}
-            />
-          ))}
           {/* Animated Finger Scratch / Tap Hint over Scratch Box */}
           {!hasInteracted && !isRevealed && (
             <div
@@ -676,7 +577,7 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
         </div>
       </div>
 
-      {/* FALLING MARIGOLD PETALS SHOWER (Celebration) */}
+      {/* 3-5 SOFTLY DRIFTING MARIGOLD PETALS (Celebration) */}
       {petals.map((petal) => (
         <div
           key={petal.id}
@@ -687,7 +588,8 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
             width: `${petal.size}px`,
             height: `${petal.size * 0.7}px`,
             transform: `rotate(${petal.angle}deg)`,
-            opacity: petal.opacity,
+            opacity: phase >= 3 ? 0 : petal.opacity,
+            transition: phase >= 3 ? "opacity 800ms ease-out" : undefined,
           }}
         >
           {/* Stylized Marigold Petal Shape */}
