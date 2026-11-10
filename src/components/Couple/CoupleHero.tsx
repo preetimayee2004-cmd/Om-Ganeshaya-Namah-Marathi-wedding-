@@ -42,11 +42,11 @@ export default function CoupleHero() {
         </div>
 
         <div className="space-y-0.5">
-          <p lang="mr" className="font-marathi text-xs font-semibold text-[#4b0f16]">
-            सुपुत्र {wedding.parentsMr.groom}
+          <p className="font-serif text-[13px] sm:text-sm font-medium tracking-wide text-[#4b0f16]">
+            {wedding.parentsEn.groom}
           </p>
-          <p lang="mr" className="font-marathi text-xs font-semibold text-[#4b0f16]">
-            सुकन्या {wedding.parentsMr.bride}
+          <p className="font-serif text-[13px] sm:text-sm font-medium tracking-wide text-[#4b0f16]">
+            {wedding.parentsEn.bride}
           </p>
         </div>
       </div>

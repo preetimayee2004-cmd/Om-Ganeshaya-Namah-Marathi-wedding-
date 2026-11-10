@@ -974,9 +974,9 @@ export default function Intro() {
           }}
         >
           {/* Top Zone: Clean English Invitation Typography in clear peach sky */}
-          <div className="relative z-10 px-6 pt-24 sm:pt-28 text-center flex flex-col items-center">
+          <div className="relative z-10 px-6 pt-12 sm:pt-14 text-center flex flex-col items-center">
             {/* Soft, gentle warm radiant glow to ensure high-contrast luxury readability */}
-            <div className="pointer-events-none absolute left-1/2 top-1 -translate-x-1/2 h-[260px] w-[94%] max-w-[360px] rounded-full bg-gradient-to-b from-[#FFFDF7]/80 via-[#FAF1E0]/55 to-transparent blur-2xl" />
+            <div className="pointer-events-none absolute left-1/2 top-1 -translate-x-1/2 h-[300px] w-[94%] max-w-[360px] rounded-full bg-gradient-to-b from-[#FFFDF7]/85 via-[#FAF1E0]/60 to-transparent blur-2xl" />
 
             {/* Ganesh Line & Heading */}
             <div
@@ -990,28 +990,34 @@ export default function Intro() {
               <p lang="mr" className="font-marathi text-xs sm:text-sm font-semibold tracking-widest text-[#6d0f1b]">
                 ॥ श्री गणेशाय नमः ॥
               </p>
-              <h2 className="mt-1.5 font-serif text-lg sm:text-xl font-medium tracking-wide text-[#6d0f1b]">
+              <h2 className="mt-1 font-serif text-lg sm:text-xl font-medium tracking-wide text-[#6d0f1b]">
                 With Joyful Hearts, We Invite You
               </h2>
             </div>
 
-            {/* Couple's Names: Sreyash & Sayeli (Preserving script title exactly, balanced gap) */}
+            {/* Couple's Names: Vertically Aligned Sreyash & Sayeli */}
             <div
-              className="relative z-10 mt-2.5 sm:mt-3 py-0.5"
+              className="relative z-10 mt-3 sm:mt-3.5 flex flex-col items-center"
               style={{
                 opacity: s4Lines[0] ? 1 : 0,
                 transform: s4Lines[0] ? "scale(1)" : "scale(0.96)",
                 transition: `opacity 500ms ${EASE_PRIMARY}, transform 500ms ${EASE_PRIMARY}`,
               }}
             >
-              <p className="font-script text-4xl sm:text-5xl font-normal leading-tight text-[#6d0f1b]">
-                {first} <span className="font-serif text-2xl sm:text-3xl font-light text-[#a8741a]">&amp;</span> {second}
+              <p className="font-script text-4xl sm:text-5xl font-normal leading-none text-[#6d0f1b]">
+                {first}
+              </p>
+              <p className="my-0.5 font-serif text-2xl sm:text-3xl font-light text-[#a8741a] leading-none">
+                &amp;
+              </p>
+              <p className="font-script text-4xl sm:text-5xl font-normal leading-none text-[#6d0f1b]">
+                {second}
               </p>
             </div>
 
             {/* Delicate Gold Floral Flourish to anchor and balance the invitation space */}
             <div
-              className="relative z-10 mt-2 flex items-center justify-center gap-2"
+              className="relative z-10 mt-2.5 flex items-center justify-center gap-2"
               style={{
                 opacity: s4Lines[0] ? 1 : 0,
                 transform: s4Lines[0] ? "scale(1)" : "scale(0.9)",
@@ -1026,7 +1032,7 @@ export default function Intro() {
             </div>
           </div>
 
-          {/* Slim Frosted Glass Button to View Couple Section */}
+          {/* Normally Highlighted "See Couple" cue (no button container) */}
           <div
             className="relative z-20 flex flex-col items-center pb-8 pt-2"
             style={{
@@ -1038,12 +1044,12 @@ export default function Intro() {
             <button
               onClick={triggerCoupleTransition}
               aria-label="See Couple"
-              className="group inline-flex h-[46px] w-auto items-center justify-center gap-1.5 rounded-full border border-[#d4af37]/45 bg-white/50 px-6 shadow-[0_4px_20px_rgba(75,15,22,0.14),inset_0_1px_1px_rgba(255,255,255,0.9)] backdrop-blur-md transition-all duration-300 hover:scale-105 hover:bg-white/65 hover:border-[#d4af37]/65 active:scale-95"
+              className="group cursor-pointer inline-flex items-center gap-1.5 rounded-md bg-[#FFF6E3]/95 px-3.5 py-1 shadow-[0_2px_8px_rgba(109,15,27,0.14)] border-b-2 border-[#c9963a] backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:bg-white active:scale-95"
             >
-              <span className="font-serif text-[15px] sm:text-base font-semibold tracking-wide text-[#6d0f1b]">
+              <span className="font-serif text-[15px] sm:text-base font-bold tracking-wider text-[#6d0f1b]">
                 See Couple
               </span>
-              <span className="font-serif text-[17px] font-bold text-[#6d0f1b] transition-transform duration-300 group-hover:translate-x-0.5">
+              <span className="font-serif text-base font-bold text-[#a8741a] transition-transform duration-300 group-hover:translate-x-1">
                 ›
               </span>
             </button>
@@ -1124,12 +1130,12 @@ export default function Intro() {
             transition: `opacity 600ms ${EASE_PRIMARY}`,
           }}
         >
-          {/* Glass Back Button to Invitation (Top-Left Corner) */}
+          {/* Glass Back Button to Invitation (Top-Left Corner, clean icon only) */}
           {stage >= 6 && (
             <button
               onClick={triggerBackToInvitation}
               aria-label="Back to Invitation"
-              className="group absolute left-4 top-4 z-50 flex items-center gap-1.5 rounded-full border border-white/75 bg-white/45 px-3.5 py-1.5 shadow-[0_4px_20px_rgba(75,15,22,0.18),inset_0_1px_1px_rgba(255,255,255,0.85)] backdrop-blur-md transition-all duration-300 hover:scale-105 hover:bg-white/65 active:scale-95"
+              className="group absolute left-4 top-4 z-50 flex h-9 w-9 items-center justify-center rounded-full border border-white/75 bg-white/45 shadow-[0_4px_20px_rgba(75,15,22,0.18),inset_0_1px_1px_rgba(255,255,255,0.85)] backdrop-blur-md transition-all duration-300 hover:scale-110 hover:bg-white/65 active:scale-95"
             >
               <svg
                 className="h-4 w-4 text-[#6d0f1b] transition-transform duration-300 group-hover:-translate-x-0.5"
@@ -1140,9 +1146,6 @@ export default function Intro() {
               >
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
               </svg>
-              <span className="font-body text-[11px] font-semibold tracking-wider text-[#4b0f16]">
-                निमंत्रण
-              </span>
             </button>
           )}
           {/* Base Couple Mandap Illustration */}
@@ -1252,7 +1255,7 @@ export default function Intro() {
               </svg>
             </div>
 
-            {/* Parents' Blessings (2.20s – 2.80s) */}
+            {/* Parents' Blessings (English) */}
             <div
               className="space-y-0.5"
               style={{
@@ -1261,11 +1264,11 @@ export default function Intro() {
                 transition: `opacity 600ms ${EASE_PRIMARY}, transform 600ms ${EASE_PRIMARY}`,
               }}
             >
-              <p lang="mr" className="font-marathi text-xs text-[#4b0f16]">
-                सुपुत्र {wedding.parentsMr.groom}
+              <p className="font-serif text-[13px] sm:text-sm font-medium tracking-wide text-[#4b0f16]">
+                {wedding.parentsEn.groom}
               </p>
-              <p lang="mr" className="font-marathi text-xs text-[#4b0f16]">
-                सुकन्या {wedding.parentsMr.bride}
+              <p className="font-serif text-[13px] sm:text-sm font-medium tracking-wide text-[#4b0f16]">
+                {wedding.parentsEn.bride}
               </p>
             </div>
           </div>
