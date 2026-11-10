@@ -973,10 +973,10 @@ export default function Intro() {
             transition: `opacity 700ms ${EASE_SOFT_EXIT}`,
           }}
         >
-          {/* Top Zone: Clean English Invitation Typography in clear peach sky */}
-          <div className="relative z-10 px-6 pt-12 sm:pt-16 text-center flex flex-col items-center">
+          {/* Top Zone: Clean English Invitation Typography in clear peach sky (shifted up 16px for roofline clearance) */}
+          <div className="relative z-10 px-6 pt-8 sm:pt-12 text-center flex flex-col items-center">
             {/* Soft, gentle warm radiant glow positioned behind text for contrast without washing out the sky */}
-            <div className="pointer-events-none absolute left-1/2 top-14 -translate-x-1/2 h-[280px] w-[92%] max-w-[350px] rounded-full bg-gradient-to-b from-[#FFFDF7]/65 via-[#FAF1E0]/45 to-transparent blur-xl" />
+            <div className="pointer-events-none absolute left-1/2 top-10 -translate-x-1/2 h-[290px] w-[92%] max-w-[350px] rounded-full bg-gradient-to-b from-[#FFFDF7]/65 via-[#FAF1E0]/45 to-transparent blur-xl" />
 
             {/* Sacred Ganesha Icon & Line */}
             <div
@@ -988,11 +988,11 @@ export default function Intro() {
               }}
             >
               {/* Traditional Auspicious Lord Ganesha Motif */}
-              <div className="mb-2 flex items-center justify-center">
+              <div className="mb-1.5 flex items-center justify-center">
                 <img
                   src="/intro/ganesh-motif.png"
                   alt="Lord Ganesha"
-                  className="h-14 w-auto sm:h-16 object-contain drop-shadow-[0_2px_8px_rgba(255,255,255,0.85)]"
+                  className="h-13 w-auto sm:h-15 object-contain drop-shadow-[0_2px_8px_rgba(255,255,255,0.85)]"
                   draggable={false}
                 />
               </div>
@@ -1000,14 +1000,14 @@ export default function Intro() {
               <p lang="mr" className="font-marathi text-xs sm:text-sm font-semibold tracking-widest text-[#6d0f1b]">
                 ॥ श्री गणेशाय नमः ॥
               </p>
-              <h2 className="mt-1 font-serif text-lg sm:text-xl font-medium tracking-wide text-[#6d0f1b]">
-                With Joyful Hearts, We Invite You
+              <h2 className="mt-1 font-serif text-[15px] sm:text-base font-medium tracking-wide text-[#6d0f1b] leading-snug">
+                With Joyful Hearts,<br />We Invite You
               </h2>
             </div>
 
             {/* Couple's Names: Vertically Aligned Sreyash & Sayeli */}
             <div
-              className="relative z-10 mt-3 sm:mt-3.5 flex flex-col items-center"
+              className="relative z-10 mt-2.5 sm:mt-3 flex flex-col items-center"
               style={{
                 opacity: s4Lines[0] ? 1 : 0,
                 transform: s4Lines[0] ? "scale(1)" : "scale(0.96)",
@@ -1023,11 +1023,16 @@ export default function Intro() {
               <p className="font-script text-4xl sm:text-5xl font-normal leading-none text-[#6d0f1b]">
                 {second}
               </p>
+
+              {/* Small date & location line in clear sky area under Sayeli */}
+              <p className="mt-1.5 font-serif text-[14px] sm:text-[15px] font-semibold tracking-wide text-[#6d0f1b]">
+                28 February 2027 · Pune
+              </p>
             </div>
 
             {/* Delicate Gold Floral Flourish to anchor and balance the invitation space */}
             <div
-              className="relative z-10 mt-2.5 flex items-center justify-center gap-2"
+              className="relative z-10 mt-2 flex items-center justify-center gap-2"
               style={{
                 opacity: s4Lines[0] ? 1 : 0,
                 transform: s4Lines[0] ? "scale(1)" : "scale(0.9)",
@@ -1042,9 +1047,9 @@ export default function Intro() {
             </div>
           </div>
 
-          {/* Normally Highlighted "Open Invitation" cue (no button frame) */}
+          {/* Frosted Cream Pill Button: 46px tall, thin gold border, maroon 14-15px text, 28px above bottom */}
           <div
-            className="relative z-20 flex flex-col items-center pb-6 sm:pb-8 pt-2"
+            className="relative z-20 flex flex-col items-center pb-7 pt-2"
             style={{
               opacity: s4Hold ? 1 : 0,
               transform: s4Hold ? "translateY(0)" : "translateY(10px)",
@@ -1055,22 +1060,12 @@ export default function Intro() {
               type="button"
               onClick={triggerCoupleTransition}
               aria-label="Open Invitation"
-              className="group cursor-pointer inline-flex items-center gap-2 transition-all duration-300 hover:opacity-90 active:scale-95"
+              className="group cursor-pointer inline-flex h-[46px] items-center justify-center gap-2 rounded-full border border-[#D4AF37] bg-[#FFFBF0]/95 px-7 shadow-[0_6px_22px_rgba(109,15,27,0.22),inset_0_1px_2px_rgba(255,255,255,0.95)] backdrop-blur-md transition-all duration-300 hover:scale-105 hover:bg-[#FFFDF7] active:scale-95"
             >
-              <span
-                className="font-serif text-[15px] sm:text-base font-bold tracking-[0.22em] uppercase text-[#6d0f1b]"
-                style={{
-                  filter: "drop-shadow(0 0 8px rgba(255,255,255,1)) drop-shadow(0 0 16px rgba(255,255,255,0.95)) drop-shadow(0 1px 2px rgba(255,255,255,1))",
-                }}
-              >
+              <span className="font-serif text-[14px] sm:text-[15px] font-bold tracking-[0.15em] uppercase text-[#6d0f1b]">
                 Open Invitation
               </span>
-              <span
-                className="text-[#8E1726] text-xl leading-none animate-bounce font-bold"
-                style={{
-                  filter: "drop-shadow(0 0 8px rgba(255,255,255,1)) drop-shadow(0 0 16px rgba(255,255,255,0.95))",
-                }}
-              >
+              <span className="text-[#a8741a] text-base leading-none transition-transform duration-300 group-hover:translate-y-0.5 animate-bounce">
                 ↓
               </span>
             </button>
