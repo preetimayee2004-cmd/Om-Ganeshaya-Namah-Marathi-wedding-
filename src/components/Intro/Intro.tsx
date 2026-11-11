@@ -714,10 +714,10 @@ export default function Intro() {
               </div>
             )}
 
-            {/* Animated Finger Tapping Hint over Central "श्री" Medallion */}
+            {/* Animated finger tapping hint, placed below the "Tap on door" text */}
             {stage === 0 && (
               <div
-                className="pointer-events-none absolute left-1/2 top-[50%] z-30 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center"
+                className="pointer-events-none absolute left-1/2 top-[79%] z-30 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center"
                 style={{
                   opacity: s1Scale ? 0 : 1,
                   transform: s1Scale ? "translate(-50%, -50%) scale(0.7)" : "translate(-50%, -50%) scale(1)",

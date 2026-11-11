@@ -218,14 +218,14 @@ export default function Gallery() {
         best = i;
       }
       const inner = el.firstElementChild as HTMLElement;
-      let s = 1 - 0.15 * Math.min(ad, 1.6);
+      let s = 1 - 0.18 * Math.min(ad, 1.6);
       let op = open ? 1 - 0.3 * Math.min(ad, 1.6) : ad < 0.5 && shown ? 1 : 0;
       const tx = open ? 0 : -d * pitch * 0.85; // before the strip opens, everything sits behind the hero
       if (!open && ad < 0.5 && !shown) s *= 0.94;
       if (!open && ad >= 0.5) op = 0;
-      inner.style.transform = `translateX(${tx}px) scale(${s}) rotateY(${(-d * 11).toFixed(1)}deg)`;
+      inner.style.transform = `translateX(${tx}px) scale(${s}) rotateY(${(-d * 24).toFixed(1)}deg)`;
       inner.style.opacity = String(op);
-      inner.style.filter = open && ad > 0.5 ? `brightness(${1 - 0.12 * Math.min(ad, 1.6)})` : "none";
+      inner.style.filter = open && ad > 0.5 ? `brightness(${1 - 0.2 * Math.min(ad, 1.6)})` : "none";
       el.style.zIndex = String(20 - Math.round(ad * 4));
     });
     if (best !== activeRef.current) {
@@ -403,8 +403,8 @@ export default function Gallery() {
             overflowX: settled ? "auto" : "hidden",
             overflowY: "hidden",
             scrollSnapType: settled ? "x mandatory" : "none",
-            perspective: 900,
-            padding: "0 21%",
+            perspective: 700,
+            padding: "0 24%",
             scrollbarWidth: "none",
             overscrollBehaviorX: "contain",
             touchAction: "pan-x pan-y",
@@ -424,7 +424,7 @@ export default function Gallery() {
               key={p.src ?? p.alt}
               data-slide
               className="relative shrink-0"
-              style={{ width: "100%", margin: "0 -11%", scrollSnapAlign: "center" }}
+              style={{ width: "100%", margin: "0 -10%", scrollSnapAlign: "center" }}
             >
               <div
                 className="gal-slide w-full overflow-hidden rounded-[6px]"

@@ -297,7 +297,7 @@ html { background: #2b1d18; }
 }
 .gal-curtain.left { left: 0; transform-origin: 0 0; }
 .gal-curtain.right { right: 0; transform-origin: 100% 0; }
-.gal-curtain.open { transform: scaleX(.2); }
+.gal-curtain.open { transform: scaleX(.14); }
 .gal-silk {
   position: absolute; inset: 0; overflow: hidden;
   background:
