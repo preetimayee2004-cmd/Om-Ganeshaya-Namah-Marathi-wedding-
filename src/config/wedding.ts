@@ -49,10 +49,11 @@ export const wedding = {
       marathi: "हळद",
       start: "2027-02-26T10:00:00+05:30",
       tagline: "A Golden Celebration",
-      venue: "Venue name, Pune",
+      venue: "Prabhat Lawns, Kothrud, Pune",
       mapUrl: "https://maps.google.com/?q=Shree+Mangal+Karyalaya+Pune",
       description:
-        "A joyful turmeric ceremony with family, music and laughter.",
+        "A golden morning of turmeric, marigolds and laughter. Family gather to bless the couple with haldi, wishing them a life as bright as sunshine.",
+      dressCode: [{ name: "Haldi Yellow", color: "#F2C12E" }, { name: "Marigold", color: "#E98A15" }, { name: "Ivory", color: "#FFF4D6" }],
     },
     {
       id: "mehendi",
@@ -61,10 +62,11 @@ export const wedding = {
       marathi: "मेहेंदी",
       start: "2027-02-26T15:00:00+05:30",
       tagline: "Hues of Love",
-      venue: "Venue name, Pune",
+      venue: "Prabhat Lawns, Kothrud, Pune",
       mapUrl: "https://maps.google.com/?q=Shree+Mangal+Karyalaya+Pune",
       description:
-        "Henna, songs and sweet moments with the women of the family.",
+        "An afternoon of henna, folk songs and sweet moments. Delicate designs bloom on every hand as the women of the family celebrate together.",
+      dressCode: [{ name: "Leaf Green", color: "#5E8C4A" }, { name: "Rose Pink", color: "#D9578A" }, { name: "Mint", color: "#BFE0C8" }],
     },
     {
       id: "simant",
@@ -73,10 +75,11 @@ export const wedding = {
       marathi: "सीमंत पूजन",
       start: "2027-02-26T18:00:00+05:30",
       tagline: "The Grand Welcome",
-      venue: "Venue name, Pune",
+      venue: "Shree Mangal Karyalaya, Pune",
       mapUrl: "https://maps.google.com/?q=Shree+Mangal+Karyalaya+Pune",
       description:
-        "The two families meet at the threshold in a warm, traditional welcome.",
+        "The two families meet at the threshold for a warm, traditional welcome. The kalash is worshipped and the groom is received with love and blessings.",
+      dressCode: [{ name: "Auspicious Red", color: "#B3202A" }, { name: "Antique Gold", color: "#D4A53C" }, { name: "Cream", color: "#F6EAD0" }],
     },
     {
       id: "antarpat",
@@ -85,10 +88,11 @@ export const wedding = {
       marathi: "अंतरपाट आणि मंगलाष्टक",
       start: "2027-02-26T20:00:00+05:30",
       tagline: "The Sacred Union",
-      venue: "Venue name, Pune",
+      venue: "Shree Mangal Karyalaya, Pune",
       mapUrl: "https://maps.google.com/?q=Shree+Mangal+Karyalaya+Pune",
       description:
-        "The antarpat is held between the couple while the mangalashtak verses are sung.",
+        "A silk curtain is held between the couple while the mangalashtak verses are sung. The curtain falls, garlands are exchanged and two lives begin to unite.",
+      dressCode: [{ name: "Maroon", color: "#7A1F2B" }, { name: "Gold", color: "#D4A53C" }, { name: "Ivory", color: "#FBF3E0" }],
     },
     {
       id: "lagn",
@@ -100,7 +104,8 @@ export const wedding = {
       venue: "Shree Mangal Karyalaya, Pune",
       mapUrl: "https://maps.google.com/?q=Shree+Mangal+Karyalaya+Pune",
       description:
-        "Kanyadaan and Saptapadi: the sacred rituals that unite the couple.",
+        "The heart of the celebration. Before the sacred fire, the couple take their vows through Kanyadaan and Saptapadi, and begin their forever.",
+      dressCode: [{ name: "Nauvari Maroon", color: "#8B1A2B" }, { name: "Mustard Gold", color: "#D9A81E" }, { name: "Cream", color: "#F7EBD0" }],
     },
     {
       id: "reception",
@@ -109,10 +114,11 @@ export const wedding = {
       marathi: "रिसेप्शन",
       start: "2027-02-27T19:00:00+05:30",
       tagline: "An Evening of Celebration",
-      venue: "Venue name, Pune",
+      venue: "The Grand Ballroom, Koregaon Park, Pune",
       mapUrl: "https://maps.google.com/?q=Shree+Mangal+Karyalaya+Pune",
       description:
-        "An evening of good food, music and blessings with everyone we love.",
+        "An evening of good food, music and blessings with everyone we love. Come dressed in your most elegant best and celebrate the newly-weds with us.",
+      dressCode: [{ name: "Royal Blue", color: "#243B7A" }, { name: "Rose Gold", color: "#C98B7B" }, { name: "Champagne", color: "#E9D6B5" }],
     },
   ],
   // Placeholder families. `photo` is optional (put the file in /public/family).

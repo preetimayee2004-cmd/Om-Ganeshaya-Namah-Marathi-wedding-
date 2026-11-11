@@ -75,20 +75,30 @@ export default function Events() {
                         className="h-full w-full scale-[1.06] object-cover"
                       />
                     </span>
-                    <span className="min-w-0 flex-1" style={{ color: INK }}>
+                    <span className="min-w-0 flex-1" style={{ color: INK, containerType: "inline-size" }}>
                       <span
-                        className="block whitespace-nowrap text-[21px] italic leading-[1.1] tracking-tight"
-                        style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 500, fontSize: e.name.length > 16 ? 18 : undefined }}
+                        className="block whitespace-nowrap italic leading-[1.1] tracking-tight"
+                        style={{
+                          fontFamily: "'Cormorant Garamond', Georgia, serif",
+                          fontWeight: 500,
+                          fontSize: `min(21px, ${(100 / (e.name.length * 0.4)).toFixed(2)}cqw)`,
+                        }}
                       >
                         {e.name}
                       </span>
-                      <span lang="mr" className="block whitespace-nowrap text-[13px] leading-snug">
+                      <span
+                        lang="mr"
+                        className="block whitespace-nowrap leading-snug"
+                        style={{ fontSize: `min(13px, ${(100 / (e.marathi.length * 0.68)).toFixed(2)}cqw)` }}
+                      >
                         {e.marathi}
                       </span>
-                      <span className="block whitespace-nowrap font-body text-[12px] leading-snug">
+                      <span className="block whitespace-nowrap font-body leading-snug" style={{ fontSize: `min(12px, ${(100 / ((fmtDate(e.start).length + fmtTime(e.start).length + 3) * 0.55)).toFixed(2)}cqw)` }}>
                         {fmtDate(e.start)} · {fmtTime(e.start)}
                       </span>
-                      <span className="block whitespace-nowrap font-body text-[12px] leading-snug">{e.tagline}</span>
+                      <span className="block whitespace-nowrap font-body leading-snug" style={{ fontSize: `min(12px, ${(100 / (e.tagline.length * 0.55)).toFixed(2)}cqw)` }}>
+                        {e.tagline}
+                      </span>
                     </span>
                     <svg
                       viewBox="0 0 20 20"
@@ -110,21 +120,74 @@ export default function Events() {
                     className={`grid transition-all duration-500 ease-out ${open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
                   >
                     <div className="overflow-hidden">
-                      <div className="space-y-3 border-t px-4 pb-4 pt-3" style={{ borderColor: CARD_BORDER, color: INK }}>
-                        <p className="font-body text-[14px] font-light leading-relaxed">
+                      <div className="space-y-4 border-t px-4 pb-5 pt-4" style={{ borderColor: CARD_BORDER, color: INK }}>
+                        {/* highlighted description */}
+                        <p
+                          className="rounded-lg px-4 py-3 text-center text-[17px] italic leading-snug"
+                          style={{
+                            fontFamily: "'Cormorant Garamond', Georgia, serif",
+                            fontWeight: 500,
+                            color: "#6B1624",
+                            background: "linear-gradient(135deg, rgba(226,168,75,0.28), rgba(244,214,150,0.38))",
+                            borderLeft: "3px solid #C9992F",
+                            borderRight: "3px solid #C9992F",
+                            boxShadow: "inset 0 0 0 1px rgba(201,153,47,0.35)",
+                          }}
+                        >
                           {e.description}
                         </p>
-                        <p className="font-body text-xs uppercase tracking-widest text-olive">
-                          {e.venue}
-                        </p>
-                        <a
-                          href={e.mapUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex min-h-11 items-center rounded-full border border-wine px-5 font-body text-xs font-bold uppercase tracking-widest text-wine"
-                        >
-                          Get Directions
-                        </a>
+
+                        {/* dress code */}
+                        <div className="text-center">
+                          <p className="font-body text-[10px] font-bold uppercase tracking-[0.3em]" style={{ color: "#9A6B1E" }}>
+                            Dress Code
+                          </p>
+                          <ul className="mt-2 flex items-start justify-center gap-5">
+                            {e.dressCode.map((d) => (
+                              <li key={d.name} className="flex w-[72px] flex-col items-center gap-1">
+                                <span
+                                  className="h-9 w-9 rounded-full"
+                                  style={{
+                                    background: d.color,
+                                    border: "2px solid #fff8e6",
+                                    boxShadow: "0 0 0 1.5px #C9992F, 0 2px 4px rgba(90,60,30,0.3)",
+                                  }}
+                                />
+                                <span className="font-body text-[11px] leading-tight">{d.name}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+
+                        {/* venue */}
+                        <div className="text-center">
+                          <p className="font-body text-[10px] font-bold uppercase tracking-[0.3em]" style={{ color: "#9A6B1E" }}>
+                            Venue
+                          </p>
+                          <p className="mt-1 font-body text-[14px] font-semibold">{e.venue}</p>
+                        </div>
+
+                        {/* directions: small brown button with golden stroke */}
+                        <div className="text-center">
+                          <a
+                            href={e.mapUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex min-h-9 items-center gap-1.5 rounded-full px-4 font-body text-[11px] font-bold uppercase tracking-[0.2em]"
+                            style={{
+                              background: "linear-gradient(180deg, #7A3B24, #5A2614)",
+                              color: "#F6DFA2",
+                              border: "1.5px solid #D4A53C",
+                              boxShadow: "0 1px 4px rgba(60,30,10,0.35)",
+                            }}
+                          >
+                            <svg viewBox="0 0 16 16" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>
+                              <path d="M8 14s4.5-4 4.5-7.5a4.5 4.5 0 1 0-9 0C3.5 10 8 14 8 14Z" />
+                              <circle cx="8" cy="6.5" r="1.6" />
+                            </svg>
+                            Get Directions
+                          </a>
+                        </div>
                       </div>
                     </div>
                   </div>
