@@ -6,26 +6,27 @@ import { useScrollRoot } from "../Layout/ScrollRoot";
 
 /**
  * Royal envelope RSVP.
- * Everything inside the envelope box is positioned in the artwork's own pixel space (715 x 607) and converted to %.
- *  - /rsvp/envelope-clean.jpg : the envelope with the wax seal + tassel painted out (base layer)
- *  - /rsvp/envelope.jpg       : the untouched artwork; the seal / tassel are cut out of it as overlays that break away
- *  - /rsvp/couple.png         : the illustrated bride and groom (rises out of the envelope together with the card)
+ * Everything inside the envelope box is positioned in the artwork's own pixel space (1200 x 896) and converted to %.
+ *  - /rsvp/envelope-new.png : the artwork (envelope + four corner flower clusters) on transparency, wax seal + tassel painted out
+ *  - /rsvp/seal-piece.png   : the wax seal + tassel as a separate cut-out (200 x 390, taken at x=500, y=340) that breaks away
+ *  - /rsvp/couple.png       : the illustrated bride and groom (rises out of the envelope together with the card)
  */
-const W = 715;
-const H = 607;
+const W = 1200;
+const H = 896;
 const px = (x: number) => `${((x / W) * 100).toFixed(3)}%`;
 const py = (y: number) => `${((y / H) * 100).toFixed(3)}%`;
-const FLAP: [number, number][] = [[88, 185], [600, 185], [344, 382]];
+const FLAP: [number, number][] = [[270, 222], [928, 222], [928, 296], [598, 522], [270, 296]];
 const FLAP_POLY = `polygon(${FLAP.map(([x, y]) => `${px(x)} ${py(y)}`).join(", ")})`;
-const FLAP_INNER = `polygon(${[[91, 187], [597, 187], [344, 378]].map(([x, y]) => `${px(x)} ${py(y)}`).join(", ")})`;
-// the card is only visible above the envelope and inside the open flap triangle (it sits in the pocket)
-const CARD_CLIP = `polygon(-60% -250%, 160% -250%, 160% ${py(185)}, ${px(600)} ${py(185)}, ${px(344)} ${py(382)}, ${px(88)} ${py(185)}, -60% ${py(185)})`;
-const SEAL = { x: 344, y: 341, r: 58 };
+const FLAP_INNER = `polygon(${[[274, 225], [924, 225], [924, 292], [598, 516], [274, 292]].map(([x, y]) => `${px(x)} ${py(y)}`).join(", ")})`;
+// the card is only visible above the envelope and inside the open flap shape (it sits in the pocket)
+const CARD_CLIP = `polygon(-60% -250%, 160% -250%, 160% ${py(222)}, ${px(928)} ${py(222)}, ${px(928)} ${py(296)}, ${px(598)} ${py(522)}, ${px(270)} ${py(296)}, ${px(270)} ${py(222)}, -60% ${py(222)})`;
+const SEAL = { x: 598, y: 431, r: 80 };
+const PIECE = { x: 500, y: 340, w: 200, h: 390 }; // seal-piece.png position inside the artwork
 
 // ===== layout (in container-width units, cqw) =====
-const SPACE_CLOSED = 25; // heading zone above the envelope
-const SPACE_OPEN = 62; // room for the couple + card once the envelope is open
-const ENV_SCALE = 112; // envelope is shown ~12% larger than the column
+const SPACE_CLOSED = 50; // heading zone above the envelope
+const SPACE_OPEN = 74; // room for the couple + card once the envelope is open
+const ENV_SCALE = 120; // artwork is a little wider than the column so the envelope itself reads larger
 
 // ===== timing (ms after "Joyfully Accept"), about 2.7 s in total =====
 const T_SEAL = 450; // seal breaks, then the flap opens
@@ -36,8 +37,7 @@ const T_CAL = 2250; // calendar button appears last
 
 const EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
 const RADIUS = 12; // one border radius for cards and buttons
-const MASK_EDGE =
-  "linear-gradient(to right, transparent, #000 7%, #000 93%, transparent), linear-gradient(to bottom, transparent, #000 7%, #000 93%, transparent)";
+const SERIF = "'Cormorant Garamond', Georgia, serif";
 
 function downloadIcs() {
   const start = new Date(wedding.date);
@@ -87,7 +87,7 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
   const [error, setError] = useState(false);
   const timers = useRef<number[]>([]);
 
-  // section entry (fade in, envelope rises, frame revealed through a mask)
+  // section entry (fade in, envelope rises, artwork revealed through a mask)
   useEffect(() => {
     const el = stageRef.current;
     if (!el) return;
@@ -195,6 +195,14 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
   const textShown = stage >= 4;
   const gone = (on: boolean): React.CSSProperties => ({ opacity: on ? 0 : 1 });
 
+  // seal piece geometry, as fractions of the piece image
+  const sp = {
+    cx: (SEAL.x - PIECE.x) / PIECE.w,
+    cy: (SEAL.y - PIECE.y) / PIECE.h,
+    rx: SEAL.r / PIECE.w,
+    ry: SEAL.r / PIECE.h,
+  };
+
   return (
     <section ref={sectionRef} id="rsvp" aria-labelledby="rsvp-title" className="relative overflow-x-clip px-5 py-6 text-[#4b0f16]">
       {/* continuous falling petals (behind the envelope, the couple, the text and the buttons) */}
@@ -231,20 +239,20 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
           ))}
         </div>
       )}
-      {/* clip paths for the seal pieces (objectBoundingBox, artwork coordinates) */}
+      {/* clip paths for the seal pieces (objectBoundingBox) */}
       <svg width="0" height="0" className="absolute" aria-hidden>
         <defs>
           <clipPath id="rsvp-seal-l" clipPathUnits="objectBoundingBox">
-            <path d={`M${SEAL.x / W} ${(SEAL.y - SEAL.r) / H} A${SEAL.r / W} ${SEAL.r / H} 0 0 0 ${SEAL.x / W} ${(SEAL.y + SEAL.r) / H} Z`} />
+            <path d={`M${sp.cx} ${sp.cy - sp.ry} A${sp.rx} ${sp.ry} 0 0 0 ${sp.cx} ${sp.cy + sp.ry} Z`} />
           </clipPath>
           <clipPath id="rsvp-seal-r" clipPathUnits="objectBoundingBox">
-            <path d={`M${SEAL.x / W} ${(SEAL.y - SEAL.r) / H} A${SEAL.r / W} ${SEAL.r / H} 0 0 1 ${SEAL.x / W} ${(SEAL.y + SEAL.r) / H} Z`} />
+            <path d={`M${sp.cx} ${sp.cy - sp.ry} A${sp.rx} ${sp.ry} 0 0 1 ${sp.cx} ${sp.cy + sp.ry} Z`} />
           </clipPath>
           <clipPath id="rsvp-seal-c" clipPathUnits="objectBoundingBox">
             <ellipse cx={SEAL.x / W} cy={SEAL.y / H} rx={SEAL.r / W} ry={SEAL.r / H} />
           </clipPath>
           <clipPath id="rsvp-tassel" clipPathUnits="objectBoundingBox">
-            <rect x={306 / W} y={392 / H} width={76 / W} height={108 / H} />
+            <rect x={44 / PIECE.w} y={(505 - PIECE.y) / PIECE.h} width={112 / PIECE.w} height={(PIECE.h - (505 - PIECE.y)) / PIECE.h} />
           </clipPath>
         </defs>
       </svg>
@@ -264,30 +272,40 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
         >
           <h2
             id="rsvp-title"
-            className="absolute inset-x-0 top-0 text-center font-script font-normal leading-[1.02] text-[#6d0f1b]"
+            className="absolute inset-x-0 top-0 text-center font-normal text-[#7a1420]"
             style={{
-              fontSize: "10.5cqw",
+              fontFamily: SERIF,
               opacity: entered && stage === 0 ? 1 : 0,
               transform: entered && stage === 0 ? "none" : "translateY(10px)",
               transition: stage === 0 ? `opacity 1200ms ${EASE} 250ms, transform 1200ms ${EASE} 250ms` : `opacity 350ms ${EASE}`,
             }}
           >
-            <span className="block">Your Presence,</span>
-            <span className="block">Our Blessing</span>
-            <svg viewBox="0 0 120 10" className="mx-auto mt-[1.6cqw] h-[2.4cqw] w-[26cqw] text-[#b98a2e]" fill="none" stroke="currentColor" strokeLinecap="round" aria-hidden>
-              <path d="M2 5h44M74 5h44" strokeWidth=".9" />
-              <path d="M60 .8l4.2 4.2L60 9.2 55.8 5z" fill="currentColor" strokeWidth=".4" />
+            <span className="block leading-[1.1]" style={{ fontSize: "10cqw", fontWeight: 600, letterSpacing: "0.01em" }}>
+              Your Presence,
+            </span>
+            <span className="block font-script leading-[1.05]" style={{ fontSize: "16cqw", marginTop: "-0.5cqw" }}>
+              Our Blessing
+            </span>
+            {/* divider: gold hairlines with small diamonds and a four-petal centre */}
+            <svg viewBox="0 0 300 16" className="mx-auto mt-[2cqw] block h-[4.4cqw] w-[82cqw] text-[#b5782a]" fill="none" aria-hidden>
+              <path d="M6 8h112M182 8h112" stroke="currentColor" strokeWidth=".9" />
+              <path d="M126 8l3.2-3.2L132.4 8l-3.2 3.2zM167.6 8l3.2-3.2L174 8l-3.2 3.2z" fill="currentColor" />
+              <path d="M150 1.5l4.6 6.5-4.6 6.5-4.6-6.5z" fill="currentColor" />
+              <path d="M143 8l4-2.4 3 2.4-3 2.4zM157 8l-4-2.4-3 2.4 3 2.4z" fill="currentColor" opacity=".75" />
             </svg>
+            <span className="mx-auto mt-[2.4cqw] block max-w-[84cqw] leading-[1.22]" style={{ fontSize: "5.6cqw", fontWeight: 600 }}>
+              Kindly let us know if you will be joining us for this special occasion.
+            </span>
           </h2>
         </div>
 
-        {/* envelope: larger than the column, rises into place with a slight 3D tilt */}
+        {/* envelope + corner flowers: rises into place with a slight 3D tilt */}
         <div
           className="relative"
           style={{
             width: `${ENV_SCALE}%`,
             marginLeft: `${(100 - ENV_SCALE) / 2}%`,
-            marginTop: "-3cqw",
+            marginTop: "-2cqw",
             aspectRatio: `${W} / ${H}`,
             opacity: entered ? 1 : 0,
             transform: entered ? "none" : "translateY(70px) perspective(900px) rotateX(18deg)",
@@ -296,7 +314,7 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
           }}
         >
           <div className="h-full w-full" style={{ animation: stage === 0 && revealDone ? "rsvp-float 7s ease-in-out infinite alternate" : undefined }}>
-            {/* floral frame revealed through a soft mask while entering */}
+            {/* artwork revealed through a soft mask while entering */}
             <div
               className={`h-full w-full ${entered && !revealDone ? "smoke-reveal" : ""}`}
               style={
@@ -312,33 +330,8 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
               }
             >
               <div className="relative h-full w-full" style={{ perspective: "1400px", perspectiveOrigin: "50% 35%" }}>
-                {/* base: envelope with the seal and tassel removed */}
-                <img
-                  src="/rsvp/envelope-clean.jpg"
-                  alt=""
-                  draggable={false}
-                  className="absolute inset-0 h-full w-full"
-                  style={{
-                    WebkitMaskImage: MASK_EDGE,
-                    maskImage: MASK_EDGE,
-                    WebkitMaskComposite: "source-in",
-                    maskComposite: "intersect",
-                  }}
-                />
-
-                {/* separation: a soft shadow around the envelope so the floral arch never merges into it */}
-                <div
-                  aria-hidden
-                  className="pointer-events-none absolute"
-                  style={{
-                    left: px(86),
-                    top: py(183),
-                    width: `${((516 / W) * 100).toFixed(3)}%`,
-                    height: `${((320 / H) * 100).toFixed(3)}%`,
-                    borderRadius: 3,
-                    boxShadow: "0 10px 22px rgba(45,8,14,0.5), 0 2px 6px rgba(45,8,14,0.4), 0 0 0 1px rgba(60,12,18,0.35)",
-                  }}
-                />
+                {/* base: envelope + corner flowers, seal and tassel removed */}
+                <img src="/rsvp/envelope-new.png" alt="" draggable={false} className="absolute inset-0 h-full w-full" />
 
                 {/* inside of the envelope (shows once the flap lifts) */}
                 <div
@@ -351,11 +344,11 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
                   <div
                     className="absolute text-center"
                     style={{
-                      left: "21%",
-                      width: "58%",
-                      top: py(-28),
-                      height: py(520),
-                      transform: cardUp ? "translateY(0)" : "translateY(112%)",
+                      left: px(300),
+                      width: `${((600 / W) * 100).toFixed(3)}%`,
+                      top: py(-110),
+                      height: `${((640 / H) * 100).toFixed(3)}%`,
+                      transform: cardUp ? "translateY(0)" : "translateY(150%)",
                       transition: `transform ${T_CARD}ms ${EASE}`,
                       containerType: "inline-size",
                     }}
@@ -371,12 +364,14 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
                       }}
                     />
                     {/* the couple stands on the card, rising out of the envelope with it */}
-                    <div className="absolute" style={{ left: "16.5%", width: "67%", top: "-86cqw" }}>
+                    <div className="absolute" style={{ left: "11%", width: "78%", top: "-99cqw" }}>
                       <img
                         src="/rsvp/couple.png"
                         alt="The bride and groom waving"
                         draggable={false}
-                        className="block w-full" loading="lazy" decoding="async"
+                        className="block w-full"
+                        loading="lazy"
+                        decoding="async"
                         style={{
                           transformOrigin: "50% 100%",
                           animation: textShown ? "rsvp-wave 2.8s ease-in-out infinite" : undefined,
@@ -414,7 +409,7 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
                   className="absolute inset-0"
                   style={{
                     transformStyle: "preserve-3d",
-                    transformOrigin: `50% ${py(185)}`,
+                    transformOrigin: `50% ${py(222)}`,
                     transform: flapOpen ? "rotateX(180deg)" : "rotateX(0deg)",
                     transition: `transform ${T_FLAP}ms cubic-bezier(0.55, 0.05, 0.25, 1)`,
                     zIndex: flapBack ? 1 : 3,
@@ -422,7 +417,7 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
                   }}
                 >
                   <img
-                    src="/rsvp/envelope-clean.jpg"
+                    src="/rsvp/envelope-new.png"
                     alt=""
                     draggable={false}
                     className="absolute inset-0 h-full w-full"
@@ -435,7 +430,7 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
                       backfaceVisibility: "hidden",
                       WebkitBackfaceVisibility: "hidden",
                       transform: "rotateY(180deg)",
-                      transformOrigin: `${px(344)} 50%`,
+                      transformOrigin: `${px(599)} 50%`,
                       background: "linear-gradient(180deg, #f3e2bd 0%, #e6c98c 100%)",
                       boxShadow: "inset 0 0 0 3px #d4a53c",
                     }}
@@ -444,19 +439,23 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
 
                 {/* wax seal (two halves) and tassel: pixel-exact cut-outs of the artwork */}
                 {([
-                  ["rsvp-seal-l", "translate(-14px, 8px) rotate(-16deg)"],
-                  ["rsvp-seal-r", "translate(14px, 10px) rotate(18deg)"],
+                  ["rsvp-seal-l", "translate(-16px, 9px) rotate(-16deg)"],
+                  ["rsvp-seal-r", "translate(16px, 11px) rotate(18deg)"],
                 ] as const).map(([id, move]) => (
                   <img
                     key={id}
-                    src="/rsvp/envelope.jpg"
+                    src="/rsvp/seal-piece.png"
                     alt=""
                     draggable={false}
-                    className="pointer-events-none absolute inset-0 h-full w-full"
+                    className="pointer-events-none absolute"
                     style={{
+                      left: px(PIECE.x),
+                      top: py(PIECE.y),
+                      width: `${((PIECE.w / W) * 100).toFixed(3)}%`,
+                      height: `${((PIECE.h / H) * 100).toFixed(3)}%`,
                       clipPath: `url(#${id})`,
                       zIndex: 6,
-                      transformOrigin: `${px(SEAL.x)} ${py(SEAL.y)}`,
+                      transformOrigin: `${(sp.cx * 100).toFixed(2)}% ${(sp.cy * 100).toFixed(2)}%`,
                       transform: sealOpen ? move : "none",
                       opacity: sealOpen ? 0 : 1,
                       transition: `transform ${T_SEAL}ms ${EASE}, opacity ${T_SEAL}ms ease ${T_SEAL * 0.2}ms`,
@@ -464,14 +463,18 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
                   />
                 ))}
                 <img
-                  src="/rsvp/envelope.jpg"
+                  src="/rsvp/seal-piece.png"
                   alt=""
                   draggable={false}
-                  className="pointer-events-none absolute inset-0 h-full w-full"
+                  className="pointer-events-none absolute"
                   style={{
+                    left: px(PIECE.x),
+                    top: py(PIECE.y),
+                    width: `${((PIECE.w / W) * 100).toFixed(3)}%`,
+                    height: `${((PIECE.h / H) * 100).toFixed(3)}%`,
                     clipPath: "url(#rsvp-tassel)",
                     zIndex: 6,
-                    transform: sealOpen ? "translateY(16px)" : "none",
+                    transform: sealOpen ? "translateY(18px)" : "none",
                     ...gone(sealOpen),
                     transition: `transform ${T_SEAL}ms ${EASE}, opacity ${T_SEAL * 0.8}ms ease`,
                   }}
@@ -519,15 +522,15 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
         </div>
       </div>
 
-      {/* Joyfully Accept: slim maroon and antique-gold button (compresses, then folds away) */}
+      {/* Joyfully Accept: slim maroon and antique-gold button (compresses, then folds away) + the line beneath it */}
       <div
         className="relative mx-auto flex flex-col items-center overflow-hidden"
         style={{
           zIndex: 1,
-          maxHeight: stage === 0 ? 90 : 0,
+          maxHeight: stage === 0 ? 140 : 0,
           opacity: stage === 0 && entered ? 1 : 0,
           marginTop: stage === 0 ? 0 : 0,
-          transition: `opacity ${stage === 0 ? "500ms ease 600ms" : "350ms ease 120ms"}, max-height 600ms ${EASE} 300ms, margin-top 600ms ${EASE} 300ms`,
+          transition: `opacity ${stage === 0 ? "500ms ease 600ms" : "350ms ease 120ms"}, max-height 600ms ${EASE} 300ms`,
         }}
       >
         <button
@@ -548,10 +551,20 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
             <path d="M20 20c-6-1-10-5-11-10 6 0 10 3 11 10Zm0 0c6-1 10-5 11-10-6 0-10 3-11 10Z" />
             <path d="M6 24c6 3 22 3 28 0" />
           </svg>
-          <span className="text-[19px] font-semibold leading-none tracking-wide text-[#f9e7b0]" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
+          <span className="text-[19px] font-semibold leading-none tracking-wide text-[#f9e7b0]" style={{ fontFamily: SERIF }}>
             Joyfully Accept
           </span>
         </button>
+        {/* "We can't wait to celebrate with you!" framed by gold rules */}
+        <div className="mt-4 flex w-full max-w-[360px] items-center gap-3 px-1" aria-hidden={false}>
+          <span className="h-px flex-1" style={{ background: "linear-gradient(90deg, transparent, #b5782a)" }} />
+          <span className="relative -ml-1 -mr-1 h-1.5 w-1.5 rotate-45 bg-[#b5782a]" style={{ marginRight: -6 }} />
+          <p className="whitespace-nowrap text-center italic leading-none text-[#7a1420]" style={{ fontFamily: SERIF, fontWeight: 600, fontSize: "clamp(16px, 4.8vw, 20px)" }}>
+            We can&apos;t wait to celebrate with you!
+          </p>
+          <span className="relative h-1.5 w-1.5 rotate-45 bg-[#b5782a]" style={{ marginLeft: -6 }} />
+          <span className="h-px flex-1" style={{ background: "linear-gradient(270deg, transparent, #b5782a)" }} />
+        </div>
         {error && (
           <p role="alert" className="mt-3 text-center font-body text-sm text-[#6d0f1b]">
             Something went wrong. Please try again.
