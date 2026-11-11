@@ -1,13 +1,28 @@
 import { useState } from "react";
 import { wedding } from "../../config/wedding";
 import Reveal from "../Layout/Reveal";
-import EventArt from "./EventArt";
 
+// Satin / silk card look (colours sampled from the reference): ivory-champagne base with soft diagonal sheen
+const SATIN =
+  "linear-gradient(112deg, #E9DFCC 0%, #E2D5C0 14%, #F3ECDC 30%, #E4D8C3 46%, #F0E8D6 62%, #E1D4BD 80%, #EAE0CD 100%)";
+const CARD_BORDER = "#D8C5A3";
+const INK = "#5A2433"; // maroon text
 const tz = wedding.timeZone;
 const fmtDate = (iso: string) =>
   new Intl.DateTimeFormat("en-IN", { weekday: "short", day: "numeric", month: "short", timeZone: tz }).format(new Date(iso));
 const fmtTime = (iso: string) =>
   new Intl.DateTimeFormat("en-IN", { hour: "numeric", minute: "2-digit", hour12: true, timeZone: tz }).format(new Date(iso));
+
+/** small gold corner flourish like the reference card */
+function Corner({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={`pointer-events-none absolute h-5 w-5 ${className}`} fill="none" stroke="#C9AE7C" strokeWidth="1" strokeLinecap="round" aria-hidden>
+      <path d="M2 20C2 10 8 3 20 2" />
+      <path d="M2 14C2 9 6 5 12 4" opacity=".7" />
+      <circle cx="3.2" cy="3.2" r="1.3" fill="#C9AE7C" stroke="none" />
+    </svg>
+  );
+}
 
 export default function Events() {
   const [openId, setOpenId] = useState<string | null>(null);
@@ -33,36 +48,61 @@ export default function Events() {
           return (
             <li key={e.id}>
               <Reveal from={fromLeft ? "left" : "right"}>
-                <article className="overflow-hidden rounded-xl border border-gold/40 bg-[#fbf5e8] shadow-sm">
+                <article
+                  className="relative overflow-hidden rounded-[10px] shadow-[0_2px_6px_rgba(90,60,30,0.18)]"
+                  style={{
+                    background: SATIN,
+                    border: `1.5px solid ${CARD_BORDER}`,
+                    boxShadow: "inset 0 0 0 3px rgba(255,255,255,0.35), inset 0 0 0 4px #E3D3B3, 0 2px 6px rgba(90,60,30,0.18)",
+                  }}
+                >
+                  <Corner className="left-1 top-1" />
+                  <Corner className="bottom-1 left-1 -scale-y-100" />
                   <button
                     onClick={() => setOpenId(open ? null : e.id)}
                     aria-expanded={open}
                     aria-controls={`event-${e.id}`}
-                    className="flex w-full items-center gap-4 p-3 text-left"
+                    className="relative flex w-full items-center gap-3 px-3 py-3 text-left"
                   >
-                    <span className="h-20 w-20 shrink-0 overflow-hidden rounded-lg">
-                      <EventArt art={e.art} />
+                    <span className="flex h-[88px] w-[104px] shrink-0 items-center justify-center">
+                      <img
+                        src={`/events/${e.art}.jpg`}
+                        alt=""
+                        loading="lazy"
+                        className="max-h-full max-w-full object-contain"
+                        style={{
+                          WebkitMaskImage: "radial-gradient(ellipse 72% 72% at 50% 50%, #000 62%, transparent 100%)",
+                          maskImage: "radial-gradient(ellipse 72% 72% at 50% 50%, #000 62%, transparent 100%)",
+                        }}
+                      />
                     </span>
-                    <span className="min-w-0 flex-1">
-                      <span className="block font-script text-3xl leading-none text-wine">
+                    <span className="min-w-0 flex-1" style={{ color: INK }}>
+                      <span
+                        className="block text-[26px] italic leading-tight"
+                        style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 500 }}
+                      >
                         {e.name}
                       </span>
-                      <span lang="mr" className="block text-sm text-gold">
+                      <span lang="mr" className="block text-[15px] leading-snug">
                         {e.marathi}
                       </span>
-                      <span className="mt-1 block font-body text-xs text-espresso/80">
+                      <span className="mt-0.5 block font-body text-[13px] leading-snug">
                         {fmtDate(e.start)} · {fmtTime(e.start)}
                       </span>
+                      <span className="block font-body text-[13px] leading-snug">{e.tagline}</span>
                     </span>
                     <svg
                       viewBox="0 0 20 20"
-                      className={`h-5 w-5 shrink-0 text-wine transition-transform duration-300 ${open ? "rotate-180" : ""}`}
+                      className={`h-6 w-6 shrink-0 transition-transform duration-300 ${open ? "rotate-90" : ""}`}
+                      style={{ color: INK }}
                       fill="none"
                       stroke="currentColor"
-                      strokeWidth="1.6"
+                      strokeWidth="2.2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                       aria-hidden
                     >
-                      <path d="M5 8l5 5 5-5" />
+                      <path d="M7 4l6 6-6 6" />
                     </svg>
                   </button>
 
@@ -71,7 +111,7 @@ export default function Events() {
                     className={`grid transition-all duration-500 ease-out ${open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
                   >
                     <div className="overflow-hidden">
-                      <div className="space-y-3 border-t border-gold/30 px-4 pb-4 pt-3">
+                      <div className="space-y-3 border-t px-4 pb-4 pt-3" style={{ borderColor: CARD_BORDER, color: INK }}>
                         <p className="font-body text-[14px] font-light leading-relaxed">
                           {e.description}
                         </p>
