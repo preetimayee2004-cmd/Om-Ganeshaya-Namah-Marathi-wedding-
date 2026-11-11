@@ -68,7 +68,7 @@ export const wedding = {
     },
     {
       id: "simant",
-      art: "ganpati",
+      art: "kalash",
       name: "Seemant Pujan",
       marathi: "सीमंत पूजन",
       start: "2027-02-26T18:00:00+05:30",
@@ -80,7 +80,7 @@ export const wedding = {
     },
     {
       id: "antarpat",
-      art: "curtain",
+      art: "antarpat",
       name: "Antarpat & Mangalashtak",
       marathi: "अंतरपाट आणि मंगलाष्टक",
       start: "2027-02-26T20:00:00+05:30",

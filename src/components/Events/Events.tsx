@@ -62,38 +62,37 @@ export default function Events() {
                     onClick={() => setOpenId(open ? null : e.id)}
                     aria-expanded={open}
                     aria-controls={`event-${e.id}`}
-                    className="relative flex w-full items-center gap-3 px-3 py-3 text-left"
+                    className="relative flex h-[88px] w-full items-center gap-3 px-2.5 text-left"
                   >
-                    <span className="flex h-[88px] w-[104px] shrink-0 items-center justify-center">
+                    <span
+                      className="h-[68px] w-[108px] shrink-0 overflow-hidden rounded-lg"
+                      style={{ border: `1px solid ${CARD_BORDER}`, boxShadow: "0 1px 3px rgba(90,60,30,0.2)" }}
+                    >
                       <img
                         src={`/events/${e.art}.jpg`}
                         alt=""
                         loading="lazy"
-                        className="max-h-full max-w-full object-contain"
-                        style={{
-                          WebkitMaskImage: "radial-gradient(ellipse 72% 72% at 50% 50%, #000 62%, transparent 100%)",
-                          maskImage: "radial-gradient(ellipse 72% 72% at 50% 50%, #000 62%, transparent 100%)",
-                        }}
+                        className="h-full w-full scale-[1.06] object-cover"
                       />
                     </span>
                     <span className="min-w-0 flex-1" style={{ color: INK }}>
                       <span
-                        className="block text-[26px] italic leading-tight"
-                        style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 500 }}
+                        className="block whitespace-nowrap text-[21px] italic leading-[1.1] tracking-tight"
+                        style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 500, fontSize: e.name.length > 16 ? 18 : undefined }}
                       >
                         {e.name}
                       </span>
-                      <span lang="mr" className="block text-[15px] leading-snug">
+                      <span lang="mr" className="block whitespace-nowrap text-[13px] leading-snug">
                         {e.marathi}
                       </span>
-                      <span className="mt-0.5 block font-body text-[13px] leading-snug">
+                      <span className="block whitespace-nowrap font-body text-[12px] leading-snug">
                         {fmtDate(e.start)} · {fmtTime(e.start)}
                       </span>
-                      <span className="block font-body text-[13px] leading-snug">{e.tagline}</span>
+                      <span className="block whitespace-nowrap font-body text-[12px] leading-snug">{e.tagline}</span>
                     </span>
                     <svg
                       viewBox="0 0 20 20"
-                      className={`h-6 w-6 shrink-0 transition-transform duration-300 ${open ? "rotate-90" : ""}`}
+                      className={`h-5 w-5 shrink-0 transition-transform duration-300 ${open ? "rotate-90" : ""}`}
                       style={{ color: INK }}
                       fill="none"
                       stroke="currentColor"
