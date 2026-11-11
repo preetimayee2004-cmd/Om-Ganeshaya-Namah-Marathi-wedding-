@@ -85,7 +85,7 @@ export default function WishingWall() {
     "w-full rounded-md border border-gold/60 bg-[#fffdf6] px-4 py-3 font-body text-base text-espresso placeholder:text-espresso/40 focus:border-wine focus:outline-none focus:ring-2 focus:ring-wine/20";
 
   return (
-    <section id="blessings" aria-labelledby="blessings-title" className="py-20 text-[#4b0f16]">
+    <section id="blessings" aria-labelledby="blessings-title" className="py-6 text-[#4b0f16]">
       <Reveal className="px-5 text-center">
         <p className="font-body text-[10px] uppercase tracking-[0.35em] text-[#a8741a]">Wishing wall</p>
         <h2 id="blessings-title" className="mt-2 text-5xl text-[#6d0f1b]">Blessings &amp; Wishes</h2>

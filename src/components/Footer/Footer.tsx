@@ -21,7 +21,7 @@ export default function Footer() {
   };
 
   return (
-    <footer ref={ref} className="px-6 pb-14 pt-16 text-center text-[#4b0f16]">
+    <footer ref={ref} className="px-6 pb-10 pt-6 text-center text-[#4b0f16]">
       <svg
         viewBox="0 0 48 44"
         className="mx-auto h-10 w-10 text-[#6d0f1b]"

@@ -54,7 +54,7 @@ export default function RSVP({ inScene = false }: { inScene?: boolean }) {
   const attending = (previous?.attending ?? values.attending) === "yes";
 
   return (
-    <section id="rsvp" aria-labelledby="rsvp-title" className="px-5 py-20 text-[#4b0f16]">
+    <section id="rsvp" aria-labelledby="rsvp-title" className="px-5 py-6 text-[#4b0f16]">
       <Reveal className="text-center">
         <p className="font-body text-[10px] uppercase tracking-[0.35em] text-[#a8741a]">Kindly reply</p>
         <h2 id="rsvp-title" className="mt-2 text-5xl text-[#6d0f1b]">RSVP</h2>

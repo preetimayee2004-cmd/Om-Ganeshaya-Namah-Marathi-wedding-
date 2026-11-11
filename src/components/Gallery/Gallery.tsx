@@ -89,7 +89,7 @@ export default function Gallery() {
   const current = index !== null ? photos[index] : null;
 
   return (
-    <section id="gallery" aria-labelledby="gallery-title" className="px-4 py-20">
+    <section id="gallery" aria-labelledby="gallery-title" className="px-4 py-6">
       <Reveal className="text-center">
         <p className="font-body text-[10px] uppercase tracking-[0.35em] text-olive">Moments</p>
         <h2 id="gallery-title" className="mt-2 text-5xl">Our Gallery</h2>

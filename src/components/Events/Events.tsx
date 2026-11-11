@@ -13,7 +13,7 @@ export default function Events() {
   const [openId, setOpenId] = useState<string | null>(null);
 
   return (
-    <section id="events" aria-labelledby="events-title" className="overflow-x-clip px-5 py-20">
+    <section id="events" aria-labelledby="events-title" className="overflow-x-clip px-5 py-6">
       <Reveal className="text-center">
         <p className="font-body text-[10px] uppercase tracking-[0.35em] text-olive">
           Order of the day

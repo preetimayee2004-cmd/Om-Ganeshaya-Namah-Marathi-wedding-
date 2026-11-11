@@ -27,7 +27,7 @@ export default function ThankYou() {
       ref={ref}
       id="thank-you"
       aria-labelledby="thanks-title"
-      className="relative overflow-hidden px-6 py-24 text-center"
+      className="relative overflow-hidden px-6 py-6 text-center"
     >
       <Sprig className="-left-3 top-10 -rotate-12" />
       <Sprig className="-right-3 top-10 rotate-12 -scale-x-100" />

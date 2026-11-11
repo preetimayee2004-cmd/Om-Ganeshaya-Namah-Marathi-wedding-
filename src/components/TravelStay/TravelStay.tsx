@@ -31,7 +31,7 @@ export default function TravelStay() {
   const { venue, travel, stays } = wedding;
 
   return (
-    <section id="venue" aria-labelledby="venue-title" className="px-5 py-20 text-[#4b0f16]">
+    <section id="venue" aria-labelledby="venue-title" className="px-5 py-6 text-[#4b0f16]">
       <Reveal className="text-center">
         <p className="font-body text-[10px] uppercase tracking-[0.35em] text-[#a8741a]">Venue &amp; stay</p>
         <h2 id="venue-title" className="mt-2 text-5xl text-[#6d0f1b]">Getting Here</h2>

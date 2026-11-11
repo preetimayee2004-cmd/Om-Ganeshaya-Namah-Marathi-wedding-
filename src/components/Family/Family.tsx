@@ -59,7 +59,7 @@ function FamilyCard({ f }: { f: Family }) {
 
 export default function Family() {
   return (
-    <section id="family" aria-labelledby="family-title" className="px-5 py-20">
+    <section id="family" aria-labelledby="family-title" className="px-5 py-6">
       <Reveal className="text-center">
         <p className="font-body text-[10px] uppercase tracking-[0.35em] text-olive">Two families, one celebration</p>
         <h2 id="family-title" className="mt-2 text-5xl">With Our Families</h2>
