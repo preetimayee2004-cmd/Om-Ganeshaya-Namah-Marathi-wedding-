@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { useScrollRoot } from "../Layout/ScrollRoot";
 import { wedding, coupleOrder } from "../../config/wedding";
-import { weddingAudio } from "../Countdown/weddingAudio";
 
 // ===== SMOKE REVEAL SETTINGS (invitation -> couple screen) =====
 const SMOKE_MS = 1800;     // speed: total time of the reveal (bigger = slower)
@@ -365,7 +364,6 @@ export default function Intro() {
   // -------------------------------------------------------------
   const runScene3 = () => {
     setStage(3);
-    weddingAudio.playWhoosh(); // soft whoosh (does nothing when muted)
 
     // Smoke grows out of Ganpati's centre and reveals the courtyard invitation scene
     const box = stageRef.current?.getBoundingClientRect();
@@ -470,7 +468,6 @@ export default function Intro() {
 
     if (smokeBusy.current) return; // ignore double clicks while it runs
     smokeBusy.current = true;
-    weddingAudio.playWhoosh(); // inside the click handler: creates/resumes the AudioContext, respects mute
 
     // 1) origin = centre of the button (bottom-centre when triggered by scroll/swipe)
     const box = stageRef.current?.getBoundingClientRect();
@@ -714,10 +711,10 @@ export default function Intro() {
               </div>
             )}
 
-            {/* Animated finger tapping hint, placed below the "Tap on door" text */}
+            {/* Animated finger tapping hint, centred on the "श्री" medallion */}
             {stage === 0 && (
               <div
-                className="pointer-events-none absolute left-1/2 top-[79%] z-30 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center"
+                className="pointer-events-none absolute left-1/2 top-[52%] z-30 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center"
                 style={{
                   opacity: s1Scale ? 0 : 1,
                   transform: s1Scale ? "translate(-50%, -50%) scale(0.7)" : "translate(-50%, -50%) scale(1)",

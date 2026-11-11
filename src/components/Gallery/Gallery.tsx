@@ -9,8 +9,8 @@ type Photo = (typeof wedding.gallery)[number];
 const T_REVEAL = 1500; // couple photo starts to fade in while the curtains are still parting
 const T_STRIP = 3700; // remaining photos slide out into the film strip
 const T_SETTLED = 4800; // animation finished: carousel becomes swipeable
-const AUTO_MS = 3200; // auto-slide: time each photo stays in the centre
-const AUTO_PAUSE_MS = 6000; // auto-slide waits this long after the visitor touches / drags the strip
+const SLIDE_MS = 3400; // film strip glides continuously: one photo passes the centre every SLIDE_MS
+const RESUME_MS = 1000; // after the visitor touches / drags, the glide resumes after this long
 const HERO_INDEX = 2; // which photo in `wedding.gallery` is the hero
 
 const tones: Record<string, string> = {
@@ -159,9 +159,10 @@ export default function Gallery() {
   const [active, setActive] = useState(Math.min(HERO_INDEX, photos.length - 1));
   const phaseRef = useRef(0);
   const activeRef = useRef(active);
-  const drag = useRef({ down: false, moved: false, x: 0, left: 0 });
+  const drag = useRef({ down: false, moved: false, x: 0, pos: 0 });
   const pausedUntil = useRef(0);
   const inView = useRef(false);
+  const posRef = useRef(Math.min(HERO_INDEX, photos.length - 1)); // film position, in photo-pitches
 
   // start automatically when the section scrolls into view
   useEffect(() => {
@@ -198,34 +199,33 @@ export default function Gallery() {
     return () => ts.forEach(clearTimeout);
   }, [seen]);
 
-  // position + emphasise every slide from the scroll position (transform/opacity only)
+  // place + emphasise every slide on a ring around the centre (transform / opacity only)
   const apply = useCallback(() => {
     const c = trackRef.current;
     if (!c) return;
     const slides = c.querySelectorAll<HTMLElement>("[data-slide]");
-    if (slides.length < 2) return;
-    const pitch = slides[1].offsetLeft - slides[0].offsetLeft || 1;
-    const mid = c.scrollLeft + c.clientWidth / 2;
+    const n = slides.length;
+    if (!n) return;
+    const pitch = c.clientWidth * 0.52 * 0.8;
     const open = phaseRef.current >= 3;
     const shown = phaseRef.current >= 2;
     let best = 0;
     let bestD = Infinity;
     slides.forEach((el, i) => {
-      const d = (el.offsetLeft + el.offsetWidth / 2 - mid) / pitch;
-      const ad = Math.abs(d);
+      const du = ((((i - posRef.current + n / 2) % n) + n) % n) - n / 2; // distance from the centre, in pitches
+      const ad = Math.abs(du);
       if (ad < bestD) {
         bestD = ad;
         best = i;
       }
       const inner = el.firstElementChild as HTMLElement;
-      let s = 1 - 0.18 * Math.min(ad, 1.6);
-      let op = open ? 1 - 0.3 * Math.min(ad, 1.6) : ad < 0.5 && shown ? 1 : 0;
-      const tx = open ? 0 : -d * pitch * 0.85; // before the strip opens, everything sits behind the hero
-      if (!open && ad < 0.5 && !shown) s *= 0.94;
-      if (!open && ad >= 0.5) op = 0;
-      inner.style.transform = `translateX(${tx}px) scale(${s}) rotateY(${(-d * 24).toFixed(1)}deg)`;
-      inner.style.opacity = String(op);
-      inner.style.filter = open && ad > 0.5 ? `brightness(${1 - 0.2 * Math.min(ad, 1.6)})` : "none";
+      const edge = Math.max(0, 1 - Math.max(0, ad - 2) * 2); // fades out where the ring wraps (off screen)
+      const s2 = (1 - 0.18 * Math.min(ad, 1.6)) * (!open && ad < 0.5 && !shown ? 0.94 : 1);
+      const op = open ? (1 - 0.3 * Math.min(ad, 1.6)) * edge : ad < 0.5 && shown ? 1 : 0;
+      const tx = (open ? 1 : 0.15) * du * pitch; // before the strip opens everything sits behind the hero
+      inner.style.transform = `translateX(${tx.toFixed(2)}px) scale(${s2.toFixed(4)}) rotateY(${(-du * 24).toFixed(1)}deg)`;
+      inner.style.opacity = op.toFixed(3);
+      inner.style.filter = open && ad > 0.5 ? `brightness(${(1 - 0.2 * Math.min(ad, 1.6)).toFixed(3)})` : "none";
       el.style.zIndex = String(20 - Math.round(ad * 4));
     });
     if (best !== activeRef.current) {
@@ -239,97 +239,94 @@ export default function Gallery() {
     apply();
   }, [phase, apply]);
 
-  // centre the hero on mount and whenever the layout changes
   useLayoutEffect(() => {
     const c = trackRef.current;
     if (!c) return;
-    const center = () => {
-      const el = c.querySelectorAll<HTMLElement>("[data-slide]")[Math.min(HERO_INDEX, photos.length - 1)];
-      if (!el) return;
-      c.style.scrollSnapType = "none";
-      c.scrollLeft = el.offsetLeft + el.offsetWidth / 2 - c.clientWidth / 2;
-      c.style.scrollSnapType = "";
-      apply();
-    };
-    center();
-    const ro = new ResizeObserver(() => {
-      if (!settled) center();
-      else apply();
-    });
+    apply();
+    const ro = new ResizeObserver(apply);
     ro.observe(c);
     return () => ro.disconnect();
-  }, [apply, photos.length, settled]);
-
-  useEffect(() => {
-    const c = trackRef.current;
-    if (!c) return;
-    let raf = 0;
-    const onScroll = () => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(apply);
-    };
-    c.addEventListener("scroll", onScroll, { passive: true });
-    return () => {
-      c.removeEventListener("scroll", onScroll);
-      cancelAnimationFrame(raf);
-    };
   }, [apply]);
 
-  const goTo = (i: number) => {
-    const c = trackRef.current;
-    const el = c?.querySelectorAll<HTMLElement>("[data-slide]")[i];
-    if (!c || !el) return;
-    c.scrollTo({ left: el.offsetLeft + el.offsetWidth / 2 - c.clientWidth / 2, behavior: "smooth" });
-  };
-
-  // auto-slide: moves to the next photo every few seconds (loops back to the first)
+  // continuous cinematic glide (pauses while out of view, dragged, or the viewer is open)
   useEffect(() => {
-    if (!settled || index !== null) return;
-    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+    if (!settled) return;
+    const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    const n = photos.length;
+    let raf = 0;
+    let running = false;
+    let last = performance.now();
+    const tick = (t: number) => {
+      const dt = Math.min(64, t - last) / 1000;
+      last = t;
+      if (!reduce && !drag.current.down && t > pausedUntil.current) posRef.current = (posRef.current + dt / (SLIDE_MS / 1000)) % n;
+      apply();
+      raf = requestAnimationFrame(tick);
+    };
+    const start = () => {
+      if (running || index !== null) return;
+      running = true;
+      last = performance.now();
+      raf = requestAnimationFrame(tick);
+    };
+    const stop = () => {
+      running = false;
+      cancelAnimationFrame(raf);
+    };
     const el = stageRef.current;
     const io = el
-      ? new IntersectionObserver(([e]) => (inView.current = e.isIntersecting), { root: scroller ?? null, threshold: 0.3 })
+      ? new IntersectionObserver(
+          ([e]) => {
+            inView.current = e.isIntersecting;
+            if (e.isIntersecting) start();
+            else stop();
+          },
+          { root: scroller ?? null, threshold: 0.2 },
+        )
       : null;
     if (el) io?.observe(el);
-    const id = setInterval(() => {
-      if (!inView.current || document.hidden || drag.current.down || Date.now() < pausedUntil.current) return;
-      goTo((activeRef.current + 1) % photos.length);
-    }, AUTO_MS);
     return () => {
-      clearInterval(id);
+      stop();
       io?.disconnect();
     };
-  }, [settled, index, scroller, photos.length]);
-  const pauseAuto = () => (pausedUntil.current = Date.now() + AUTO_PAUSE_MS);
+  }, [settled, index, scroller, photos.length, apply]);
 
-  // mouse drag (touch uses native scrolling)
+  // drag / swipe (touch and mouse): the glide resumes RESUME_MS after the finger lifts
   const onPointerDown = (e: React.PointerEvent) => {
-    pauseAuto();
-    if (e.pointerType !== "mouse" || !settled) return;
-    const c = trackRef.current!;
-    drag.current = { down: true, moved: false, x: e.clientX, left: c.scrollLeft };
+    if (!settled) return;
+    drag.current = { down: true, moved: false, x: e.clientX, pos: posRef.current };
+    pausedUntil.current = Infinity;
   };
   const onPointerMove = (e: React.PointerEvent) => {
     const d = drag.current;
     if (!d.down) return;
-    const c = trackRef.current!;
     const dx = e.clientX - d.x;
-    if (Math.abs(dx) > 4 && !d.moved) {
+    if (!d.moved && Math.abs(dx) > 6) {
       d.moved = true;
-      c.style.scrollSnapType = "none";
+      (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
     }
-    if (d.moved) c.scrollLeft = d.left - dx;
+    if (d.moved) {
+      const c = trackRef.current!;
+      const n = photos.length;
+      const pitch = c.clientWidth * 0.52 * 0.8;
+      posRef.current = (((d.pos - dx / pitch) % n) + n) % n;
+      apply();
+    }
   };
   const endDrag = () => {
     const d = drag.current;
     if (!d.down) return;
     d.down = false;
+    pausedUntil.current = performance.now() + RESUME_MS;
+    if (d.moved) setTimeout(() => (drag.current.moved = false), 0);
+  };
+  const onWheel = (e: React.WheelEvent) => {
+    if (!settled || Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
     const c = trackRef.current!;
-    if (d.moved) {
-      c.style.scrollSnapType = "";
-      goTo(activeRef.current);
-      setTimeout(() => (drag.current.moved = false), 0);
-    }
+    const n = photos.length;
+    posRef.current = (((posRef.current + e.deltaX / (c.clientWidth * 0.52 * 0.8)) % n) + n) % n;
+    pausedUntil.current = performance.now() + RESUME_MS;
+    apply();
   };
 
   // ---------- lightbox (unchanged behaviour) ----------
@@ -393,38 +390,32 @@ export default function Gallery() {
         className="relative mx-auto mt-6 w-full max-w-[460px] select-none"
         style={{ aspectRatio: "1 / 1" }}
       >
-        {/* photographs: hero first, film strip after the curtains open */}
+        {/* photographs: hero first, then a continuously gliding film strip */}
         <div
           ref={trackRef}
-          className={`absolute left-0 right-0 flex items-center ${settled ? "" : "gal-anim"}`}
+          className={`absolute left-0 right-0 ${settled ? "" : "gal-anim"}`}
           style={{
             top: "12%",
             height: "78%",
-            overflowX: settled ? "auto" : "hidden",
-            overflowY: "hidden",
-            scrollSnapType: settled ? "x mandatory" : "none",
+            overflow: "hidden",
             perspective: 700,
-            padding: "0 24%",
-            scrollbarWidth: "none",
-            overscrollBehaviorX: "contain",
-            touchAction: "pan-x pan-y",
+            touchAction: "pan-y",
             cursor: settled ? "grab" : "default",
             zIndex: 2,
           }}
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
-          onTouchStart={pauseAuto}
-          onWheel={pauseAuto}
           onPointerUp={endDrag}
-          onPointerLeave={endDrag}
+          onPointerCancel={endDrag}
+          onWheel={onWheel}
           aria-label="Wedding photographs"
         >
           {photos.map((p, i) => (
             <div
               key={p.src ?? p.alt}
               data-slide
-              className="relative shrink-0"
-              style={{ width: "100%", margin: "0 -10%", scrollSnapAlign: "center" }}
+              className="absolute"
+              style={{ left: "24%", width: "52%", top: "50%", marginTop: "-32.5%" }}
             >
               <div
                 className="gal-slide w-full overflow-hidden rounded-[6px]"
@@ -444,8 +435,7 @@ export default function Gallery() {
                   aria-label={`Open photo: ${p.alt}`}
                   onClick={(e) => {
                     if (!settled || drag.current.moved) return;
-                    if (i === active) open(i, e.currentTarget);
-                    else goTo(i);
+                    open(i, e.currentTarget);
                   }}
                 >
                   <Tile p={p} />

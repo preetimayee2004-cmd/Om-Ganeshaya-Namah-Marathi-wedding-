@@ -670,16 +670,24 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
             />
           ))}
 
-          {/* Animated Finger Scratch / Tap Hint over Scratch Box */}
+          {/* Tiny hand hint: rubs back and forth over the foil until the guest starts scratching */}
           {!hasInteracted && !isRevealed && (
-            <div
-              className="pointer-events-none absolute right-4 sm:right-8 top-1/2 z-20 -translate-y-1/2 flex items-center gap-1.5 transition-opacity duration-300"
-            >
-              <svg viewBox="0 0 48 30" className="h-8 w-12 text-[#F6DD93] drop-shadow-[0_1px_4px_rgba(0,0,0,0.6)]" fill="none" stroke="currentColor" strokeLinecap="round" aria-hidden>
-                <path d="M4 24C12 6 28 4 38 12" strokeWidth="1.6" strokeDasharray="1 4.5" />
-                <path d="M33 5l1.4 4.2 4.2 1.4-4.2 1.4L33 16.2l-1.4-4.2-4.2-1.4 4.2-1.4z" fill="currentColor" stroke="none" />
-                <path d="M42 17l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z" fill="currentColor" stroke="none" opacity=".8" />
-              </svg>
+            <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center" aria-hidden>
+              <div className="relative h-8 w-24">
+                <span className="absolute inset-x-1 top-1/2 h-[2px] -translate-y-1/2 rounded-full" style={{ background: "repeating-linear-gradient(90deg, rgba(246,221,147,0.75) 0 4px, transparent 4px 9px)" }} />
+                <div className="absolute left-0 top-0" style={{ animation: "scratch-hand 1.6s ease-in-out infinite" }}>
+                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" style={{ filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.55)) drop-shadow(0 0 6px rgba(255,235,160,0.8))" }}>
+                    <path
+                      d="M12 2a1.5 1.5 0 0 0-1.5 1.5v7.2l-1.3-1.3a1.5 1.5 0 0 0-2.1 0 1.5 1.5 0 0 0 0 2.1l3.5 3.5c1 1 2.2 1.7 3.5 1.7h2.4a4.5 4.5 0 0 0 4.5-4.5V9.5a1.5 1.5 0 0 0-3 0v1a1.5 1.5 0 0 0-3 0V9a1.5 1.5 0 0 0-3 0v-5.5A1.5 1.5 0 0 0 12 2z"
+                      fill="#FFFDF7"
+                      stroke="#6d0f1b"
+                      strokeWidth="1.4"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </div>
+              </div>
             </div>
           )}
         </div>

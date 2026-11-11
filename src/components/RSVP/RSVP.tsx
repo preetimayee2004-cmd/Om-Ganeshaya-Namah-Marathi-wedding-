@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { wedding, coupleOrder } from "../../config/wedding";
 import { useGuest } from "../../context/GuestContext";
-import { readPreviousRsvp, submitRsvp } from "../../lib/rsvp";
+import { submitRsvp } from "../../lib/rsvp";
 import { useScrollRoot } from "../Layout/ScrollRoot";
 
 /**
@@ -68,13 +68,15 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
   const scroller = useScrollRoot();
   const stageRef = useRef<HTMLDivElement>(null);
   const sending = useRef(false);
-  const previous = useMemo(readPreviousRsvp, []);
-  const alreadyYes = previous?.attending === "yes";
+  const sectionRef = useRef<HTMLElement>(null);
+  const [sectionW, setSectionW] = useState(400);
+  const [fallPx, setFallPx] = useState(700);
+  const [visible, setVisible] = useState(false);
 
   const [entered, setEntered] = useState(false);
-  const [revealDone, setRevealDone] = useState(alreadyYes);
+  const [revealDone, setRevealDone] = useState(false);
   // 0 closed | 1 seal breaking | 2 flap opening | 3 card rising | 4 message shown
-  const [stage, setStage] = useState(alreadyYes ? 4 : 0);
+  const [stage, setStage] = useState(0);
   const [error, setError] = useState(false);
   const timers = useRef<number[]>([]);
 
@@ -100,6 +102,23 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
     return () => clearTimeout(t);
   }, [entered, revealDone]);
   useEffect(() => () => timers.current.forEach(clearTimeout), []);
+
+  // petals only run while the section is on screen (and are removed when it is not)
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([e]) => setVisible(e.isIntersecting), { root: scroller ?? null, threshold: 0.05 });
+    io.observe(el);
+    const ro = new ResizeObserver(() => {
+      setSectionW(el.clientWidth);
+      setFallPx(el.clientHeight + 40);
+    });
+    ro.observe(el);
+    return () => {
+      io.disconnect();
+      ro.disconnect();
+    };
+  }, [scroller]);
 
   const later = (fn: () => void, ms: number) => timers.current.push(window.setTimeout(fn, ms));
 
@@ -144,6 +163,23 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
     [],
   );
 
+  const petalSpecs = useMemo(
+    () =>
+      Array.from({ length: 14 }, (_, i) => ({
+        left: 4 + ((i * 97) % 92) + Math.random() * 4,
+        dx: 60 + Math.random() * 120,
+        sway: (Math.random() - 0.5) * 50,
+        rot: (Math.random() < 0.5 ? -1 : 1) * (240 + Math.random() * 240),
+        dur: 9 + Math.random() * 7,
+        delay: -Math.random() * 14,
+        size: 13 + Math.random() * 8,
+        color: ["#F4C6CF", "#D98F9F", "#8E3347", "#FBF1E3", "#EBA9B6", "#B85A6E"][i % 6],
+      })),
+    [],
+  );
+  const petalCount = sectionW < 440 ? 9 : 14;
+  const showPetals = stage >= 1 && visible && !(typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches);
+
   const sealOpen = stage >= 1;
   const flapOpen = stage >= 2;
   const flapBack = stage >= 3; // once the flap has passed upright it lies behind the card
@@ -152,7 +188,41 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
   const gone = (on: boolean): React.CSSProperties => ({ opacity: on ? 0 : 1 });
 
   return (
-    <section id="rsvp" aria-labelledby="rsvp-title" className="px-5 py-6 text-[#4b0f16]">
+    <section ref={sectionRef} id="rsvp" aria-labelledby="rsvp-title" className="relative px-5 py-6 text-[#4b0f16]">
+      {/* continuous falling petals (behind the envelope, the couple, the text and the buttons) */}
+      {showPetals && (
+        <div className="pointer-events-none absolute inset-0 overflow-hidden" style={{ zIndex: 0 }} aria-hidden>
+          {petalSpecs.slice(0, petalCount).map((pt, i) => (
+            <svg
+              key={i}
+              viewBox="0 0 24 24"
+              className="absolute"
+              style={{
+                left: `${pt.left}%`,
+                top: -30,
+                width: pt.size,
+                height: pt.size,
+                opacity: 0,
+                willChange: "transform, opacity",
+                ["--dx" as string]: `${pt.dx}px`,
+                ["--sway" as string]: `${pt.sway}px`,
+                ["--rot" as string]: `${pt.rot}deg`,
+                ["--fall" as string]: `${fallPx}px`,
+                animation: `rsvp-petal ${pt.dur.toFixed(1)}s linear ${pt.delay.toFixed(1)}s infinite`,
+              }}
+            >
+              <defs>
+                <linearGradient id={`pg${i}`} x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stopColor={pt.color} stopOpacity=".95" />
+                  <stop offset="1" stopColor={pt.color} stopOpacity=".62" />
+                </linearGradient>
+              </defs>
+              <path d="M12 1.5C18.5 6 20 14 12 22.5 4 14 5.5 6 12 1.5Z" fill={`url(#pg${i})`} />
+              <path d="M12 4C12.4 9 12.2 15 12 20" stroke="#fff" strokeOpacity=".28" strokeWidth=".6" fill="none" />
+            </svg>
+          ))}
+        </div>
+      )}
       {/* clip paths for the seal pieces (objectBoundingBox, artwork coordinates) */}
       <svg width="0" height="0" className="absolute" aria-hidden>
         <defs>
@@ -174,7 +244,7 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
       <div
         ref={stageRef}
         className="relative mx-auto w-full max-w-[420px] select-none"
-        style={{ aspectRatio: STAGE_ASPECT, containerType: "inline-size" }}
+        style={{ aspectRatio: STAGE_ASPECT, containerType: "inline-size", zIndex: 1 }}
       >
         {/* heading */}
         <h2
@@ -277,7 +347,7 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
                     <div
                       className="flex flex-col items-center justify-center"
                       style={{
-                        height: "50%",
+                        height: "54%",
                         opacity: msgShown ? 1 : 0,
                         transform: msgShown ? "none" : "translateY(10px)",
                         transition: `opacity ${T_MSG}ms ease, transform ${T_MSG}ms ${EASE}`,
@@ -290,32 +360,11 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
                       </svg>
                       <p
                         role="status"
-                        className="mt-[3cqw] italic leading-[1.25] text-[#6d0f1b]"
-                        style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 500, fontSize: "9.6cqw" }}
+                        className="mt-[4cqw] italic leading-[1.2] text-[#6d0f1b]"
+                        style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 500, fontSize: "12.5cqw" }}
                       >
                         We are delighted to have you join our celebration.
                       </p>
-                      <span className="my-[3.5cqw] block h-px w-[40cqw] bg-gradient-to-r from-transparent via-[#c9992f] to-transparent" />
-                      <button
-                        onClick={downloadIcs}
-                        tabIndex={msgShown ? 0 : -1}
-                        className="pointer-events-auto inline-flex items-center gap-[2cqw] rounded-full font-body font-bold uppercase"
-                        style={{
-                          fontSize: "4.5cqw",
-                          letterSpacing: "0.16em",
-                          padding: "2.6cqw 6cqw",
-                          background: "linear-gradient(180deg, #7A3B24, #5A2614)",
-                          color: "#F6DFA2",
-                          border: "1.5px solid #D4A53C",
-                          boxShadow: "0 1px 4px rgba(60,30,10,0.35)",
-                        }}
-                      >
-                        <svg viewBox="0 0 16 16" className="h-[4.6cqw] w-[4.6cqw]" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden>
-                          <rect x="2" y="3" width="12" height="11" rx="1.5" />
-                          <path d="M2 6.5h12M5.5 1.5v3M10.5 1.5v3" />
-                        </svg>
-                        Add to Calendar
-                      </button>
                     </div>
                   </div>
                 </div>
@@ -433,8 +482,9 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
 
       {/* Joyfully Accept: rounded-corner red and gold button (no decline) */}
       <div
-        className="mx-auto flex flex-col items-center overflow-hidden"
+        className="relative mx-auto flex flex-col items-center overflow-hidden"
         style={{
+          zIndex: 1,
           maxHeight: stage === 0 ? 120 : 0,
           opacity: stage === 0 && entered ? 1 : 0,
           marginTop: stage === 0 ? 20 : 0,
@@ -466,6 +516,55 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
             Something went wrong. Please try again.
           </p>
         )}
+      </div>
+
+      {/* after accepting: cute couple waves, confirmation text and Add to Calendar (below the envelope) */}
+      <div
+        className="relative mx-auto flex flex-col items-center overflow-hidden"
+        style={{
+          zIndex: 1,
+          maxHeight: stage >= 3 ? 520 : 0,
+          opacity: stage >= 3 ? 1 : 0,
+          marginTop: stage >= 3 ? 8 : 0,
+          transition: `opacity 700ms ease, max-height 900ms ${EASE}, margin-top 900ms ${EASE}`,
+        }}
+        aria-hidden={stage < 3}
+      >
+        <img
+          src="/rsvp/couple.png"
+          alt="The bride and groom waving"
+          draggable={false}
+          loading="lazy"
+          className="w-[150px]"
+          style={{
+            transformOrigin: "50% 100%",
+            animation: stage >= 3 ? "rsvp-wave 2.6s ease-in-out infinite" : undefined,
+            WebkitMaskImage: "linear-gradient(to bottom, #000 78%, transparent 100%)",
+            maskImage: "linear-gradient(to bottom, #000 78%, transparent 100%)",
+            filter: "drop-shadow(0 6px 10px rgba(80,30,20,0.25))",
+          }}
+        />
+        <p className="mt-1 text-center font-script text-[34px] leading-none text-[#6d0f1b]">Yay! You&apos;re Coming! ♡</p>
+        <p className="mx-auto mt-2 max-w-[17rem] text-center font-body text-[13px] leading-snug text-[#4b0f16]/85">
+          We can&apos;t wait to celebrate this beautiful day with you!
+        </p>
+        <button
+          onClick={downloadIcs}
+          tabIndex={stage >= 4 ? 0 : -1}
+          className="mt-4 inline-flex min-h-10 items-center gap-2 rounded-full px-5 font-body text-[11px] font-bold uppercase tracking-[0.18em] transition active:scale-95"
+          style={{
+            background: "linear-gradient(180deg, #7A3B24, #5A2614)",
+            color: "#F6DFA2",
+            border: "1.5px solid #D4A53C",
+            boxShadow: "0 2px 6px rgba(60,30,10,0.35)",
+          }}
+        >
+          <svg viewBox="0 0 16 16" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden>
+            <rect x="2" y="3" width="12" height="11" rx="1.5" />
+            <path d="M2 6.5h12M5.5 1.5v3M10.5 1.5v3" />
+          </svg>
+          Add to Calendar
+        </button>
       </div>
     </section>
   );

@@ -2,11 +2,12 @@ import { useState } from "react";
 import { wedding } from "../../config/wedding";
 import Reveal from "../Layout/Reveal";
 
-// Satin / silk card look (colours sampled from the reference): ivory-champagne base with soft diagonal sheen
-const SATIN =
-  "linear-gradient(112deg, #E9DFCC 0%, #E2D5C0 14%, #F3ECDC 30%, #E4D8C3 46%, #F0E8D6 62%, #E1D4BD 80%, #EAE0CD 100%)";
-const CARD_BORDER = "#D8C5A3";
-const INK = "#5A2433"; // maroon text
+// Golden silk card: warm antique-gold base with a soft diagonal sheen, deep maroon ink
+const GOLD =
+  "linear-gradient(112deg, #E7C46C 0%, #DCAE4F 14%, #F2D88E 30%, #DBAC4B 46%, #EDCF80 62%, #D6A444 80%, #E6C26A 100%)";
+const CARD_BORDER = "#B07F25";
+const INK = "#4A0E1A"; // deep maroon text
+const INK_SOFT = "#6B1A26";
 const tz = wedding.timeZone;
 const fmtDate = (iso: string) =>
   new Intl.DateTimeFormat("en-IN", { weekday: "short", day: "numeric", month: "short", timeZone: tz }).format(new Date(iso));
@@ -16,10 +17,10 @@ const fmtTime = (iso: string) =>
 /** small gold corner flourish like the reference card */
 function Corner({ className = "" }: { className?: string }) {
   return (
-    <svg viewBox="0 0 24 24" className={`pointer-events-none absolute h-5 w-5 ${className}`} fill="none" stroke="#C9AE7C" strokeWidth="1" strokeLinecap="round" aria-hidden>
+    <svg viewBox="0 0 24 24" className={`pointer-events-none absolute h-5 w-5 ${className}`} fill="none" stroke="#8A5F15" strokeWidth="1" strokeLinecap="round" aria-hidden>
       <path d="M2 20C2 10 8 3 20 2" />
       <path d="M2 14C2 9 6 5 12 4" opacity=".7" />
-      <circle cx="3.2" cy="3.2" r="1.3" fill="#C9AE7C" stroke="none" />
+      <circle cx="3.2" cy="3.2" r="1.3" fill="#8A5F15" stroke="none" />
     </svg>
   );
 }
@@ -51,9 +52,9 @@ export default function Events() {
                 <article
                   className="relative overflow-hidden rounded-[10px] shadow-[0_2px_6px_rgba(90,60,30,0.18)]"
                   style={{
-                    background: SATIN,
+                    background: GOLD,
                     border: `1.5px solid ${CARD_BORDER}`,
-                    boxShadow: "inset 0 0 0 3px rgba(255,255,255,0.35), inset 0 0 0 4px #E3D3B3, 0 2px 6px rgba(90,60,30,0.18)",
+                    boxShadow: "inset 0 0 0 3px rgba(255,244,205,0.45), inset 0 0 0 4px rgba(176,127,37,0.55), 0 3px 8px rgba(110,70,10,0.28)",
                   }}
                 >
                   <Corner className="left-1 top-1" />
@@ -62,11 +63,11 @@ export default function Events() {
                     onClick={() => setOpenId(open ? null : e.id)}
                     aria-expanded={open}
                     aria-controls={`event-${e.id}`}
-                    className="relative flex h-[88px] w-full items-center gap-3 px-2.5 text-left"
+                    className="relative flex min-h-[92px] w-full items-center gap-3 px-2.5 py-2 text-left"
                   >
                     <span
-                      className="h-[68px] w-[108px] shrink-0 overflow-hidden rounded-lg"
-                      style={{ border: `1px solid ${CARD_BORDER}`, boxShadow: "0 1px 3px rgba(90,60,30,0.2)" }}
+                      className="h-[68px] w-[100px] shrink-0 overflow-hidden rounded-lg"
+                      style={{ border: `1px solid ${CARD_BORDER}`, boxShadow: "0 1px 3px rgba(90,60,30,0.3)" }}
                     >
                       <img
                         src={`/events/${e.art}.jpg`}
@@ -75,28 +76,20 @@ export default function Events() {
                         className="h-full w-full scale-[1.06] object-cover"
                       />
                     </span>
-                    <span className="min-w-0 flex-1" style={{ color: INK, containerType: "inline-size" }}>
+                    <span className="min-w-0 flex-1 break-words" style={{ color: INK }}>
                       <span
-                        className="block whitespace-nowrap italic leading-[1.1] tracking-tight"
-                        style={{
-                          fontFamily: "'Cormorant Garamond', Georgia, serif",
-                          fontWeight: 500,
-                          fontSize: `min(21px, ${(100 / (e.name.length * 0.4)).toFixed(2)}cqw)`,
-                        }}
+                        className="block text-[19px] italic leading-[1.1]"
+                        style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 600 }}
                       >
                         {e.name}
                       </span>
-                      <span
-                        lang="mr"
-                        className="block whitespace-nowrap leading-snug"
-                        style={{ fontSize: `min(13px, ${(100 / (e.marathi.length * 0.68)).toFixed(2)}cqw)` }}
-                      >
+                      <span lang="mr" className="block text-[13px] leading-snug">
                         {e.marathi}
                       </span>
-                      <span className="block whitespace-nowrap font-body leading-snug" style={{ fontSize: `min(12px, ${(100 / ((fmtDate(e.start).length + fmtTime(e.start).length + 3) * 0.55)).toFixed(2)}cqw)` }}>
+                      <span className="block font-body text-[12px] font-medium leading-snug">
                         {fmtDate(e.start)} · {fmtTime(e.start)}
                       </span>
-                      <span className="block whitespace-nowrap font-body leading-snug" style={{ fontSize: `min(12px, ${(100 / (e.tagline.length * 0.55)).toFixed(2)}cqw)` }}>
+                      <span className="block font-body text-[12px] leading-snug" style={{ color: INK_SOFT }}>
                         {e.tagline}
                       </span>
                     </span>
@@ -120,40 +113,31 @@ export default function Events() {
                     className={`grid transition-all duration-500 ease-out ${open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
                   >
                     <div className="overflow-hidden">
-                      <div className="space-y-4 border-t px-4 pb-5 pt-4" style={{ borderColor: CARD_BORDER, color: INK }}>
-                        {/* highlighted description */}
+                      <div className="space-y-2.5 border-t px-4 pb-3 pt-2.5" style={{ borderColor: CARD_BORDER, color: INK }}>
                         <p
-                          className="rounded-lg px-4 py-3 text-center text-[17px] italic leading-snug"
-                          style={{
-                            fontFamily: "'Cormorant Garamond', Georgia, serif",
-                            fontWeight: 500,
-                            color: "#6B1624",
-                            background: "linear-gradient(135deg, rgba(226,168,75,0.28), rgba(244,214,150,0.38))",
-                            borderLeft: "3px solid #C9992F",
-                            borderRight: "3px solid #C9992F",
-                            boxShadow: "inset 0 0 0 1px rgba(201,153,47,0.35)",
-                          }}
+                          className="text-center text-[13.5px] italic leading-snug"
+                          style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 600, color: INK }}
                         >
                           {e.description}
                         </p>
 
                         {/* dress code */}
                         <div className="text-center">
-                          <p className="font-body text-[10px] font-bold uppercase tracking-[0.3em]" style={{ color: "#9A6B1E" }}>
+                          <p className="font-body text-[10px] font-bold uppercase tracking-[0.3em]" style={{ color: "#6B1A26" }}>
                             Dress Code
                           </p>
-                          <ul className="mt-2 flex items-start justify-center gap-5">
+                          <ul className="mt-1.5 flex items-start justify-center gap-4">
                             {e.dressCode.map((d) => (
-                              <li key={d.name} className="flex w-[72px] flex-col items-center gap-1">
+                              <li key={d.name} className="flex w-[68px] flex-col items-center gap-0.5">
                                 <span
-                                  className="h-9 w-9 rounded-full"
+                                  className="h-7 w-7 rounded-full"
                                   style={{
                                     background: d.color,
                                     border: "2px solid #fff8e6",
-                                    boxShadow: "0 0 0 1.5px #C9992F, 0 2px 4px rgba(90,60,30,0.3)",
+                                    boxShadow: "0 0 0 1.5px #8A5F15, 0 2px 4px rgba(90,60,30,0.3)",
                                   }}
                                 />
-                                <span className="font-body text-[11px] leading-tight">{d.name}</span>
+                                <span className="font-body text-[10.5px] font-medium leading-tight">{d.name}</span>
                               </li>
                             ))}
                           </ul>
@@ -161,10 +145,10 @@ export default function Events() {
 
                         {/* venue */}
                         <div className="text-center">
-                          <p className="font-body text-[10px] font-bold uppercase tracking-[0.3em]" style={{ color: "#9A6B1E" }}>
+                          <p className="font-body text-[10px] font-bold uppercase tracking-[0.3em]" style={{ color: "#6B1A26" }}>
                             Venue
                           </p>
-                          <p className="mt-1 font-body text-[14px] font-semibold">{e.venue}</p>
+                          <p className="mt-0.5 font-body text-[12.5px] font-semibold">{e.venue}</p>
                         </div>
 
                         {/* directions: small brown button with golden stroke */}
@@ -173,7 +157,7 @@ export default function Events() {
                             href={e.mapUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex min-h-9 items-center gap-1.5 rounded-full px-4 font-body text-[11px] font-bold uppercase tracking-[0.2em]"
+                            className="inline-flex min-h-8 items-center gap-1.5 rounded-full px-3.5 font-body text-[10.5px] font-bold uppercase tracking-[0.2em]"
                             style={{
                               background: "linear-gradient(180deg, #7A3B24, #5A2614)",
                               color: "#F6DFA2",
