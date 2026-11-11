@@ -29,6 +29,178 @@ interface DateRevealProps {
   onRevealed?: () => void;
 }
 
+const TAU = Math.PI * 2;
+
+/** teardrop paisley with a curled tip, centred on the origin */
+function paisleyPath(ctx: CanvasRenderingContext2D, s: number) {
+  ctx.beginPath();
+  ctx.moveTo(0, -s);
+  ctx.bezierCurveTo(s * 0.9, -s * 0.6, s * 0.9, s * 0.5, 0, s * 0.8);
+  ctx.bezierCurveTo(-s * 0.7, s * 0.5, -s * 0.5, -s * 0.2, -s * 0.05, -s * 0.1);
+  ctx.bezierCurveTo(s * 0.25, 0, s * 0.25, -s * 0.35, 0, -s * 0.4);
+}
+
+/** Ceremonial scratch foil: deep-maroon silk, embossed paisley, antique-gold double border, lotus motif. */
+function drawSilkFoil(ctx: CanvasRenderingContext2D, w: number, h: number) {
+  const gold = ctx.createLinearGradient(0, 0, w, 0);
+  [[0, "#f0cf7a"], [0.3, "#c9963a"], [0.55, "#f6dd93"], [0.8, "#b8862f"], [1, "#e9c667"]].forEach(([o, c]) => gold.addColorStop(o as number, c as string));
+
+  // silk base
+  const base = ctx.createLinearGradient(0, 0, w, h);
+  base.addColorStop(0, "#7d1626");
+  base.addColorStop(0.5, "#5e0d1a");
+  base.addColorStop(1, "#430911");
+  ctx.fillStyle = base;
+  ctx.fillRect(0, 0, w, h);
+
+  // fine silk threads
+  ctx.save();
+  ctx.lineWidth = 0.6;
+  for (let x = -h, i = 0; x < w + h; x += 3, i++) {
+    ctx.strokeStyle = i % 2 ? "rgba(255,190,190,0.045)" : "rgba(0,0,0,0.09)";
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x + h * 0.6, h);
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  // soft diagonal sheen
+  ([[0.18, 0.1], [0.55, 0.07], [0.86, 0.09]] as const).forEach(([pos, a]) => {
+    const g = ctx.createLinearGradient(w * pos - 60, 0, w * pos + 60, h);
+    g.addColorStop(0, "rgba(255,215,190,0)");
+    g.addColorStop(0.5, `rgba(255,215,190,${a})`);
+    g.addColorStop(1, "rgba(255,215,190,0)");
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, w, h);
+  });
+
+  // embossed paisley lattice (shadow + highlight + body stroke)
+  const stepX = 44, stepY = 40;
+  for (let row = 0; row * stepY < h + stepY; row++) {
+    for (let col = -1; col * stepX < w + stepX; col++) {
+      const cx = col * stepX + (row % 2 ? stepX / 2 : 0) + 14;
+      const cy = row * stepY + 16;
+      const rot = row % 2 ? -0.5 : 0.5;
+      ([[1, 1, "rgba(0,0,0,0.38)"], [-0.8, -0.8, "rgba(255,206,150,0.2)"], [0, 0, "rgba(120,30,40,0.55)"]] as const).forEach(([dx, dy, stroke]) => {
+        ctx.save();
+        ctx.translate(cx + dx, cy + dy);
+        ctx.rotate(rot);
+        paisleyPath(ctx, 10);
+        ctx.strokeStyle = stroke;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        ctx.restore();
+      });
+    }
+  }
+
+  // embossed mandala rings behind the centre motif
+  ctx.save();
+  ctx.translate(w / 2, h / 2);
+  [58, 44].forEach((r) => {
+    ctx.beginPath();
+    ctx.arc(1, 1, r, 0, TAU);
+    ctx.strokeStyle = "rgba(0,0,0,0.3)";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(0, 0, r, 0, TAU);
+    ctx.strokeStyle = "rgba(255,206,150,0.16)";
+    ctx.stroke();
+  });
+  ctx.restore();
+
+  // depth: soft vignette
+  const vg = ctx.createRadialGradient(w / 2, h / 2, h * 0.25, w / 2, h / 2, w * 0.62);
+  vg.addColorStop(0, "rgba(0,0,0,0)");
+  vg.addColorStop(1, "rgba(0,0,0,0.4)");
+  ctx.fillStyle = vg;
+  ctx.fillRect(0, 0, w, h);
+
+  // antique-gold double border with small corner roundels
+  ctx.save();
+  ctx.strokeStyle = gold;
+  ctx.lineWidth = 1.8;
+  ctx.strokeRect(6, 6, w - 12, h - 12);
+  ctx.lineWidth = 0.7;
+  ctx.strokeRect(11, 11, w - 22, h - 22);
+  ctx.fillStyle = gold;
+  [[6, 6], [w - 6, 6], [6, h - 6], [w - 6, h - 6]].forEach(([x, y]) => {
+    ctx.beginPath();
+    ctx.arc(x, y, 3, 0, TAU);
+    ctx.fill();
+  });
+  ctx.restore();
+
+  // centre: small gold lotus medallion flanked by fine lines and diamonds
+  ctx.save();
+  ctx.translate(w / 2, h / 2);
+  ctx.strokeStyle = gold;
+  ctx.fillStyle = "rgba(48,6,13,0.85)";
+  ctx.lineWidth = 1.2;
+  ctx.beginPath();
+  ctx.arc(0, 0, 21, 0, TAU);
+  ctx.fill();
+  ctx.stroke();
+  ctx.lineWidth = 0.6;
+  ctx.beginPath();
+  ctx.arc(0, 0, 17.5, 0, TAU);
+  ctx.stroke();
+  for (let i = 0; i < 8; i++) {
+    ctx.save();
+    ctx.rotate((i * TAU) / 8);
+    ctx.beginPath();
+    ctx.ellipse(0, -9, 3.2, 7.5, 0, 0, TAU);
+    ctx.fillStyle = "rgba(226,178,79,0.28)";
+    ctx.fill();
+    ctx.lineWidth = 0.9;
+    ctx.stroke();
+    ctx.restore();
+  }
+  ctx.fillStyle = gold;
+  ctx.beginPath();
+  ctx.arc(0, 0, 2.6, 0, TAU);
+  ctx.fill();
+  [-1, 1].forEach((d) => {
+    ctx.beginPath();
+    ctx.moveTo(d * 30, 0);
+    ctx.lineTo(d * 78, 0);
+    ctx.lineWidth = 0.8;
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(d * 82, -3.5);
+    ctx.lineTo(d * 85.5, 0);
+    ctx.lineTo(d * 82, 3.5);
+    ctx.lineTo(d * 78.5, 0);
+    ctx.closePath();
+    ctx.fill();
+  });
+  ctx.restore();
+}
+
+/** small traditional lotus used as an icon */
+function Lotus({ className = "h-4 w-4" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round" aria-hidden>
+      <path d="M12 3c2.6 3 2.6 8 0 11-2.6-3-2.6-8 0-11Z" fill="currentColor" fillOpacity=".18" />
+      <path d="M12 14c-4-.5-7-3-8-7 4 0 7 2.3 8 7Zm0 0c4-.5 7-3 8-7-4 0-7 2.3-8 7Z" fill="currentColor" fillOpacity=".12" />
+      <path d="M3 17c4 3 14 3 18 0" />
+    </svg>
+  );
+}
+
+/** gold corner flourish; rotate with a class for the other three corners */
+function Flourish({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 30 30" className={`pointer-events-none absolute h-6 w-6 text-[#C9963A] ${className}`} fill="none" stroke="currentColor" strokeLinecap="round" aria-hidden>
+      <path d="M2 28V11C2 5.5 5.5 2 11 2h17" strokeWidth="1.4" />
+      <path d="M7 28V14c0-4 3-7 7-7h14" strokeWidth=".7" opacity=".75" />
+      <circle cx="11.5" cy="11.5" r="1.6" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
 export default function DateReveal({ onRevealed }: DateRevealProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -75,46 +247,7 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
     const w = rect.width;
     const h = rect.height;
 
-    // Rich Vermilion Red to Deep Royal Maroon Gradient
-    const grad = ctx.createLinearGradient(0, 0, w, h);
-    grad.addColorStop(0, "#8E1726");
-    grad.addColorStop(0.5, "#6D0F1B");
-    grad.addColorStop(1, "#520912");
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, w, h);
-
-    // Subtle Traditional Paithani Gold Watermark Pattern
-    ctx.save();
-    ctx.strokeStyle = "rgba(235, 192, 105, 0.22)";
-    ctx.lineWidth = 1;
-
-    // Geometric Diamond / Paisley Weave Lattice
-    const step = 28;
-    for (let x = 0; x < w + step; x += step) {
-      for (let y = 0; y < h + step; y += step) {
-        ctx.beginPath();
-        ctx.arc(x, y, 6, 0, Math.PI * 2);
-        ctx.stroke();
-      }
-    }
-
-    // Inner Antique Gold Ornate Border
-    ctx.strokeStyle = "rgba(226, 178, 79, 0.75)";
-    ctx.lineWidth = 1.5;
-    ctx.strokeRect(8, 8, w - 16, h - 16);
-
-    ctx.strokeStyle = "rgba(255, 236, 180, 0.4)";
-    ctx.lineWidth = 0.8;
-    ctx.strokeRect(12, 12, w - 24, h - 24);
-
-    // Delicate Subtle Gold Center Accent on Scratch Foil
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillStyle = "rgba(255, 236, 180, 0.35)";
-    ctx.font = "14px serif";
-    ctx.fillText("❖", w / 2, h / 2);
-
-    ctx.restore();
+    drawSilkFoil(ctx, w, h);
   }, []);
 
   useEffect(() => {
@@ -400,6 +533,13 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
         }}
       />
 
+      {/* Outer frame refinement: inner gold hairline + corner flourishes */}
+      <div className="pointer-events-none absolute inset-[5px] z-20 rounded-[1.25rem] border border-[#D4AF37]/45" />
+      <Flourish className="left-[7px] top-[7px] z-20" />
+      <Flourish className="right-[7px] top-[7px] z-20 -scale-x-100" />
+      <Flourish className="bottom-[7px] left-[7px] z-20 -scale-y-100" />
+      <Flourish className="bottom-[7px] right-[7px] z-20 -scale-100" />
+
       {/* TOP PEACOCK FLORAL BORDER STRIP */}
       <div className="relative w-full overflow-hidden border-b border-[#D4AF37]/35 bg-[#FAF0DF]/90 backdrop-blur-sm">
         <img
@@ -408,6 +548,8 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
           className="h-14 w-full object-cover object-center sm:h-16"
           draggable={false}
         />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[2px] bg-gradient-to-r from-transparent via-[#C9963A] to-transparent" />
+        <span className="pointer-events-none absolute bottom-[-4px] left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 border border-[#C9963A] bg-[#FAF0DF]" />
       </div>
 
       {/* TINY CORNER BELL AUDIO BUTTON */}
@@ -424,38 +566,40 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
       </button>
 
       {/* CARD CONTENT HEADER */}
-      <div className="relative z-10 px-5 pt-5 pb-2 text-center">
-        {/* SAVE THE DATE Heading */}
-        <h2 className="font-serif text-2xl sm:text-3xl font-bold tracking-[0.2em] text-[#6d0f1b] uppercase">
+      <div className="relative z-10 px-5 pt-4 pb-0 text-center">
+        <h2
+          className="font-bold uppercase text-[#6d0f1b]"
+          style={{ fontFamily: '"Cormorant Garamond", Georgia, serif', fontSize: "clamp(24px, 7vw, 30px)", letterSpacing: "0.3em", paddingLeft: "0.3em", lineHeight: 1.1, fontWeight: 700 }}
+        >
           Save The Date
         </h2>
-        {/* Delicate Golden Divider */}
-        <div className="mx-auto mt-2 flex items-center justify-center gap-2">
-          <span className="h-px w-12 sm:w-16 bg-gradient-to-r from-transparent via-[#D4AF37] to-[#D4AF37]" />
-          <span className="text-[#D4AF37] text-xs">❖</span>
-          <span className="h-px w-12 sm:w-16 bg-gradient-to-l from-transparent via-[#D4AF37] to-[#D4AF37]" />
-        </div>
+        {/* traditional gold divider */}
+        <svg viewBox="0 0 180 14" className="mx-auto mt-1.5 h-3.5 w-44 text-[#B8862F]" fill="none" stroke="currentColor" strokeLinecap="round" aria-hidden>
+          <path d="M6 7h62M112 7h62" strokeWidth="0.9" />
+          <path d="M44 7h24M112 7h24" strokeWidth="0.9" />
+          <path d="M90 1.5l5.5 5.5L90 12.5 84.5 7z" fill="currentColor" strokeWidth="0.6" />
+          <circle cx="76" cy="7" r="1.3" fill="currentColor" stroke="none" />
+          <circle cx="104" cy="7" r="1.3" fill="currentColor" stroke="none" />
+        </svg>
       </div>
 
       {/* ========================================================= */}
       {/* SCRATCH CARD CONTAINER (Deep Vermilion with Gold Frame)   */}
       {/* ========================================================= */}
-      <div className="relative mx-auto mt-2 w-[92%] max-w-[370px]">
+      <div className="relative mx-auto mt-1 w-[92%] max-w-[370px]">
         {/* Royal Ornate Frame with Bracket Corners */}
         <div
-          className="relative overflow-hidden rounded-2xl border-2 border-[#D4AF37] bg-gradient-to-b from-[#871724] via-[#6d0f1b] to-[#4A0A13] p-1.5 shadow-[0_8px_30px_rgba(75,10,18,0.35),inset_0_1px_3px_rgba(255,236,180,0.4)]"
+          className="relative overflow-hidden rounded-2xl border-2 border-[#C9963A] bg-gradient-to-b from-[#7d1626] via-[#5e0d1a] to-[#430911] p-1.5 shadow-[0_14px_30px_-8px_rgba(60,8,16,0.55),0_2px_6px_rgba(60,8,16,0.35),inset_0_1px_3px_rgba(255,236,180,0.45),inset_0_-2px_6px_rgba(0,0,0,0.35)]"
           style={{
             minHeight: "150px",
           }}
         >
-          {/* Inner Golden Beaded Double Rule */}
-          <div className="pointer-events-none absolute inset-1.5 rounded-xl border border-[#FFECB4]/40" />
-
-          {/* Golden Corner Floral Ornaments */}
-          <div className="pointer-events-none absolute left-2 top-2 h-4 w-4 border-l-2 border-t-2 border-[#FFE8A3]" />
-          <div className="pointer-events-none absolute right-2 top-2 h-4 w-4 border-r-2 border-t-2 border-[#FFE8A3]" />
-          <div className="pointer-events-none absolute left-2 bottom-2 h-4 w-4 border-l-2 border-b-2 border-[#FFE8A3]" />
-          <div className="pointer-events-none absolute right-2 bottom-2 h-4 w-4 border-r-2 border-b-2 border-[#FFE8A3]" />
+          {/* Inner gold hairline + refined corners (kept above the foil so they stay after the reveal) */}
+          <div className="pointer-events-none absolute inset-[5px] z-20 rounded-xl border border-[#E2B24F]/60" />
+          <Flourish className="left-[7px] top-[7px] z-20 h-5 w-5 text-[#E2B24F]" />
+          <Flourish className="right-[7px] top-[7px] z-20 h-5 w-5 -scale-x-100 text-[#E2B24F]" />
+          <Flourish className="bottom-[7px] left-[7px] z-20 h-5 w-5 -scale-y-100 text-[#E2B24F]" />
+          <Flourish className="bottom-[7px] right-[7px] z-20 h-5 w-5 -scale-100 text-[#E2B24F]" />
 
           {/* ======================================================= */}
           {/* UNDERNEATH LAYER: ONLY THE SACRED WEDDING DATE          */}
@@ -542,18 +686,11 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
             <div
               className="pointer-events-none absolute right-4 sm:right-8 top-1/2 z-20 -translate-y-1/2 flex items-center gap-1.5 transition-opacity duration-300"
             >
-              <div className="relative flex items-center justify-center">
-                {/* Expanding glowing touch ripple ring */}
-                <span className="absolute -left-1 -top-1 h-6 w-6 rounded-full border-2 border-[#FFE8A3] animate-ping opacity-75" />
-                {/* Finger pointer icon */}
-                <svg
-                  viewBox="0 0 24 24"
-                  className="h-10 w-10 text-[#FFE8A3] drop-shadow-[0_2px_10px_rgba(0,0,0,0.7)] animate-bounce"
-                  fill="currentColor"
-                >
-                  <path d="M9 11.25V6.5a1.5 1.5 0 0 1 3 0v4.75m0 0V3.5a1.5 1.5 0 0 1 3 0v7.75m0 0V5.5a1.5 1.5 0 0 1 3 0v6.25m0 0a1.5 1.5 0 0 1 3 0v3.25a7 7 0 0 1-7 7H12a7 7 0 0 1-5.6-2.8l-3.2-4.4a1.5 1.5 0 0 1 2.4-1.8L7 15.5V11.25a1.5 1.5 0 0 1 2 0z" />
-                </svg>
-              </div>
+              <svg viewBox="0 0 48 30" className="h-8 w-12 text-[#F6DD93] drop-shadow-[0_1px_4px_rgba(0,0,0,0.6)]" fill="none" stroke="currentColor" strokeLinecap="round" aria-hidden>
+                <path d="M4 24C12 6 28 4 38 12" strokeWidth="1.6" strokeDasharray="1 4.5" />
+                <path d="M33 5l1.4 4.2 4.2 1.4-4.2 1.4L33 16.2l-1.4-4.2-4.2-1.4 4.2-1.4z" fill="currentColor" stroke="none" />
+                <path d="M42 17l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z" fill="currentColor" stroke="none" opacity=".8" />
+              </svg>
             </div>
           )}
         </div>
@@ -589,17 +726,15 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
       {/* FOOTER: Scratch to reveal */}
       <div className="relative z-10 flex flex-col items-center px-4 pt-3 pb-3 text-center">
         {!isRevealed ? (
-          <div className="flex items-center gap-2 text-[#6d0f1b]">
-            <svg
-              className="h-4 w-4 text-[#8E1726] animate-pulse"
-              viewBox="0 0 24 24"
-              fill="currentColor"
+          <div className="flex items-center gap-2.5 text-[#B8862F]">
+            <Lotus className="h-4 w-4" />
+            <p
+              className="text-[#6d0f1b]"
+              style={{ fontFamily: '"Cormorant Garamond", Georgia, serif', fontStyle: "italic", fontWeight: 600, fontSize: "clamp(17px, 4.8vw, 20px)", letterSpacing: "0.06em", lineHeight: 1.2 }}
             >
-              <path d="M9 11.25V6.5a1.5 1.5 0 0 1 3 0v4.75m0 0V3.5a1.5 1.5 0 0 1 3 0v7.75m0 0V5.5a1.5 1.5 0 0 1 3 0v6.25m0 0a1.5 1.5 0 0 1 3 0v3.25a7 7 0 0 1-7 7H12a7 7 0 0 1-5.6-2.8l-3.2-4.4a1.5 1.5 0 0 1 2.4-1.8L7 15.5V11.25a1.5 1.5 0 0 1 2 0z" />
-            </svg>
-            <p className="font-serif text-sm sm:text-base italic font-semibold tracking-wider text-[#6d0f1b]">
               Scratch to reveal
             </p>
+            <Lotus className="h-4 w-4" />
           </div>
         ) : (
           <div className="flex items-center gap-1.5 py-0.5">
@@ -612,13 +747,25 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
         )}
       </div>
 
-      {/* BOTTOM PEACOCK FLORAL BORDER STRIP (INVERTED/MIRRORED) */}
-      <div className="relative w-full overflow-hidden border-t border-[#D4AF37]/35 bg-[#FFFDF7]">
+      {/* BOTTOM BORDER: same artwork turned over and mirrored, with a scalloped gold edge and a lotus */}
+      <div className="relative w-full overflow-hidden bg-[#FFFDF7]">
+        <svg className="relative block h-3.5 w-full text-[#C9963A]" aria-hidden>
+          <defs>
+            <pattern id="dr-scallop" width="22" height="14" patternUnits="userSpaceOnUse">
+              <path d="M0 14Q11-3 22 14" fill="none" stroke="currentColor" strokeWidth="1" />
+              <circle cx="11" cy="9.5" r="1.1" fill="currentColor" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="14" fill="url(#dr-scallop)" />
+        </svg>
+        <span className="pointer-events-none absolute left-1/2 top-0 z-10 flex h-5 w-8 -translate-x-1/2 items-center justify-center rounded-b-full bg-[#FFFDF7] text-[#B8862F]">
+          <Lotus className="h-4 w-4" />
+        </span>
         <img
           src="/border/peacock-border.png"
           alt="Traditional Royal Maharashtrian Peacock Floral Border"
           className="h-12 w-full object-cover object-center sm:h-14"
-          style={{ transform: "scaleY(-1)" }}
+          style={{ transform: "scale(-1, -1)" }}
           draggable={false}
         />
       </div>
