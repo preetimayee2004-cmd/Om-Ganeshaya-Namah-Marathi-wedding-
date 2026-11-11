@@ -385,21 +385,42 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
                     <div
                       className="absolute inset-x-0 flex flex-col items-center"
                       style={{
-                        top: "7cqw",
+                        top: "9cqw",
                         padding: "0 6%",
                         opacity: textShown ? 1 : 0,
                         transform: textShown ? "none" : "translateY(8px)",
                         transition: `opacity ${T_TEXT}ms ease, transform ${T_TEXT}ms ${EASE}`,
                       }}
                     >
-                      <p role="status" className="font-script leading-[0.92] text-[#6d0f1b]" style={{ fontSize: "14cqw" }}>
+                      <p role="status" className="font-script leading-[1.08] text-[#6d0f1b]" style={{ fontSize: "13.5cqw" }}>
                         <span className="block">Yay!</span>
                         <span className="block">You&apos;re</span>
                         <span className="block">Coming! ♡</span>
                       </p>
-                      <p className="mt-[3cqw] font-body leading-snug text-[#4b0f16]/90" style={{ fontSize: "5.8cqw" }}>
+                      <span className="mt-[3.5cqw] block h-px w-[44cqw] bg-gradient-to-r from-transparent via-[#c9992f] to-transparent" aria-hidden />
+                      <p className="mt-[3.5cqw] font-body leading-[1.45] text-[#4b0f16]/90" style={{ fontSize: "5.6cqw" }}>
                         We can&apos;t wait to celebrate this beautiful day with you!
                       </p>
+                      {/* a small heart fills the space above the envelope's V */}
+                      <svg
+                        viewBox="0 0 24 22"
+                        className="mt-[5cqw] block h-[11cqw] w-[12cqw]"
+                        aria-hidden
+                        style={{ animation: textShown ? "rsvp-heart 1.8s ease-in-out infinite" : undefined }}
+                      >
+                        <defs>
+                          <linearGradient id="rsvp-heart-g" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0" stopColor="#b3243a" />
+                            <stop offset="1" stopColor="#6d0f1b" />
+                          </linearGradient>
+                        </defs>
+                        <path
+                          d="M12 21s-8.5-5.3-10.6-10.4C-.1 5.9 3.6 1.5 7.7 2.6c1.9.5 3.3 2 4.3 3.6 1-1.6 2.4-3.1 4.3-3.6 4.1-1.1 7.8 3.3 6.3 8C20.5 15.7 12 21 12 21Z"
+                          fill="url(#rsvp-heart-g)"
+                          stroke="#d4a53c"
+                          strokeWidth="1"
+                        />
+                      </svg>
                     </div>
                   </div>
                 </div>

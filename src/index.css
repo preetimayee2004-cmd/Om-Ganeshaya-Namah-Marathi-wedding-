@@ -352,3 +352,7 @@ html { background: #2b1d18; }
 }
 @keyframes rsvp-wave { 0%, 100% { transform: rotate(-2.5deg) translateY(0) } 25% { transform: rotate(2.5deg) translateY(-5px) } 50% { transform: rotate(-1.5deg) translateY(0) } 75% { transform: rotate(3deg) translateY(-4px) } }
 @media (prefers-reduced-motion: reduce) { [style*="rsvp-wave"], [style*="rsvp-petal"] { animation: none !important } }
+
+/* RSVP card heart */
+@keyframes rsvp-heart { 0%, 100% { transform: scale(1) } 15% { transform: scale(1.12) } 30% { transform: scale(1) } 45% { transform: scale(1.08) } 60% { transform: scale(1) } }
+@media (prefers-reduced-motion: reduce) { [style*="rsvp-heart"] { animation: none !important } }
