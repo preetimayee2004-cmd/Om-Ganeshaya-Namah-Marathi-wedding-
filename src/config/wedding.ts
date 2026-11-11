@@ -151,10 +151,11 @@ export const wedding = {
     mapUrl: "https://maps.google.com/?q=Shree+Mangal+Karyalaya+Pune",
     note: "Parking is available on site. Please arrive 15 minutes before the ceremony.",
   },
+  // "Getting there" cards (By Air / By Train / By Road & Metro): placeholders, replace with the real details.
   travel: [
-    { mode: "By air", detail: "Nearest airport: City Airport, about 25 km (45 min by taxi)." },
-    { mode: "By rail", detail: "Nearest station: City Junction, about 8 km (20 min by auto or taxi)." },
-    { mode: "By road", detail: "Well connected by highway; cabs and autos are readily available." },
+    { mode: "By Air", detail: "Pune International Airport (PNQ) · ~30 min" },
+    { mode: "By Train", detail: "Pune Junction (PUNE) · ~25 min" },
+    { mode: "By Road & Metro", detail: "Pune Metro / Valet Parking Available" },
   ],
   stays: [
     { name: "Hotel One", distance: "1.2 km from venue", tier: "Premium", phone: "+910000000001", link: "" },
@@ -167,9 +168,10 @@ export const wedding = {
   hashtag: "#SreyashWedsSayeli",
   // Placeholder contacts. Use digits with country code, no spaces (e.g. +919876543210).
   contacts: [
-    { name: "Contact Person 1", role: "Bride's family", phone: "+910000000011" },
-    { name: "Contact Person 2", role: "Groom's family", phone: "+910000000012" },
-    { name: "Contact Person 3", role: "Travel & stay help", phone: "+910000000013" },
+    { name: "Contact Name", role: "Bride's Brother", phone: "+910000000011" },
+    { name: "Contact Name", role: "Groom's Sister", phone: "+910000000012" },
+    { name: "Contact Name", role: "Guest Coordinator", phone: "+910000000013" },
+    { name: "Contact Name", role: "Wedding Coordinator", phone: "+910000000014" },
   ],
   // Approved blessings shown on the wall. SAMPLE entries: replace with real, moderated ones.
   blessings: [

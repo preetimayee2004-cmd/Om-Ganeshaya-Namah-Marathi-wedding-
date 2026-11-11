@@ -46,11 +46,12 @@ function drawSilkFoil(ctx: CanvasRenderingContext2D, w: number, h: number) {
   const gold = ctx.createLinearGradient(0, 0, w, 0);
   [[0, "#f0cf7a"], [0.3, "#c9963a"], [0.55, "#f6dd93"], [0.8, "#b8862f"], [1, "#e9c667"]].forEach(([o, c]) => gold.addColorStop(o as number, c as string));
 
-  // silk base
+  // golden base
   const base = ctx.createLinearGradient(0, 0, w, h);
-  base.addColorStop(0, "#7d1626");
-  base.addColorStop(0.5, "#5e0d1a");
-  base.addColorStop(1, "#430911");
+  base.addColorStop(0, "#d8a83e");
+  base.addColorStop(0.35, "#e9c46a");
+  base.addColorStop(0.65, "#d5a23a");
+  base.addColorStop(1, "#c08b2a");
   ctx.fillStyle = base;
   ctx.fillRect(0, 0, w, h);
 
@@ -58,7 +59,7 @@ function drawSilkFoil(ctx: CanvasRenderingContext2D, w: number, h: number) {
   ctx.save();
   ctx.lineWidth = 0.6;
   for (let x = -h, i = 0; x < w + h; x += 3, i++) {
-    ctx.strokeStyle = i % 2 ? "rgba(255,190,190,0.045)" : "rgba(0,0,0,0.09)";
+    ctx.strokeStyle = i % 2 ? "rgba(255,240,200,0.06)" : "rgba(120,80,10,0.07)";
     ctx.beginPath();
     ctx.moveTo(x, 0);
     ctx.lineTo(x + h * 0.6, h);
@@ -76,6 +77,18 @@ function drawSilkFoil(ctx: CanvasRenderingContext2D, w: number, h: number) {
     ctx.fillRect(0, 0, w, h);
   });
 
+  // soft golden bokeh
+  for (let i = 0; i < 26; i++) {
+    const bx = ((i * 97) % 100) / 100 * w, by = ((i * 53) % 100) / 100 * h, br = 6 + ((i * 37) % 14);
+    const bg = ctx.createRadialGradient(bx, by, 0, bx, by, br);
+    bg.addColorStop(0, "rgba(255,248,220,0.42)");
+    bg.addColorStop(1, "rgba(255,248,220,0)");
+    ctx.fillStyle = bg;
+    ctx.beginPath();
+    ctx.arc(bx, by, br, 0, TAU);
+    ctx.fill();
+  }
+
   // embossed paisley lattice (shadow + highlight + body stroke)
   const stepX = 44, stepY = 40;
   for (let row = 0; row * stepY < h + stepY; row++) {
@@ -83,7 +96,7 @@ function drawSilkFoil(ctx: CanvasRenderingContext2D, w: number, h: number) {
       const cx = col * stepX + (row % 2 ? stepX / 2 : 0) + 14;
       const cy = row * stepY + 16;
       const rot = row % 2 ? -0.5 : 0.5;
-      ([[1, 1, "rgba(0,0,0,0.38)"], [-0.8, -0.8, "rgba(255,206,150,0.2)"], [0, 0, "rgba(120,30,40,0.55)"]] as const).forEach(([dx, dy, stroke]) => {
+      ([[1, 1, "rgba(110,70,10,0.28)"], [-0.8, -0.8, "rgba(255,245,210,0.35)"], [0, 0, "rgba(150,100,25,0.35)"]] as const).forEach(([dx, dy, stroke]) => {
         ctx.save();
         ctx.translate(cx + dx, cy + dy);
         ctx.rotate(rot);
@@ -115,7 +128,7 @@ function drawSilkFoil(ctx: CanvasRenderingContext2D, w: number, h: number) {
   // depth: soft vignette
   const vg = ctx.createRadialGradient(w / 2, h / 2, h * 0.25, w / 2, h / 2, w * 0.62);
   vg.addColorStop(0, "rgba(0,0,0,0)");
-  vg.addColorStop(1, "rgba(0,0,0,0.4)");
+  vg.addColorStop(1, "rgba(110,70,10,0.28)");
   ctx.fillStyle = vg;
   ctx.fillRect(0, 0, w, h);
 
