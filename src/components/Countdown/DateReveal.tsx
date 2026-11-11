@@ -202,6 +202,9 @@ function Flourish({ className = "" }: { className?: string }) {
   );
 }
 
+/** how much of the foil must be scratched away before the date is revealed completely */
+const REVEAL_PERCENT = 40;
+
 export default function DateReveal({ onRevealed }: DateRevealProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -294,14 +297,14 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
   }, [isRevealed, isMuted, onRevealed]);
 
   // Calculate Cleared Percentage (fast 20px sampling to eliminate frame drops)
-  const checkScratchPercentage = useCallback(() => {
+  const checkScratchPercentage = useCallback((force = false) => {
     const canvas = canvasRef.current;
     if (!canvas || isRevealed) return;
     const ctx = canvas.getContext("2d", { willReadFrequently: true });
     if (!ctx) return;
 
     const now = performance.now();
-    if (now - lastCheckTime.current < 150) return;
+    if (!force && now - lastCheckTime.current < 150) return;
     lastCheckTime.current = now;
 
     const w = canvas.width;
@@ -325,8 +328,8 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
 
     const pct = Math.round((cleared / total) * 100);
 
-    // "ek line scratch karne se pura ho jayega" - If even 5% cleared or single stroke drawn, reveal completely!
-    if ((pct >= 5 || scratchDistanceRef.current >= 40) && !isRevealed) {
+    // Reveal everything only once about 40% of the foil has been scratched away
+    if (pct >= REVEAL_PERCENT && !isRevealed) {
       triggerCelebration();
     }
   }, [isRevealed, triggerCelebration]);
@@ -412,13 +415,8 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
     lastPoint.current = { x, y };
     strokeCount.current++;
 
-    // "jaise ek line scratch karne se pura ho jayega"
-    // As soon as one line is drawn (distance >= 45px or 5 stroke events), trigger full celebration!
-    if (scratchDistanceRef.current >= 45 || strokeCount.current >= 5) {
-      triggerCelebration();
-    } else if (strokeCount.current % 3 === 0) {
-      checkScratchPercentage();
-    }
+    // reveal only after ~40% of the foil is cleared (the check is throttled and sparsely sampled)
+    checkScratchPercentage();
   };
 
   // Mouse Handlers
@@ -438,12 +436,7 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
   const handleMouseUp = () => {
     isScratchingRef.current = false;
     lastPoint.current = null;
-    // If guest interacted with even a short flick/swipe, trigger complete reveal
-    if (hasInteractedRef.current && (scratchDistanceRef.current >= 15 || strokeCount.current >= 2)) {
-      triggerCelebration();
-    } else {
-      checkScratchPercentage();
-    }
+    checkScratchPercentage(true); // reveal only if 40% is already cleared
   };
 
   // Touch Handlers (Mobile)
@@ -464,12 +457,7 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
   const handleTouchEnd = () => {
     isScratchingRef.current = false;
     lastPoint.current = null;
-    // If guest interacted with even a short flick/swipe, trigger complete reveal
-    if (hasInteractedRef.current && (scratchDistanceRef.current >= 15 || strokeCount.current >= 2)) {
-      triggerCelebration();
-    } else {
-      checkScratchPercentage();
-    }
+    checkScratchPercentage(true); // reveal only if 40% is already cleared
   };
 
   // Particle & Petal Animation Loop
