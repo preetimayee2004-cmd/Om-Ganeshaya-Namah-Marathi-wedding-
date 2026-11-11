@@ -167,7 +167,7 @@ export default function WishingWall() {
     <section ref={sectionRef} id="blessings" aria-labelledby="blessings-title" className="relative py-6" style={{ color: INK_SOFT }}>
       <Reveal className="px-5 text-center">
         <p className="font-body text-[10px] uppercase tracking-[0.35em]" style={{ color: GOLD_LABEL }}>Wishing wall</p>
-        <h2 id="blessings-title" className="mt-2 text-5xl" style={{ color: INK }}>Blessings &amp; Wishes</h2>
+        <h2 id="blessings-title" className="section-title mt-2" style={{ color: INK }}>Blessings &amp; Wishes</h2>
         <p lang="mr" className="mt-1 text-sm font-semibold" style={{ color: GOLD_LABEL }}>शुभाशीर्वाद</p>
       </Reveal>
 

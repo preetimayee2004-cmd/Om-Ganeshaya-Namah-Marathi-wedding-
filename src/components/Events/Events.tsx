@@ -33,7 +33,7 @@ export default function Events() {
         <p className="font-body text-[10px] uppercase tracking-[0.35em] text-olive">
           Order of the day
         </p>
-        <h2 id="events-title" className="mt-2 text-5xl">
+        <h2 id="events-title" className="section-title mt-2">
           Wedding Celebrations
         </h2>
         <p className="mx-auto mt-2 max-w-[16rem] font-body text-sm text-espresso/70">

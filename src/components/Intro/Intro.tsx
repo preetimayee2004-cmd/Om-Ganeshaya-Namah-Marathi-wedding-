@@ -1093,7 +1093,7 @@ export default function Intro() {
               }}
             >
               <p className="font-serif text-[14px] sm:text-[15px] font-semibold tracking-[0.12em] text-[#6d0f1b] drop-shadow-[0_1px_2px_rgba(255,255,255,0.85)]">
-                {weddingTime}
+                <span className="font-medium italic tracking-[0.06em]">Muhurat</span> · {weddingTime}
               </p>
               <p className="mt-0.5 font-serif text-[13px] sm:text-sm font-medium italic text-[#4b0f16] drop-shadow-[0_1px_2px_rgba(255,255,255,0.85)]">
                 {wedding.venue.name}, {wedding.venue.city}
@@ -1114,7 +1114,12 @@ export default function Intro() {
               type="button"
               onClick={triggerCoupleTransition}
               aria-label="Open Invitation"
-              className="group cursor-pointer inline-flex h-[34px] sm:h-[36px] items-center justify-center gap-1.5 rounded-full border border-[#D4AF37]/65 bg-[#FFFDF8]/90 px-4 sm:px-5 shadow-[0_3px_12px_rgba(109,15,27,0.12),inset_0_1px_1px_rgba(255,255,255,0.95)] backdrop-blur-md transition-all duration-300 hover:scale-105 hover:bg-[#FFF9EE] active:scale-95"
+              className="group cursor-pointer inline-flex h-[34px] sm:h-[36px] items-center justify-center gap-1.5 rounded-full px-4 sm:px-5 transition-all duration-300 hover:scale-105 active:scale-95"
+              style={{
+                background: "linear-gradient(180deg, #FCEFCB 0%, #F3DB9C 55%, #F8E8BC 100%)",
+                border: "1.5px solid #D4AE5E",
+                boxShadow: "inset 0 0 0 2px rgba(255,248,225,0.7), inset 0 0 0 3px rgba(212,174,94,0.45), 0 3px 10px rgba(110,70,10,0.22)",
+              }}
             >
               <span className="font-serif text-[11.5px] sm:text-[12.5px] font-semibold tracking-[0.14em] uppercase text-[#6d0f1b]">
                 Open Invitation
@@ -1246,6 +1251,12 @@ export default function Intro() {
               </svg>
             </button>
           )}
+          {/* the couple scene melts into the shared sky below */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 bottom-0 z-30 h-[18%]"
+            style={{ background: "linear-gradient(to bottom, rgba(248,223,191,0) 0%, rgba(248,223,191,0.7) 55%, #F8DFBF 100%)" }}
+          />
           {/* Base Couple Mandap Illustration */}
           <div
             className="absolute inset-0"

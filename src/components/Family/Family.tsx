@@ -62,7 +62,7 @@ export default function Family() {
     <section id="family" aria-labelledby="family-title" className="px-5 py-6">
       <Reveal className="text-center">
         <p className="font-body text-[10px] uppercase tracking-[0.35em] text-olive">Two families, one celebration</p>
-        <h2 id="family-title" className="mt-2 text-5xl">With Our Families</h2>
+        <h2 id="family-title" className="section-title mt-2">With Our Families</h2>
       </Reveal>
 
       <div className="mt-10 space-y-6">

@@ -4,8 +4,8 @@ import { useInView } from "../Layout/Reveal";
 
 function Sprig({ className }: { className: string }) {
   return (
-    <svg viewBox="0 0 60 120" className={`absolute h-28 w-14 text-blush ${className}`} fill="currentColor" aria-hidden>
-      <path d="M30 118C28 80 30 40 30 6" stroke="#687253" strokeWidth="1.5" fill="none" />
+    <svg viewBox="0 0 60 120" className={`absolute h-28 w-14 text-[#d9b25a] ${className}`} fill="currentColor" aria-hidden>
+      <path d="M30 118C28 80 30 40 30 6" stroke="#a8741a" strokeWidth="1.5" fill="none" />
       {[24, 46, 68, 90].map((y, i) => (
         <ellipse key={y} cx={i % 2 ? 40 : 20} cy={y} rx="11" ry="6" transform={`rotate(${i % 2 ? 25 : -25} ${i % 2 ? 40 : 20} ${y})`} opacity={0.85} />
       ))}
@@ -39,7 +39,7 @@ export default function ThankYou() {
         <CouplePlaceholder />
       </div>
 
-      <h2 id="thanks-title" className="mt-8 text-6xl leading-none text-[#6d0f1b]" style={fade(400)}>
+      <h2 id="thanks-title" className="section-title mt-8 text-[#6d0f1b]" style={fade(400)}>
         Thank You
       </h2>
       <p lang="mr" className="mt-1 text-sm font-semibold text-[#a8741a]" style={fade(500)}>धन्यवाद</p>

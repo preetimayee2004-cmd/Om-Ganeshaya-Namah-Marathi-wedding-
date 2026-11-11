@@ -5,7 +5,7 @@ import Reveal from "../Layout/Reveal";
 const INK = "#6d0f1b";
 const INK_SOFT = "#4b0f16";
 const GOLD = "#a8741a";
-const RED = "#b3122a";
+const RED = "#7a1420"; // maroon, like the rest of the site
 const SERIF = "'Cormorant Garamond', Georgia, serif";
 const tz = wedding.timeZone;
 
@@ -112,14 +112,13 @@ export default function TravelStay() {
     <section id="venue" aria-labelledby="venue-title" className="px-5 py-6" style={{ color: INK_SOFT }}>
       <Reveal className="text-center">
         <p className="font-body text-[10px] uppercase tracking-[0.35em]" style={{ color: GOLD }}>Where &amp; how</p>
-        <h2 id="venue-title" className="mt-2 text-[44px] leading-[1.05]" style={{ color: INK }}>
-          Venue &amp; Travel
-          <span className="block text-[34px]">Accommodation</span>
+        <h2 id="venue-title" className="section-title mt-2" style={{ color: INK }}>
+          Venue &amp; Travel Accommodation
         </h2>
       </Reveal>
 
       {/* venue illustration, melting into the shared sky */}
-      <Reveal className="mx-auto mt-2 max-w-[380px]" from="zoom" delay={100}>
+      <Reveal className="mx-auto -mt-3 max-w-[380px]" from="zoom" delay={100}>
         <img
           src="/venue/mandap.jpg"
           alt={`Floral mandap at ${venue.name}`}
@@ -128,7 +127,7 @@ export default function TravelStay() {
           style={{
             aspectRatio: "760 / 1018",
             WebkitMaskImage:
-              "linear-gradient(to bottom, transparent 0%, #000 12%, #000 88%, transparent 100%), linear-gradient(to right, transparent 0%, #000 10%, #000 90%, transparent 100%)",
+              "linear-gradient(to bottom, transparent 0%, #000 6%, #000 88%, transparent 100%), linear-gradient(to right, transparent 0%, #000 10%, #000 90%, transparent 100%)",
             maskImage:
               "linear-gradient(to bottom, transparent 0%, #000 14%, #000 84%, transparent 100%), linear-gradient(to right, transparent 0%, #000 10%, #000 90%, transparent 100%)",
             WebkitMaskComposite: "source-in",
@@ -189,7 +188,7 @@ export default function TravelStay() {
       {/* contact & assistance */}
       <Reveal className="mx-auto mt-12 max-w-[420px] text-center" delay={100}>
         <p className="font-body text-[10px] font-bold uppercase tracking-[0.35em]" style={{ color: GOLD }}>Here for you</p>
-        <h3 className="mt-1 text-[40px] leading-[1.05]" style={{ fontFamily: SERIF, fontWeight: 600, color: INK }}>
+        <h3 className="section-title mt-1" style={{ color: INK }}>
           Contact &amp; Assistance
         </h3>
         <p className="mx-auto mt-2 max-w-[18rem] text-[16px] italic leading-snug" style={{ fontFamily: SERIF, color: INK_SOFT }}>

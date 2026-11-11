@@ -206,7 +206,7 @@ export default function Gallery() {
     const slides = c.querySelectorAll<HTMLElement>("[data-slide]");
     const n = slides.length;
     if (!n) return;
-    const pitch = c.clientWidth * 0.52 * 0.8;
+    const pitch = c.clientWidth * 0.62 * 0.8;
     const open = phaseRef.current >= 3;
     const shown = phaseRef.current >= 2;
     let best = 0;
@@ -308,7 +308,7 @@ export default function Gallery() {
     if (d.moved) {
       const c = trackRef.current!;
       const n = photos.length;
-      const pitch = c.clientWidth * 0.52 * 0.8;
+      const pitch = c.clientWidth * 0.62 * 0.8;
       posRef.current = (((d.pos - dx / pitch) % n) + n) % n;
       apply();
     }
@@ -324,7 +324,7 @@ export default function Gallery() {
     if (!settled || Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
     const c = trackRef.current!;
     const n = photos.length;
-    posRef.current = (((posRef.current + e.deltaX / (c.clientWidth * 0.52 * 0.8)) % n) + n) % n;
+    posRef.current = (((posRef.current + e.deltaX / (c.clientWidth * 0.62 * 0.8)) % n) + n) % n;
     pausedUntil.current = performance.now() + RESUME_MS;
     apply();
   };
@@ -381,22 +381,22 @@ export default function Gallery() {
     <section id="gallery" aria-labelledby="gallery-title" className="px-4 py-6">
       <Reveal className="text-center">
         <p className="font-body text-[10px] uppercase tracking-[0.35em] text-olive">Moments</p>
-        <h2 id="gallery-title" className="mt-2 text-5xl">Our Gallery</h2>
+        <h2 id="gallery-title" className="section-title mt-2">Our Gallery</h2>
       </Reveal>
 
       {/* ===== Antarpat reveal stage ===== */}
       <div
         ref={stageRef}
         className="relative mx-auto mt-6 w-full max-w-[460px] select-none"
-        style={{ aspectRatio: "1 / 1" }}
+        style={{ aspectRatio: "1 / 1.12" }}
       >
         {/* photographs: hero first, then a continuously gliding film strip */}
         <div
           ref={trackRef}
           className={`absolute left-0 right-0 ${settled ? "" : "gal-anim"}`}
           style={{
-            top: "12%",
-            height: "78%",
+            top: "11%",
+            height: "80%",
             overflow: "hidden",
             perspective: 700,
             touchAction: "pan-y",
@@ -415,7 +415,7 @@ export default function Gallery() {
               key={p.src ?? p.alt}
               data-slide
               className="absolute"
-              style={{ left: "24%", width: "52%", top: "50%", marginTop: "-32.5%" }}
+              style={{ left: "19%", width: "62%", top: "50%", marginTop: "-38.75%" }}
             >
               <div
                 className="gal-slide w-full overflow-hidden rounded-[6px]"
