@@ -530,15 +530,15 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
       <Flourish className="bottom-[7px] right-[7px] z-20 -scale-100" />
 
       {/* TOP PEACOCK FLORAL BORDER STRIP */}
-      <div className="relative w-full overflow-hidden border-b border-[#D4AF37]/35 bg-[#FAF0DF]/90 backdrop-blur-sm">
+      <div className="relative w-full overflow-hidden border-b border-[#B8862F]/60" style={{ background: "linear-gradient(180deg,#F6DD93 0%,#E2B24F 55%,#EFCB73 100%)" }}>
         <img
           src="/border/peacock-border.png"
           alt="Traditional Royal Maharashtrian Peacock Floral Border"
           className="h-14 w-full object-cover object-center sm:h-16"
           draggable={false}
         />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[2px] bg-gradient-to-r from-transparent via-[#C9963A] to-transparent" />
-        <span className="pointer-events-none absolute bottom-[-4px] left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 border border-[#C9963A] bg-[#FAF0DF]" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[2px] bg-gradient-to-r from-transparent via-[#8A5A12] to-transparent" />
+        <span className="pointer-events-none absolute bottom-[-4px] left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 border border-[#8A5A12] bg-[#E2B24F]" />
       </div>
 
       {/* TINY CORNER BELL AUDIO BUTTON */}
@@ -737,8 +737,8 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
       </div>
 
       {/* BOTTOM BORDER: same artwork turned over and mirrored, with a scalloped gold edge and a lotus */}
-      <div className="relative w-full overflow-hidden bg-[#FFFDF7]">
-        <svg className="relative block h-3.5 w-full text-[#C9963A]" aria-hidden>
+      <div className="relative w-full overflow-hidden" style={{ background: "linear-gradient(180deg,#F6DD93 0%,#E2B24F 55%,#EFCB73 100%)" }}>
+        <svg className="relative block h-3.5 w-full text-[#8A5A12]" aria-hidden>
           <defs>
             <pattern id="dr-scallop" width="22" height="14" patternUnits="userSpaceOnUse">
               <path d="M0 14Q11-3 22 14" fill="none" stroke="currentColor" strokeWidth="1" />
@@ -747,7 +747,7 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
           </defs>
           <rect width="100%" height="14" fill="url(#dr-scallop)" />
         </svg>
-        <span className="pointer-events-none absolute left-1/2 top-0 z-10 flex h-5 w-8 -translate-x-1/2 items-center justify-center rounded-b-full bg-[#FFFDF7] text-[#B8862F]">
+        <span className="pointer-events-none absolute left-1/2 top-0 z-10 flex h-5 w-8 -translate-x-1/2 items-center justify-center rounded-b-full bg-[#E2B24F] text-[#6D0F1B]">
           <Lotus className="h-4 w-4" />
         </span>
         <img
