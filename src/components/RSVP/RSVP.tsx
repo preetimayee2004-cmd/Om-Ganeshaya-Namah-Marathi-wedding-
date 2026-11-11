@@ -390,17 +390,19 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
                     <div
                       className="absolute inset-x-0 flex flex-col items-center"
                       style={{
-                        top: "9cqw",
+                        top: "7cqw",
                         padding: "0 6%",
                         opacity: textShown ? 1 : 0,
                         transform: textShown ? "none" : "translateY(8px)",
                         transition: `opacity ${T_TEXT}ms ease, transform ${T_TEXT}ms ${EASE}`,
                       }}
                     >
-                      <p role="status" className="font-script leading-none text-[#6d0f1b]" style={{ fontSize: "10.5cqw", whiteSpace: "nowrap" }}>
-                        Yay! You&apos;re Coming! ♡
+                      <p role="status" className="font-script leading-[0.92] text-[#6d0f1b]" style={{ fontSize: "14cqw" }}>
+                        <span className="block">Yay!</span>
+                        <span className="block">You&apos;re</span>
+                        <span className="block">Coming! ♡</span>
                       </p>
-                      <p className="mt-[3cqw] font-body leading-snug text-[#4b0f16]/90" style={{ fontSize: "5.6cqw" }}>
+                      <p className="mt-[3cqw] font-body leading-snug text-[#4b0f16]/90" style={{ fontSize: "5.8cqw" }}>
                         We can&apos;t wait to celebrate this beautiful day with you!
                       </p>
                     </div>
