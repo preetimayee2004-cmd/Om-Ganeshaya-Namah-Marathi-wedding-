@@ -317,9 +317,9 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
                     style={{
                       left: "21%",
                       width: "58%",
-                      top: "-37%",
+                      top: "-52%",
                       height: "110%",
-                      transform: cardUp ? "translateY(0)" : "translateY(96%)",
+                      transform: cardUp ? "translateY(0)" : "translateY(106%)",
                       transition: `transform ${T_CARD}ms ${EASE}`,
                       background: "linear-gradient(170deg, #fffaf0 0%, #f9efd9 60%, #f1e2c0 100%)",
                       border: "2px solid #d4a53c",
@@ -347,21 +347,33 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
                     <div
                       className="flex flex-col items-center justify-center"
                       style={{
-                        height: "54%",
+                        height: "74%",
                         opacity: msgShown ? 1 : 0,
                         transform: msgShown ? "none" : "translateY(10px)",
                         transition: `opacity ${T_MSG}ms ease, transform ${T_MSG}ms ${EASE}`,
                       }}
                     >
-                      <svg viewBox="0 0 40 28" className="h-[7.5cqw] w-[11cqw] text-[#b98a2e]" fill="none" stroke="currentColor" strokeWidth="1.2" aria-hidden>
-                        <path d="M20 3c4 5 4 12 0 17-4-5-4-12 0-17Z" />
-                        <path d="M20 20c-6-1-10-5-11-10 6 0 10 3 11 10Zm0 0c6-1 10-5 11-10-6 0-10 3-11 10Z" />
-                        <path d="M6 24c6 3 22 3 28 0" />
-                      </svg>
+                      <img
+                        src="/rsvp/couple.png"
+                        alt="The bride and groom waving"
+                        draggable={false}
+                        loading="lazy"
+                        className="w-[54cqw]"
+                        style={{
+                          transformOrigin: "50% 100%",
+                          animation: msgShown ? "rsvp-wave 2.6s ease-in-out infinite" : undefined,
+                          WebkitMaskImage: "linear-gradient(to bottom, #000 80%, transparent 100%)",
+                          maskImage: "linear-gradient(to bottom, #000 80%, transparent 100%)",
+                          filter: "drop-shadow(0 4px 6px rgba(80,30,20,0.25))",
+                        }}
+                      />
+                      <p className="mt-[1cqw] text-center font-script leading-none text-[#6d0f1b]" style={{ fontSize: "11cqw", whiteSpace: "nowrap" }}>
+                        Yay! You&apos;re Coming! ♡
+                      </p>
                       <p
                         role="status"
-                        className="mt-[4cqw] italic leading-[1.2] text-[#6d0f1b]"
-                        style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 500, fontSize: "12.5cqw" }}
+                        className="mt-[3cqw] italic leading-[1.2] text-[#6d0f1b]"
+                        style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 600, fontSize: "8.4cqw" }}
                       >
                         We are delighted to have you join our celebration.
                       </p>
@@ -523,29 +535,14 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
         className="relative mx-auto flex flex-col items-center overflow-hidden"
         style={{
           zIndex: 1,
-          maxHeight: stage >= 3 ? 520 : 0,
+          maxHeight: stage >= 3 ? 160 : 0,
           opacity: stage >= 3 ? 1 : 0,
           marginTop: stage >= 3 ? 8 : 0,
           transition: `opacity 700ms ease, max-height 900ms ${EASE}, margin-top 900ms ${EASE}`,
         }}
         aria-hidden={stage < 3}
       >
-        <img
-          src="/rsvp/couple.png"
-          alt="The bride and groom waving"
-          draggable={false}
-          loading="lazy"
-          className="w-[150px]"
-          style={{
-            transformOrigin: "50% 100%",
-            animation: stage >= 3 ? "rsvp-wave 2.6s ease-in-out infinite" : undefined,
-            WebkitMaskImage: "linear-gradient(to bottom, #000 78%, transparent 100%)",
-            maskImage: "linear-gradient(to bottom, #000 78%, transparent 100%)",
-            filter: "drop-shadow(0 6px 10px rgba(80,30,20,0.25))",
-          }}
-        />
-        <p className="mt-1 text-center font-script text-[34px] leading-none text-[#6d0f1b]">Yay! You&apos;re Coming! ♡</p>
-        <p className="mx-auto mt-2 max-w-[17rem] text-center font-body text-[13px] leading-snug text-[#4b0f16]/85">
+        <p className="mx-auto mt-1 max-w-[17rem] text-center font-body text-[13px] leading-snug text-[#4b0f16]/85">
           We can&apos;t wait to celebrate this beautiful day with you!
         </p>
         <button
