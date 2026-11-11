@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { weddingAudio } from "./weddingAudio";
+import { triggerPartyPopper } from "./partyPopper";
 
 interface Particle {
   id: number;
@@ -264,6 +265,7 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
     if (isRevealed) return;
     setIsRevealed(true);
     setPhase(1); // 0ms: Dissolving remaining texture over 600ms
+    triggerPartyPopper({ muted: isMuted }); // party popper: sound x2 + confetti + vibration
 
     if (onRevealed) onRevealed();
 
@@ -290,7 +292,7 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
     setTimeout(() => {
       setPhase(3);
     }, 3000);
-  }, [isRevealed, onRevealed]);
+  }, [isRevealed, isMuted, onRevealed]);
 
   // Calculate Cleared Percentage (fast 20px sampling to eliminate frame drops)
   const checkScratchPercentage = useCallback(() => {
