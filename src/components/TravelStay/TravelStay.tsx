@@ -119,7 +119,7 @@ export default function TravelStay() {
       </Reveal>
 
       {/* venue illustration, melting into the shared sky */}
-      <Reveal className="mx-auto mt-6 max-w-[380px]" from="zoom" delay={100}>
+      <Reveal className="mx-auto mt-2 max-w-[380px]" from="zoom" delay={100}>
         <img
           src="/venue/mandap.jpg"
           alt={`Floral mandap at ${venue.name}`}
@@ -128,7 +128,7 @@ export default function TravelStay() {
           style={{
             aspectRatio: "760 / 1018",
             WebkitMaskImage:
-              "linear-gradient(to bottom, transparent 0%, #000 14%, #000 84%, transparent 100%), linear-gradient(to right, transparent 0%, #000 10%, #000 90%, transparent 100%)",
+              "linear-gradient(to bottom, transparent 0%, #000 12%, #000 88%, transparent 100%), linear-gradient(to right, transparent 0%, #000 10%, #000 90%, transparent 100%)",
             maskImage:
               "linear-gradient(to bottom, transparent 0%, #000 14%, #000 84%, transparent 100%), linear-gradient(to right, transparent 0%, #000 10%, #000 90%, transparent 100%)",
             WebkitMaskComposite: "source-in",
@@ -138,20 +138,12 @@ export default function TravelStay() {
       </Reveal>
 
       {/* wedding location, date and time */}
-      <Reveal className="-mt-6 text-center" delay={150}>
+      <Reveal className="mt-3 text-center" delay={150}>
         <p lang="mr" className="text-sm font-semibold" style={{ color: GOLD }}>{venue.marathi}</p>
         <h3 className="mt-1 text-[38px] leading-none" style={{ color: INK }}>{venue.name}</h3>
         <p className="mt-1 font-body text-[13px] uppercase tracking-[0.25em]" style={{ color: GOLD }}>{venue.city}</p>
-        <div className="mx-auto mt-4 flex max-w-[320px] items-stretch justify-center gap-3 font-body">
-          <div className="flex-1 px-3 py-2.5" style={cardFrame}>
-            <p className="text-[10px] font-bold uppercase tracking-[0.25em]" style={{ color: GOLD }}>Date</p>
-            <p className="mt-0.5 text-[14px] font-semibold leading-snug" style={{ color: INK }}>{date}</p>
-          </div>
-          <div className="w-[38%] px-3 py-2.5" style={cardFrame}>
-            <p className="text-[10px] font-bold uppercase tracking-[0.25em]" style={{ color: GOLD }}>Time</p>
-            <p className="mt-0.5 text-[14px] font-semibold leading-snug" style={{ color: INK }}>{time}</p>
-          </div>
-        </div>
+        <p className="mt-4 font-body text-[15px] font-semibold" style={{ color: INK }}>{date}</p>
+        <p className="mt-1 font-body text-[14px]" style={{ color: INK_SOFT }}>{time}</p>
         <a
           href={venue.mapUrl}
           target="_blank"

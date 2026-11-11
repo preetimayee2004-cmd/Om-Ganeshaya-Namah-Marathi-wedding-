@@ -24,8 +24,8 @@ export default function Footer() {
     <footer ref={ref} className="px-6 pb-10 pt-6 text-center text-[#4b0f16]">
 
       <p
-        className="mx-auto max-w-[18rem] font-script text-4xl leading-tight text-[#6d0f1b]"
-        style={{ opacity: seen ? 1 : 0, transition: "opacity 1600ms ease 400ms" }}
+        className="mx-auto max-w-[18rem] text-[20px] italic leading-snug text-[#6d0f1b]"
+        style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 600, opacity: seen ? 1 : 0, transition: "opacity 1600ms ease 400ms" }}
       >
         {wedding.finalNote}
       </p>

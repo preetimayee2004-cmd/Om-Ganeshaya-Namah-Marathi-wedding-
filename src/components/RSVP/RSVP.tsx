@@ -7,14 +7,17 @@ import { useScrollRoot } from "../Layout/ScrollRoot";
 /**
  * Royal envelope RSVP.
  * Everything inside the envelope box is positioned in the artwork's own pixel space (1200 x 896) and converted to %.
- *  - /rsvp/envelope-new.png : the artwork (envelope + four corner flower clusters) on transparency, wax seal + tassel painted out
+ *  - /rsvp/envelope-only.png : the envelope on transparency (seal + tassel painted out), cropped from the 1200 x 896 artwork at (240, 200)
  *  - /rsvp/seal-piece.png   : the wax seal + tassel as a separate cut-out (200 x 390, taken at x=500, y=340) that breaks away
  *  - /rsvp/couple.png       : the illustrated bride and groom (rises out of the envelope together with the card)
  */
-const W = 1200;
-const H = 896;
-const px = (x: number) => `${((x / W) * 100).toFixed(3)}%`;
-const py = (y: number) => `${((y / H) * 100).toFixed(3)}%`;
+// coordinates below stay in the original 1200 x 896 artwork space; the image is the crop starting at (OX, OY)
+const OX = 240;
+const OY = 200;
+const W = 720;
+const H = 540;
+const px = (x: number) => `${(((x - OX) / W) * 100).toFixed(3)}%`;
+const py = (y: number) => `${(((y - OY) / H) * 100).toFixed(3)}%`;
 const FLAP: [number, number][] = [[270, 222], [928, 222], [928, 296], [598, 522], [270, 296]];
 const FLAP_POLY = `polygon(${FLAP.map(([x, y]) => `${px(x)} ${py(y)}`).join(", ")})`;
 const FLAP_INNER = `polygon(${[[274, 225], [924, 225], [924, 292], [598, 516], [274, 292]].map(([x, y]) => `${px(x)} ${py(y)}`).join(", ")})`;
@@ -24,9 +27,9 @@ const SEAL = { x: 598, y: 431, r: 80 };
 const PIECE = { x: 500, y: 340, w: 200, h: 390 }; // seal-piece.png position inside the artwork
 
 // ===== layout (in container-width units, cqw) =====
-const SPACE_CLOSED = 50; // heading zone above the envelope
-const SPACE_OPEN = 74; // room for the couple + card once the envelope is open
-const ENV_SCALE = 120; // artwork is a little wider than the column so the envelope itself reads larger
+const SPACE_CLOSED = 60; // heading zone above the envelope (leaves breathing room before it)
+const SPACE_OPEN = 95; // room for the couple + card once the envelope is open
+const ENV_SCALE = 100; // the envelope fills the column
 
 // ===== timing (ms after "Joyfully Accept"), about 2.7 s in total =====
 const T_SEAL = 450; // seal breaks, then the flap opens
@@ -249,7 +252,7 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
             <path d={`M${sp.cx} ${sp.cy - sp.ry} A${sp.rx} ${sp.ry} 0 0 1 ${sp.cx} ${sp.cy + sp.ry} Z`} />
           </clipPath>
           <clipPath id="rsvp-seal-c" clipPathUnits="objectBoundingBox">
-            <ellipse cx={SEAL.x / W} cy={SEAL.y / H} rx={SEAL.r / W} ry={SEAL.r / H} />
+            <ellipse cx={(SEAL.x - OX) / W} cy={(SEAL.y - OY) / H} rx={SEAL.r / W} ry={SEAL.r / H} />
           </clipPath>
           <clipPath id="rsvp-tassel" clipPathUnits="objectBoundingBox">
             <rect x={44 / PIECE.w} y={(505 - PIECE.y) / PIECE.h} width={112 / PIECE.w} height={(PIECE.h - (505 - PIECE.y)) / PIECE.h} />
@@ -305,7 +308,7 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
           style={{
             width: `${ENV_SCALE}%`,
             marginLeft: `${(100 - ENV_SCALE) / 2}%`,
-            marginTop: "-2cqw",
+            marginTop: 0,
             aspectRatio: `${W} / ${H}`,
             opacity: entered ? 1 : 0,
             transform: entered ? "none" : "translateY(70px) perspective(900px) rotateX(18deg)",
@@ -331,7 +334,7 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
             >
               <div className="relative h-full w-full" style={{ perspective: "1400px", perspectiveOrigin: "50% 35%" }}>
                 {/* base: envelope + corner flowers, seal and tassel removed */}
-                <img src="/rsvp/envelope-new.png" alt="" draggable={false} className="absolute inset-0 h-full w-full" />
+                <img src="/rsvp/envelope-only.png" alt="" draggable={false} className="absolute inset-0 h-full w-full" />
 
                 {/* inside of the envelope (shows once the flap lifts) */}
                 <div
@@ -344,11 +347,11 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
                   <div
                     className="absolute text-center"
                     style={{
-                      left: px(300),
-                      width: `${((600 / W) * 100).toFixed(3)}%`,
-                      top: py(-110),
-                      height: `${((640 / H) * 100).toFixed(3)}%`,
-                      transform: cardUp ? "translateY(0)" : "translateY(150%)",
+                      left: px(380),
+                      width: `${((440 / W) * 100).toFixed(3)}%`,
+                      top: py(-38),
+                      height: `${((560 / H) * 100).toFixed(3)}%`,
+                      transform: cardUp ? "translateY(0)" : "translateY(128%)",
                       transition: `transform ${T_CARD}ms ${EASE}`,
                       containerType: "inline-size",
                     }}
@@ -364,7 +367,7 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
                       }}
                     />
                     {/* the couple stands on the card, rising out of the envelope with it */}
-                    <div className="absolute" style={{ left: "11%", width: "78%", top: "-99cqw" }}>
+                    <div className="absolute" style={{ left: "11%", width: "78%", top: "-97cqw" }}>
                       <img
                         src="/rsvp/couple.png"
                         alt="The bride and groom waving"
@@ -438,7 +441,7 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
                   }}
                 >
                   <img
-                    src="/rsvp/envelope-new.png"
+                    src="/rsvp/envelope-only.png"
                     alt=""
                     draggable={false}
                     className="absolute inset-0 h-full w-full"
