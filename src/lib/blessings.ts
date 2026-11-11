@@ -23,7 +23,7 @@ export interface BlessingInput {
 const OUTBOX_KEY = "blessings-outbox";
 const LAST_KEY = "blessings-last";
 
-export const limits = { nameMin: 2, nameMax: 40, msgMin: 10, msgMax: 300 };
+export const limits = { nameMin: 2, nameMax: 40, msgMin: 1, msgMax: 300 };
 
 export function validate(v: BlessingInput): Partial<Record<keyof BlessingInput, string>> {
   const errors: Partial<Record<keyof BlessingInput, string>> = {};
@@ -31,7 +31,7 @@ export function validate(v: BlessingInput): Partial<Record<keyof BlessingInput, 
   const m = v.message.trim().length;
   if (n < limits.nameMin) errors.name = "Please enter your name.";
   else if (n > limits.nameMax) errors.name = `Name must be under ${limits.nameMax} characters.`;
-  if (m < limits.msgMin) errors.message = `Please write at least ${limits.msgMin} characters.`;
+  if (m < limits.msgMin) errors.message = "Please write your blessing.";
   else if (m > limits.msgMax) errors.message = `Please keep it under ${limits.msgMax} characters.`;
   return errors;
 }

@@ -161,7 +161,7 @@ export default function WishingWall() {
   };
 
   const inputCls =
-    "w-full rounded-md border border-[#e2c27a] bg-[#fffdf6] px-4 py-3 font-body text-base placeholder:text-[#4b0f16]/40 focus:border-[#c9992f] focus:outline-none focus:ring-2 focus:ring-[#e2c27a]/50";
+    "w-full rounded-md border border-[#e2c27a] bg-[#fffdf6] px-3 py-2 font-body text-base placeholder:text-[#4b0f16]/40 focus:border-[#c9992f] focus:outline-none focus:ring-2 focus:ring-[#e2c27a]/50";
 
   return (
     <section ref={sectionRef} id="blessings" aria-labelledby="blessings-title" className="relative py-6" style={{ color: INK_SOFT }}>
@@ -181,11 +181,8 @@ export default function WishingWall() {
           <Note key={`${b.name}-${b.message.slice(0, 12)}-${i}`} {...b} i={i} />
         ))}
       </div>
-      <p className="mt-4 px-5 text-center font-body text-[11px]" style={{ color: `${INK_SOFT}99` }}>
-        {live ? "Guests see your blessing once the couple approves it." : "Sample wishes shown. Guests see yours once the couple approves it."}
-      </p>
 
-      <Reveal className="mx-auto mt-8 max-w-sm px-5">
+      <Reveal className="mx-auto mt-4 max-w-sm px-5">
         {/* view all wishes, above the input */}
         <div className="mb-4 text-center">
           <button
@@ -221,7 +218,7 @@ export default function WishingWall() {
         <form
           onSubmit={onSubmit}
           noValidate
-          className="relative space-y-4 rounded-xl p-5"
+          className="relative space-y-2.5 rounded-xl p-3.5"
           style={{
             background: "linear-gradient(180deg, #fdf5e1 0%, #f8e8c2 100%)",
             border: "1.5px solid #e2c27a",
@@ -235,7 +232,7 @@ export default function WishingWall() {
             <textarea
               ref={msgRef}
               id="bl-msg"
-              rows={4}
+              rows={2}
               value={message}
               onChange={(e) => {
                 setMessage(e.target.value);
@@ -268,7 +265,7 @@ export default function WishingWall() {
             ref={btnRef}
             type="submit"
             disabled={status === "sending"}
-            className="min-h-12 w-full rounded-xl font-body text-sm font-bold uppercase tracking-widest shadow-md transition active:scale-95 disabled:opacity-60"
+            className="min-h-11 w-full rounded-xl font-body text-sm font-bold uppercase tracking-widest shadow-md transition active:scale-95 disabled:opacity-60"
             style={{ background: "linear-gradient(180deg, #8f1427 0%, #6d0f1b 100%)", color: "#f9e7b0", border: "1.5px solid #d4a53c" }}
           >
             {status === "sending" ? "Sending…" : "Send Blessing"}
