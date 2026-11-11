@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="mr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>श्रेयश & सायेली</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Marathi&display=swap" rel="stylesheet">
+<style>
+  :root { --maroon:#5a0f1a; --gold:#d9a93f; --gold-l:#f3d98b; --parch:#f6e7c8; }
+  * { box-sizing:border-box; }
+  body { margin:0; min-height:100dvh; display:flex; flex-direction:column; align-items:center; justify-content:center;
+         gap:18px; padding:20px; background:radial-gradient(ellipse at 50% 30%,#7a1a28,var(--maroon) 70%);
+         font-family:'Tiro Devanagari Marathi',serif; color:var(--gold-l); text-align:center; }
+  h1 { margin:0; font-weight:400; font-size:clamp(28px,8vw,40px); letter-spacing:.02em; }
+  p  { margin:0; font-size:16px; opacity:.85; }
+  /* No text cursor / selection anywhere on the card */
+  .card { position:relative; width:min(92vw,420px); aspect-ratio:16/10; border-radius:16px; overflow:hidden;
+          background:radial-gradient(circle at 50% 40%,#fff3d6,var(--parch) 70%); border:2px solid var(--gold);
+          box-shadow:0 10px 30px rgba(0,0,0,.45); cursor:pointer; user-select:none; -webkit-user-select:none;
+          -webkit-touch-callout:none; -webkit-tap-highlight-color:transparent; }
+  .card.flash { animation:flash .9s ease-out; }
+  @keyframes flash { 0%{box-shadow:0 0 0 0 rgba(255,214,102,.9),0 10px 30px rgba(0,0,0,.45)}
+                     40%{box-shadow:0 0 60px 20px rgba(255,214,102,.8),0 10px 30px rgba(0,0,0,.45)}
+                     100%{box-shadow:0 0 0 0 rgba(255,214,102,0),0 10px 30px rgba(0,0,0,.45)} }
+  .date { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
+          color:var(--maroon); transform:scale(.7); opacity:0; }
+  .date.show { animation:pop .7s cubic-bezier(.3,1.6,.5,1) forwards; }
+  @keyframes pop { to { transform:scale(1); opacity:1; } }
+  .day { font-size:clamp(64px,22vw,104px); line-height:1; }
+  .month { font-size:clamp(20px,6vw,28px); margin-top:6px; }
+  canvas.foil { position:absolute; inset:0; width:100%; height:100%; cursor:pointer; touch-action:none;
+                user-select:none; -webkit-user-select:none; -webkit-touch-callout:none; transition:opacity .8s; }
+  canvas.confetti { position:fixed; inset:0; width:100%; height:100%; pointer-events:none; z-index:10; }
+</style>
+</head>
+<body>
+<h1>श्रेयश &amp; सायेली</h1>
+<p>तारीख पाहण्यासाठी खरवडा</p>
+<div class="card" id="card">
+  <div class="date" id="date"><div class="day" id="day"></div><div class="month" id="month"></div></div>
+  <canvas class="foil" id="foil"></canvas>
+</div>
+
+<script>
+// ===== CONFIG: edit these =====
+const DATE  = "००";
+const MONTH = "महिना २०२७";
+// ==============================
+document.getElementById('day').textContent = DATE;
+document.getElementById('month').textContent = MONTH;
+
+const card = document.getElementById('card'), foil = document.getElementById('foil');
+const ctx = foil.getContext('2d', { willReadFrequently: true });
+const dpr = Math.min(window.devicePixelRatio || 1, 2);
+let W = 0, H = 0, revealed = false, last = null, lastT = 0, lastCheck = 0;
+
+// ---------- Foil ----------
+function drawFoil() {
+  const r = foil.getBoundingClientRect(); W = r.width; H = r.height;
+  foil.width = W * dpr; foil.height = H * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const g = ctx.createLinearGradient(0, 0, W, H);
+  [[0, '#f3d98b'], [.3, '#d9a93f'], [.55, '#f8e6a8'], [.8, '#c8962e'], [1, '#e9c667']].forEach(s => g.addColorStop(s[0], s[1]));
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = 'rgba(90,15,26,.75)'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.font = `${Math.round(W / 15)}px 'Tiro Devanagari Marathi',serif`;
+  ctx.fillText('✦ इथे खरवडा ✦', W / 2, H / 2);
+}
+drawFoil();
+document.fonts.ready.then(() => { if (!revealed && !last) drawFoil(); });
+addEventListener('resize', () => { if (!revealed) drawFoil(); });
+card.addEventListener('selectstart', e => e.preventDefault());
+
+// ---------- Sound (Web Audio only) ----------
+let ac, scratchGain;
+const noiseBuf = (secs, decay) => {
+  const b = ac.createBuffer(1, ac.sampleRate * secs, ac.sampleRate), d = b.getChannelData(0);
+  for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * (decay ? Math.pow(1 - i / d.length, 3) : 1);
+  return b;
+};
+function initAudio() {                       // created on the first pointerdown
+  if (ac) { ac.resume(); return; }
+  ac = new (window.AudioContext || window.webkitAudioContext)();
+  const src = ac.createBufferSource(); src.buffer = noiseBuf(2); src.loop = true;
+  const bp = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 3000; bp.Q.value = .8;
+  scratchGain = ac.createGain(); scratchGain.gain.value = 0;
+  src.connect(bp).connect(scratchGain).connect(ac.destination); src.start();
+}
+const scratchVol = v => scratchGain && scratchGain.gain.setTargetAtTime(v, ac.currentTime, .04);
+function pop() {                             // one party-popper: burst + thump + sparkle ticks
+  const t = ac.currentTime;
+  const n = ac.createBufferSource(); n.buffer = noiseBuf(.3, true);
+  const hp = ac.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 1200;
+  const ng = ac.createGain(); ng.gain.setValueAtTime(.7, t); ng.gain.exponentialRampToValueAtTime(.001, t + .25);
+  n.connect(hp).connect(ng).connect(ac.destination); n.start(t);
+  const o = ac.createOscillator(), og = ac.createGain(); o.type = 'sine';
+  o.frequency.setValueAtTime(220, t); o.frequency.exponentialRampToValueAtTime(50, t + .15);
+  og.gain.setValueAtTime(.9, t); og.gain.exponentialRampToValueAtTime(.001, t + .2);
+  o.connect(og).connect(ac.destination); o.start(t); o.stop(t + .25);
+  for (let i = 0; i < 14; i++) {             // tiny confetti ticks
+    const s = t + .04 + Math.random() * .5, f = 3500 + Math.random() * 3500;
+    const k = ac.createOscillator(), kg = ac.createGain(); k.type = 'triangle'; k.frequency.value = f;
+    kg.gain.setValueAtTime(.05, s); kg.gain.exponentialRampToValueAtTime(.0005, s + .08);
+    k.connect(kg).connect(ac.destination); k.start(s); k.stop(s + .1);
+  }
+}
+
+// ---------- Scratching ----------
+function scratch(x, y) {
+  ctx.globalCompositeOperation = 'destination-out';
+  ctx.lineCap = ctx.lineJoin = 'round'; ctx.lineWidth = 30; ctx.beginPath();
+  const p = last || { x, y }; ctx.moveTo(p.x, p.y); ctx.lineTo(x, y); ctx.stroke();
+  last = { x, y };
+}
+function cleared() {                         // sample a sparse grid instead of every pixel
+  const d = ctx.getImageData(0, 0, foil.width, foil.height).data, step = Math.round(12 * dpr);
+  let hit = 0, tot = 0;
+  for (let y = 0; y < foil.height; y += step) for (let x = 0; x < foil.width; x += step) { tot++; if (d[(y * foil.width + x) * 4 + 3] < 128) hit++; }
+  return hit / tot;
+}
+foil.addEventListener('pointerdown', e => {
+  if (revealed) return;
+  initAudio(); foil.setPointerCapture(e.pointerId);
+  const r = foil.getBoundingClientRect(); last = null; lastT = performance.now();
+  scratch(e.clientX - r.left, e.clientY - r.top);
+});
+foil.addEventListener('pointermove', e => {
+  if (revealed || !foil.hasPointerCapture(e.pointerId)) return;
+  const r = foil.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top, now = performance.now();
+  const speed = last ? Math.hypot(x - last.x, y - last.y) / Math.max(now - lastT, 1) : 0; // px per ms
+  scratchVol(Math.min(speed * .12, .5)); lastT = now;
+  scratch(x, y);
+  if (now - lastCheck > 120) { lastCheck = now; if (cleared() >= .55) reveal(); }
+});
+const end = () => { last = null; scratchVol(0); if (!revealed && cleared() >= .55) reveal(); };
+foil.addEventListener('pointerup', end); foil.addEventListener('pointercancel', end);
+foil.addEventListener('touchmove', e => e.preventDefault(), { passive: false });
+
+// ---------- Reveal ----------
+function reveal() {
+  if (revealed) return; revealed = true; scratchVol(0);
+  foil.style.opacity = 0; foil.style.pointerEvents = 'none';
+  document.getElementById('date').classList.add('show'); card.classList.add('flash');
+  if (ac) { pop(); setTimeout(pop, 250); }
+  if (navigator.vibrate) navigator.vibrate([30, 40, 30]);
+  confetti();
+}
+
+// ---------- Party-popper confetti ----------
+function confetti() {
+  const c = document.createElement('canvas'); c.className = 'confetti'; document.body.appendChild(c);
+  const cw = c.width = innerWidth * dpr, ch = c.height = innerHeight * dpr, g = c.getContext('2d');
+  const colors = ['#d9a93f', '#e0262f', '#ff9933', '#ffffff', '#1fb5a8', '#ff6fa8'], parts = [];
+  const shoot = side => {                    // side: -1 = bottom-left popper, +1 = bottom-right popper
+    for (let i = 0; i < 70; i++) {
+      const a = -Math.PI / 2 + -side * (.2 + Math.random() * .65), sp = (9 + Math.random() * 13) * dpr; // fan toward the centre
+      const streamer = Math.random() < .25;
+      parts.push({ x: side < 0 ? 0 : cw, y: ch, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp,
+        w: (streamer ? 14 + Math.random() * 16 : 6 + Math.random() * 6) * dpr, h: (streamer ? 3 : 4 + Math.random() * 5) * dpr,
+        r: Math.random() * 6, vr: (Math.random() - .5) * .4, col: colors[i % colors.length], born: performance.now() });
+    }
+  };
+  shoot(-1); setTimeout(() => shoot(1), 180);  // the right popper fires a beat later
+  const t0 = performance.now();
+  (function frame(now) {
+    g.clearRect(0, 0, cw, ch);
+    parts.forEach(p => {
+      p.vx *= .985; p.vy = p.vy * .985 + .32 * dpr;      // air drag + gravity
+      p.x += p.vx; p.y += p.vy; p.r += p.vr;
+      const life = (now - p.born) / 4200; if (life >= 1) return;
+      g.save(); g.globalAlpha = life < .6 ? 1 : 1 - (life - .6) / .4;
+      g.translate(p.x, p.y); g.rotate(p.r); g.fillStyle = p.col; g.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); g.restore();
+    });
+    if (now - t0 < 5000) requestAnimationFrame(frame); else c.remove();   // remove after ~5 s
+  })(t0);
+}
+</script>
+</body>
+</html>
