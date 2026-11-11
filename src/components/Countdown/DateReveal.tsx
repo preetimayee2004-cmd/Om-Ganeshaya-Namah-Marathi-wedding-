@@ -289,6 +289,7 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
 
   // Mouse Handlers
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    e.preventDefault(); // stops text selection, so the I-beam never appears while scratching
     isScratchingRef.current = true;
     lastPoint.current = null;
     scratch(e.clientX, e.clientY);
@@ -296,6 +297,7 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
 
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (!isScratchingRef.current) return;
+    e.preventDefault();
     scratch(e.clientX, e.clientY);
   };
 
@@ -382,7 +384,7 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
   return (
     <div
       ref={containerRef}
-      className="relative mx-auto w-full max-w-[430px] overflow-hidden rounded-3xl border-2 border-[#D4AF37]/60 shadow-[0_12px_45px_rgba(109,15,27,0.18),inset_0_1px_2px_rgba(255,255,255,0.95)]"
+      className="relative mx-auto w-full max-w-[430px] cursor-default select-none overflow-hidden rounded-3xl border-2 border-[#D4AF37]/60 shadow-[0_12px_45px_rgba(109,15,27,0.18),inset_0_1px_2px_rgba(255,255,255,0.95)]"
       style={{
         boxShadow: "0 16px 48px -8px rgba(109,15,27,0.22), 0 0 0 1px rgba(212,175,55,0.35)",
       }}

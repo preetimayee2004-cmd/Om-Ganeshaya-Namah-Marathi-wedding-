@@ -179,6 +179,8 @@ export default function Intro() {
   };
 
   const [first, second] = coupleOrder;
+  // time and place only (the date is revealed later by the scratch card)
+  const weddingTime = new Intl.DateTimeFormat("en-IN", { hour: "numeric", minute: "2-digit", hour12: true, timeZone: wedding.timeZone }).format(new Date(wedding.date)).toUpperCase();
 
   // Preload all 5 master images
   useEffect(() => {
@@ -1021,6 +1023,23 @@ export default function Intro() {
               <span className="h-[0.8px] w-12 sm:w-16 bg-gradient-to-r from-transparent via-[#C9963A] to-[#C9963A]" />
               <span className="text-[#C9963A] text-[9px] leading-none opacity-85">❖</span>
               <span className="h-[0.8px] w-12 sm:w-16 bg-gradient-to-l from-transparent via-[#C9963A] to-[#C9963A]" />
+            </div>
+
+            {/* Time and place (no date here) */}
+            <div
+              className="relative z-10 mt-3 flex flex-col items-center text-center"
+              style={{
+                opacity: s4Lines[0] ? 1 : 0,
+                transform: s4Lines[0] ? "translateY(0)" : "translateY(6px)",
+                transition: `opacity 600ms 300ms ${EASE_PRIMARY}, transform 600ms 300ms ${EASE_PRIMARY}`,
+              }}
+            >
+              <p className="font-serif text-[14px] sm:text-[15px] font-semibold tracking-[0.12em] text-[#6d0f1b] drop-shadow-[0_1px_2px_rgba(255,255,255,0.85)]">
+                {weddingTime}
+              </p>
+              <p className="mt-0.5 font-serif text-[13px] sm:text-sm font-medium italic text-[#4b0f16] drop-shadow-[0_1px_2px_rgba(255,255,255,0.85)]">
+                {wedding.venue.name}, {wedding.venue.city}
+              </p>
             </div>
           </div>
 
