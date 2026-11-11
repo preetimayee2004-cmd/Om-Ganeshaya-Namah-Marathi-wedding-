@@ -461,64 +461,13 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
           {/* UNDERNEATH LAYER: ONLY THE SACRED WEDDING DATE          */}
           {/* ======================================================= */}
           <div
-            className="relative flex h-full min-h-[136px] flex-col items-center justify-center rounded-xl px-3 py-4 text-center bg-[#FAF0DF]"
+            className="pointer-events-none relative flex h-full min-h-[136px] flex-col items-center justify-center rounded-xl px-3 py-4 text-center bg-[#FAF0DF]"
             style={{
               backgroundImage: `url("/bg/mandap-sky.jpg"), radial-gradient(ellipse at 50% 30%, #FFF8EE 0%, #FDEBD1 40%, #F8DFBF 100%)`,
               backgroundSize: "cover",
               backgroundPosition: "center center",
             }}
           >
-            {/* Delicate Traditional Marathi Wedding Mandala */}
-            <div
-              className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden"
-              style={{
-                opacity: phase >= 2 ? 0.38 : 0,
-                transition: "opacity 1200ms cubic-bezier(0.22, 1, 0.36, 1)",
-              }}
-            >
-              <svg viewBox="0 0 200 200" className="h-44 w-44 text-[#C9963A]">
-                {/* Outer Ring (1.5s stroke drawing) */}
-                <circle
-                  cx="100"
-                  cy="100"
-                  r="72"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.2"
-                  strokeDasharray="453"
-                  strokeDashoffset={phase >= 2 ? "0" : "453"}
-                  style={{ transition: "stroke-dashoffset 1500ms cubic-bezier(0.22, 1, 0.36, 1)" }}
-                />
-                {/* Inner Ring */}
-                <circle
-                  cx="100"
-                  cy="100"
-                  r="52"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="0.8"
-                  strokeDasharray="327"
-                  strokeDashoffset={phase >= 2 ? "0" : "327"}
-                  style={{ transition: "stroke-dashoffset 1300ms cubic-bezier(0.22, 1, 0.36, 1) 200ms" }}
-                />
-                {/* 12 Auspicious Lotus Petals */}
-                {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map((deg) => (
-                  <path
-                    key={deg}
-                    d="M100 28 C107 50 114 65 100 84 C86 65 93 50 100 28 Z"
-                    fill="rgba(212,175,55,0.12)"
-                    stroke="currentColor"
-                    strokeWidth="0.8"
-                    transform={`rotate(${deg} 100 100)`}
-                    style={{
-                      opacity: phase >= 2 ? 1 : 0,
-                      transition: `opacity 1000ms cubic-bezier(0.22, 1, 0.36, 1) ${300 + (deg / 30) * 40}ms`,
-                    }}
-                  />
-                ))}
-              </svg>
-            </div>
-
             {/* Revealed Date Content: ONLY the wedding date (scale 0.96 to 1.0, 900ms) */}
             <div
               className="relative z-10 flex flex-col items-center justify-center transition-all"
@@ -562,7 +511,7 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
             aria-label="Scratch surface to reveal wedding date"
-            className="absolute inset-0 h-full w-full cursor-pointer touch-none select-none"
+            className="absolute inset-0 z-[15] h-full w-full cursor-pointer touch-none select-none"
             style={{
               opacity: isRevealed ? 0 : 1,
               pointerEvents: isRevealed ? "none" : "auto",

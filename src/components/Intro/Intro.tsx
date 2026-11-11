@@ -1240,11 +1240,11 @@ export default function Intro() {
                 transition: `opacity 600ms ${EASE_PRIMARY}, transform 600ms ${EASE_PRIMARY}`,
               }}
             >
-              <p className="font-script text-4xl text-[#6d0f1b]">
-                {wedding.couple.groom}{" "}
-                <span className="text-2xl text-[#a8741a]">&amp;</span>{" "}
-                {wedding.couple.bride}
-              </p>
+              <div className="flex flex-col items-center leading-none">
+                <p className="font-script text-[36px] leading-[1.05] text-[#6d0f1b]">{wedding.couple.groom}</p>
+                <p className="font-script text-xl leading-none text-[#a8741a]">&amp;</p>
+                <p className="font-script text-[36px] leading-[1.05] text-[#6d0f1b]">{wedding.couple.bride}</p>
+              </div>
             </div>
 
             {/* Ornamental Divider (1.90s – 2.40s) */}
