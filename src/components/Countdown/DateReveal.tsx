@@ -275,7 +275,6 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
     // 200ms: As surface dissolves, date becomes visible + gentle Shehnai flourish + mandala draws
     setTimeout(() => {
       setPhase(2);
-      weddingAudio.playShehnaiFlourish();
 
       // Spawn exactly 4 softly drifting marigold petals (requirement: 3-5 petals)
       const marigoldColors = ["#FFA000", "#FFB300", "#E65100", "#FF8F00"];
