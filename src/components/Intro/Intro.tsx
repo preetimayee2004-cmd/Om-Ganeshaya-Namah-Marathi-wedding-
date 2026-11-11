@@ -974,7 +974,7 @@ export default function Intro() {
           }}
         >
           {/* Top Zone: Clean English Invitation Typography positioned in clear sunset sky */}
-          <div className="relative z-10 px-6 pt-[17vh] sm:pt-[16%] text-center flex flex-col items-center">
+          <div className="relative z-10 px-6 pt-[21vh] sm:pt-[20%] text-center flex flex-col items-center">
             {/* Invitation Heading */}
             <div
               className="relative z-10 flex flex-col items-center"
