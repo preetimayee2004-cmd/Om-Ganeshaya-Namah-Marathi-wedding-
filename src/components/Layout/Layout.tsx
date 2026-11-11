@@ -26,13 +26,20 @@ export default function Layout({ children }: { children: ReactNode }) {
   return (
     <div
       className="fixed inset-0 flex items-center justify-center overflow-hidden"
-      style={{
-        backgroundColor: "#FAF6EF",
-        backgroundImage: 'url("/bg/stage.jpg")',
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
+      style={{ backgroundColor: "#FAF6EF" }}
     >
+      {/* Blurred desktop backdrop: softens the paisley so the eye goes to the phone (scaled up so the blur never shows an edge) */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
+        style={{
+          backgroundImage: 'url("/bg/stage.jpg")',
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          filter: "blur(14px)",
+          transform: "scale(1.08)",
+        }}
+      />
 
       {/* Phone: slim bezel, nearly full viewport height (94.3%), 414:860 as measured on the reference */}
       <div
