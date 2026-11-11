@@ -1,6 +1,6 @@
 /**
- * triggerPartyPopper(): two party poppers (confetti + a short vibration, no sound). Plain JS, no libraries.
- * Call it at any moment, e.g. when a scratch card is revealed:  triggerPartyPopper();
+ * triggerPartyPopper(): two party poppers (sound + confetti). Plain JS, no libraries, no audio files.
+ * Call it at any moment, e.g. when a scratch card is revealed:  triggerPartyPopper({ muted: isMuted });
  */
 
 // ===== EDIT ME =====
@@ -10,10 +10,91 @@ const SECOND_POPPER_DELAY = 250; // ms: right popper (and second pop sound)
 const LIFETIME = 4200;           // ms each piece lives
 const REMOVE_AFTER = 5000;       // ms until the canvas is removed
 const SPREAD_DEG = 50;           // fan angle of each popper
+const MASTER_VOLUME = 0.55;      // keep below ~0.7 to avoid clipping
 // ===================
 
 const TAU = Math.PI * 2;
-export function triggerPartyPopper() {
+let ac: AudioContext | null = null;
+let master: GainNode | null = null;
+
+/** Create or resume the AudioContext. Browsers only allow this inside a user gesture. */
+function unlockAudio() {
+  const Ctx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+  if (!Ctx) return;
+  if (!ac) {
+    ac = new Ctx();
+    const comp = ac.createDynamicsCompressor(); // safety net against clipping
+    master = ac.createGain();
+    master.gain.value = MASTER_VOLUME;
+    master.connect(comp).connect(ac.destination);
+  }
+  if (ac.state === "suspended") void ac.resume();
+}
+if (typeof window !== "undefined") {
+  // first tap / click anywhere unlocks audio so the pop can play later
+  ["pointerdown", "touchstart", "click", "keydown"].forEach((ev) => window.addEventListener(ev, unlockAudio, { capture: true, passive: true }));
+}
+
+/** white-noise buffer of `secs` seconds; `decay` shapes it into a fast-fading burst */
+function noise(secs: number, decay: boolean) {
+  const b = ac!.createBuffer(1, Math.ceil(ac!.sampleRate * secs), ac!.sampleRate);
+  const d = b.getChannelData(0);
+  for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * (decay ? Math.pow(1 - i / d.length, 4) : 1);
+  return b;
+}
+
+/** one pop = bang + thump + sparkle ticks, starting at `t0` */
+function pop(t0: number) {
+  const out = master!;
+  // 1) sharp bang: 0.3 s noise burst, fast decay, highpass ~900 Hz
+  const n = ac!.createBufferSource();
+  n.buffer = noise(0.3, true);
+  const hp = ac!.createBiquadFilter();
+  hp.type = "highpass";
+  hp.frequency.value = 900;
+  const ng = ac!.createGain();
+  ng.gain.setValueAtTime(0.9, t0);
+  ng.gain.exponentialRampToValueAtTime(0.001, t0 + 0.28);
+  n.connect(hp).connect(ng).connect(out);
+  n.start(t0);
+  // 2) low thump: sine 220 Hz -> 50 Hz in 0.12 s, quick fade
+  const o = ac!.createOscillator();
+  const og = ac!.createGain();
+  o.type = "sine";
+  o.frequency.setValueAtTime(220, t0);
+  o.frequency.exponentialRampToValueAtTime(50, t0 + 0.12);
+  og.gain.setValueAtTime(0.9, t0);
+  og.gain.exponentialRampToValueAtTime(0.001, t0 + 0.18);
+  o.connect(og).connect(out);
+  o.start(t0);
+  o.stop(t0 + 0.2);
+  // 3) confetti sparkle: ~14 triangle ticks (2500-6000 Hz, ~70 ms) over 0.7 s, softer one by one
+  const TICKS = 14;
+  for (let i = 0; i < TICKS; i++) {
+    const s = t0 + 0.05 + (i / TICKS) * 0.7 + Math.random() * 0.02;
+    const k = ac!.createOscillator();
+    const kg = ac!.createGain();
+    k.type = "triangle";
+    k.frequency.value = 2500 + Math.random() * 3500;
+    const vol = 0.07 * (1 - i / (TICKS + 2)); // fades out tick by tick
+    kg.gain.setValueAtTime(vol, s);
+    kg.gain.exponentialRampToValueAtTime(0.0005, s + 0.07);
+    k.connect(kg).connect(out);
+    k.start(s);
+    k.stop(s + 0.08);
+  }
+}
+
+export function triggerPartyPopper(opts: { muted?: boolean } = {}) {
+  // ---------- sound: two pops, 250 ms apart ----------
+  if (!opts.muted) {
+    unlockAudio();
+    if (ac && master) {
+      const now = ac.currentTime + 0.02;
+      pop(now);
+      pop(now + SECOND_POPPER_DELAY / 1000);
+    }
+  }
   if (navigator.vibrate) navigator.vibrate([30, 40, 30]);
 
   // ---------- confetti canvas (fixed, on top, never blocks taps) ----------
