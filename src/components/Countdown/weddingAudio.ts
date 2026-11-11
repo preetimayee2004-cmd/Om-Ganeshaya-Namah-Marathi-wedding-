@@ -195,6 +195,35 @@ class WeddingAudioEngine {
       t += note.dur;
     });
   }
+
+  /**
+   * Soft "whoosh" for the smoke page transition: filtered white noise, bandpass sweeping
+   * 400 Hz -> 2500 Hz -> 400 Hz over ~1.4 s, low volume. Call it inside the click handler
+   * (that is what lets the browser create/resume the AudioContext). Does nothing when muted.
+   */
+  public playWhoosh(duration = 1.4) {
+    const ctx = this.initCtx(); // returns null when muted
+    if (!ctx) return;
+    const t0 = ctx.currentTime;
+    const buf = ctx.createBuffer(1, Math.floor(ctx.sampleRate * duration), ctx.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    const src = ctx.createBufferSource();
+    src.buffer = buf;
+    const bp = ctx.createBiquadFilter();
+    bp.type = "bandpass";
+    bp.Q.value = 0.9;
+    bp.frequency.setValueAtTime(400, t0);
+    bp.frequency.exponentialRampToValueAtTime(2500, t0 + duration * 0.5);
+    bp.frequency.exponentialRampToValueAtTime(400, t0 + duration);
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(0.16, t0 + duration * 0.4); // low volume
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + duration);
+    src.connect(bp).connect(g).connect(ctx.destination);
+    src.start(t0);
+    src.stop(t0 + duration);
+  }
 }
 
 export const weddingAudio = new WeddingAudioEngine();

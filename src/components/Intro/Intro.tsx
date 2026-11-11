@@ -1,6 +1,19 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { useScrollRoot } from "../Layout/ScrollRoot";
 import { wedding, coupleOrder } from "../../config/wedding";
+import { weddingAudio } from "../Countdown/weddingAudio";
+
+// ===== SMOKE REVEAL SETTINGS (invitation -> couple screen) =====
+const SMOKE_MS = 1800;     // speed: total time of the reveal (bigger = slower)
+const SMOKE_BLOBS = 8;     // number of overlapping smoke blobs
+const SMOKE_SOFT = 16;     // softness of the edge, in % (bigger = softer, more cloud-like)
+const SMOKE_SPREAD = 140;  // px: how far blob centres wander from the button
+const SMOKE_SPARKLES = 25; // golden sparkles drifting out of the button
+const smokeSupported = () =>
+  typeof CSS !== "undefined" && "registerProperty" in CSS &&
+  (CSS.supports("mask-image", "radial-gradient(#000, transparent)") || CSS.supports("-webkit-mask-image", "radial-gradient(#000, transparent)"));
+
+interface Sparkle { id: number; tx: number; ty: number; size: number; delay: number; dur: number }
 
 /**
  * MASTER MOTION TIMING — CINEMATIC MARATHI WEDDING OPENING
@@ -145,6 +158,14 @@ export default function Intro() {
 
   // Micro-timings for Scene 5
   const [s5SplashUp, setS5SplashUp] = useState(false);
+  // smoke reveal: the CSS mask (null = none), whether it is running, sparkles, and a double-click lock
+  const [smokeMask, setSmokeMask] = useState<string | null>(null);
+  const [smokeActive, setSmokeActive] = useState(false);
+  const [smokeFade, setSmokeFade] = useState(false); // fallback: plain cross-fade
+  const [smokeOrigin, setSmokeOrigin] = useState({ x: 0, y: 0 });
+  const [sparkles, setSparkles] = useState<Sparkle[]>([]);
+  const smokeBusy = useRef(false);
+  const stageRef = useRef<HTMLDivElement>(null);
   const [s5TextDissolve, setS5TextDissolve] = useState(false);
   const [s5CoupleBg, setS5CoupleBg] = useState(() => getInitialStage() >= 6);
 
@@ -414,7 +435,7 @@ export default function Intro() {
   // SCENE 5: INVITATION TO COUPLE TRANSITION
   // Continuous cinematic flow into Couple Section
   // -------------------------------------------------------------
-  const triggerCoupleTransition = () => {
+  const triggerCoupleTransition = (e?: React.MouseEvent<HTMLElement>) => {
     if (s6Finished) {
       setStage(6);
       setS6Landscape(true);
@@ -427,27 +448,61 @@ export default function Intro() {
       return;
     }
 
-    setStage(5);
+    if (smokeBusy.current) return; // ignore double clicks while it runs
+    smokeBusy.current = true;
+    weddingAudio.playWhoosh(); // inside the click handler: creates/resumes the AudioContext, respects mute
 
-    // 0.10s: Organic watercolor splash blooms upward
-    later(() => setS5SplashUp(true), 100);
+    // 1) origin = centre of the button (bottom-centre when triggered by scroll/swipe)
+    const box = stageRef.current?.getBoundingClientRect();
+    const br = e?.currentTarget?.getBoundingClientRect?.();
+    const ox = box && br ? br.left + br.width / 2 - box.left : (box?.width ?? 390) / 2;
+    const oy = box && br ? br.top + br.height / 2 - box.top : (box?.height ?? 844) * 0.9;
+    setSmokeOrigin({ x: ox, y: oy });
 
-    // 0.40s: Invitation text dissolves into watercolor wash
-    later(() => setS5TextDissolve(true), 400);
+    // 2) the couple screen is already in the DOM: start its own animations now (the mask hides it at first)
+    runScene6(false);
+    setSmokeActive(true);
 
-    // 0.65s: Couple section background gradually emerges through the splash
-    later(() => setS5CoupleBg(true), 650);
+    // 3) sparkles drifting outward from the button
+    setSparkles(
+      Array.from({ length: SMOKE_SPARKLES }, (_, i) => {
+        const ang = Math.random() * Math.PI * 2;
+        const dist = 70 + Math.random() * 190;
+        return { id: i, tx: Math.cos(ang) * dist, ty: Math.sin(ang) * dist - 30, size: 2 + Math.random() * 3, delay: Math.random() * 500, dur: 900 + Math.random() * 800 };
+      })
+    );
 
-    // End of Scene 5 -> Trigger Scene 6 smoothly at 1.40s
-    later(() => runScene6(), 1400);
+    const supported = smokeSupported();
+    if (supported) {
+      // N overlapping radial-gradient blobs with random centres and growth factors; --r is animated in CSS
+      const blobs = Array.from({ length: SMOKE_BLOBS }, () => {
+        const x = ox + (Math.random() * 2 - 1) * SMOKE_SPREAD;
+        const y = oy + (Math.random() * 2 - 1) * SMOKE_SPREAD;
+        const f = (0.55 + Math.random() * 0.55).toFixed(2); // growth factor 0.55 - 1.10
+        return `radial-gradient(circle at ${x.toFixed(0)}px ${y.toFixed(0)}px, #000 calc(var(--r) * ${f}), transparent calc(var(--r) * ${f} + ${SMOKE_SOFT}%))`;
+      });
+      setSmokeMask(blobs.join(", "));
+    } else {
+      setSmokeFade(true); // fallback: 1 s opacity cross-fade
+    }
+
+    // 4) when it ends: drop the mask so the couple screen renders normally, hand over to stage 6
+    later(() => {
+      setStage(6);
+      setSmokeMask(null);
+      setSmokeActive(false);
+      setSmokeFade(false);
+      setSparkles([]);
+      smokeBusy.current = false;
+    }, supported ? SMOKE_MS : 1000);
   };
 
   // -------------------------------------------------------------
   // SCENE 6: COUPLE SECTION REVEAL
   // Final resting state of the invitation
   // -------------------------------------------------------------
-  const runScene6 = () => {
-    setStage(6);
+  const runScene6 = (setStageNow = true) => {
+    if (setStageNow) setStage(6);
 
     // 0.00s – 0.50s: watercolor landscape appears
     setS6Landscape(true);
@@ -528,7 +583,7 @@ export default function Intro() {
       </svg>
 
       {/* Mobile Viewport Stage */}
-      <div className="relative mx-auto h-full w-full overflow-hidden bg-[#F8DFBF]">
+      <div ref={stageRef} className="relative mx-auto h-full w-full overflow-hidden bg-[#F8DFBF]">
         {/* ========================================================= */}
         {/* SCENE 1: ROYAL TEMPLE DOUBLE DOORS (OPENS TO REVEAL GANPATI) */}
         {/* ========================================================= */}
@@ -1132,15 +1187,43 @@ export default function Intro() {
           </div>
         </div>
 
+        {/* Smoke reveal: golden sparkles drifting out of the button */}
+        {sparkles.length > 0 && (
+          <div className="pointer-events-none absolute inset-0 z-50 overflow-hidden" aria-hidden>
+            {sparkles.map((p) => (
+              <span
+                key={p.id}
+                className="absolute rounded-full"
+                style={{
+                  left: smokeOrigin.x,
+                  top: smokeOrigin.y,
+                  width: p.size,
+                  height: p.size,
+                  background: "#F6D98A",
+                  boxShadow: "0 0 6px 1px rgba(246,217,138,0.9)",
+                  opacity: 0,
+                  ["--tx" as string]: `${p.tx}px`,
+                  ["--ty" as string]: `${p.ty}px`,
+                  animation: `smoke-sparkle ${p.dur}ms ${p.delay}ms ease-out forwards`,
+                }}
+              />
+            ))}
+          </div>
+        )}
+
         {/* ========================================================= */}
         {/* SCENE 6: COUPLE SECTION REVEAL (2.8s)                      */}
         {/* ========================================================= */}
         <div
-          className="absolute inset-0 z-40 overflow-hidden"
+          className={`absolute inset-0 z-40 overflow-hidden ${smokeMask ? "smoke-reveal" : ""}`}
           style={{
-            opacity: stage >= 6 ? 1 : 0,
+            opacity: stage >= 6 || smokeActive ? 1 : 0,
             pointerEvents: stage >= 6 ? "auto" : "none",
-            transition: `opacity 600ms ${EASE_PRIMARY}`,
+            transition: smokeFade ? "opacity 1000ms ease" : smokeActive ? "none" : `opacity 600ms ${EASE_PRIMARY}`,
+            ...(smokeMask
+              ? { WebkitMaskImage: smokeMask, maskImage: smokeMask, animationDuration: `${SMOKE_MS}ms` }
+              : null),
+            ...(smokeFade ? { opacity: 1 } : null),
           }}
         >
           {/* Glass Back Button to Invitation (Top-Left Corner, clean icon only) */}
