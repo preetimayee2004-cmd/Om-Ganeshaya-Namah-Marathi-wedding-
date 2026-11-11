@@ -164,6 +164,7 @@ export default function Intro() {
   const [smokeFade, setSmokeFade] = useState(false); // fallback: plain cross-fade
   const [smokeOrigin, setSmokeOrigin] = useState({ x: 0, y: 0 });
   const [sparkles, setSparkles] = useState<Sparkle[]>([]);
+  const [wadaMask, setWadaMask] = useState<string | null>(null); // smoke mask for the Ganpati -> invitation reveal
   const smokeBusy = useRef(false);
   const stageRef = useRef<HTMLDivElement>(null);
   const [s5TextDissolve, setS5TextDissolve] = useState(false);
@@ -364,24 +365,28 @@ export default function Intro() {
   // -------------------------------------------------------------
   const runScene3 = () => {
     setStage(3);
+    weddingAudio.playWhoosh(); // soft whoosh (does nothing when muted)
 
-    // 0.00s: Organic watercolor splash begins from center
-    setS3SplashStart(true);
+    // Smoke grows out of Ganpati's centre and reveals the courtyard invitation scene
+    const box = stageRef.current?.getBoundingClientRect();
+    const ox = (box?.width ?? 390) / 2;
+    const oy = (box?.height ?? 844) * 0.46;
+    setSmokeOrigin({ x: ox, y: oy });
+    setSparkles(buildSparkles());
+    const supported = smokeSupported();
+    if (supported) setWadaMask(buildSmokeMask(ox, oy));
 
-    // 0.15s: Watercolor splash spreads outward with fluid bleed edges & splatter droplets
-    later(() => setS3SplashSpread(true), 150);
+    // Ganpati melts away underneath the cloud
+    later(() => setS3GaneshDissolve(true), 800);
 
-    // 0.45s: Wada courtyard scene appears inside the expanding watercolor splash
-    later(() => setS3WadaAppear(true), 450);
+    // The invitation text starts as the smoke finishes
+    later(() => runScene4(), supported ? SMOKE_MS - 300 : 700);
 
-    // 0.85s: Ganpati Bappa gradually dissolves into the watercolor paper texture
-    later(() => setS3GaneshDissolve(true), 850);
-
-    // 1.45s: Watercolor wash reaches full coverage, temple/wada details reveal cleanly
-    later(() => setS3DetailsReveal(true), 1450);
-
-    // 2.25s: End of Scene 3 -> Trigger Scene 4 at 2.25s
-    later(() => runScene4(), 2250);
+    // Smoke done: drop the mask so the scene renders normally
+    later(() => {
+      setWadaMask(null);
+      setSparkles([]);
+    }, supported ? SMOKE_MS + 100 : 1000);
   };
 
   // -------------------------------------------------------------
@@ -435,6 +440,21 @@ export default function Intro() {
   // SCENE 5: INVITATION TO COUPLE TRANSITION
   // Continuous cinematic flow into Couple Section
   // -------------------------------------------------------------
+  /** N soft radial-gradient blobs growing from (ox, oy); --r is animated by .smoke-reveal */
+  const buildSmokeMask = (ox: number, oy: number) =>
+    Array.from({ length: SMOKE_BLOBS }, () => {
+      const x = ox + (Math.random() * 2 - 1) * SMOKE_SPREAD;
+      const y = oy + (Math.random() * 2 - 1) * SMOKE_SPREAD;
+      const f = (0.55 + Math.random() * 0.55).toFixed(2); // growth factor 0.55 - 1.10
+      return `radial-gradient(circle at ${x.toFixed(0)}px ${y.toFixed(0)}px, #000 calc(var(--r) * ${f}), transparent calc(var(--r) * ${f} + ${SMOKE_SOFT}%))`;
+    }).join(", ");
+  const buildSparkles = (): Sparkle[] =>
+    Array.from({ length: SMOKE_SPARKLES }, (_, i) => {
+      const ang = Math.random() * Math.PI * 2;
+      const dist = 70 + Math.random() * 190;
+      return { id: i, tx: Math.cos(ang) * dist, ty: Math.sin(ang) * dist - 30, size: 2 + Math.random() * 3, delay: Math.random() * 500, dur: 900 + Math.random() * 800 };
+    });
+
   const triggerCoupleTransition = (e?: React.MouseEvent<HTMLElement>) => {
     if (s6Finished) {
       setStage(6);
@@ -926,26 +946,11 @@ export default function Intro() {
         {/* WADA COURTYARD LAYER (Revealed via Organic Splash)        */}
         {/* ========================================================= */}
         <div
-          className="absolute inset-0 z-24 overflow-hidden pointer-events-none"
+          className={`absolute inset-0 z-24 overflow-hidden pointer-events-none ${wadaMask ? "smoke-reveal" : ""}`}
           style={{
             opacity: stage >= 3 && stage <= 5 ? (s5TextDissolve ? 0 : 1) : 0,
-            WebkitMaskImage: stage === 3
-              ? (s3SplashSpread
-                  ? "radial-gradient(circle at 50% 46%, black 75%, transparent 100%)"
-                  : "radial-gradient(circle at 50% 46%, black 0%, transparent 15%)")
-              : undefined,
-            maskImage: stage === 3
-              ? (s3SplashSpread
-                  ? "radial-gradient(circle at 50% 46%, black 75%, transparent 100%)"
-                  : "radial-gradient(circle at 50% 46%, black 0%, transparent 15%)")
-              : undefined,
-            WebkitMaskSize: stage === 3 ? (s3SplashSpread ? "340% 340%" : "15% 15%") : undefined,
-            maskSize: stage === 3 ? (s3SplashSpread ? "340% 340%" : "15% 15%") : undefined,
-            WebkitMaskPosition: "center 46%",
-            maskPosition: "center 46%",
-            WebkitMaskRepeat: "no-repeat",
-            maskRepeat: "no-repeat",
-            transition: `mask-size 1350ms ${EASE_PRIMARY}, -webkit-mask-size 1350ms ${EASE_PRIMARY}, opacity 700ms ${EASE_SOFT_EXIT}`,
+            ...(wadaMask ? { WebkitMaskImage: wadaMask, maskImage: wadaMask, animationDuration: `${SMOKE_MS}ms` } : null),
+            transition: stage === 3 && !wadaMask ? "opacity 1000ms ease" : `opacity 700ms ${EASE_SOFT_EXIT}`,
           }}
         >
           <img
