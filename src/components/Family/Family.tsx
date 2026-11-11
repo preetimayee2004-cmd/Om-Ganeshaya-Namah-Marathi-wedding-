@@ -17,8 +17,13 @@ function FamilyCard({ f }: { f: Family }) {
   return (
     <div ref={ref}>
       <article
-        className="relative mx-auto max-w-sm overflow-hidden rounded-t-[999px] rounded-b-xl border border-gold/50 bg-[#fbf5e8] px-6 pb-8 text-center shadow-sm transition-all duration-[1100ms] ease-out"
-        style={{ clipPath: seen ? "inset(0 0 0 0)" : "inset(0 50% 0 50%)", opacity: seen ? 1 : 0 }}
+        className="relative mx-auto max-w-sm overflow-hidden rounded-t-[999px] rounded-b-xl px-6 pb-8 text-center shadow-sm transition-all duration-[1100ms] ease-out"
+        style={{
+          clipPath: seen ? "inset(0 0 0 0)" : "inset(0 50% 0 50%)",
+          opacity: seen ? 1 : 0,
+          background: "linear-gradient(180deg, #FCEFCB 0%, #F3DB9C 55%, #F8E8BC 100%)", // light gold, like the event cards
+          border: "1.5px solid #D4AE5E",
+        }}
         aria-label={f.side}
       >
         {/* family photo fills the arch and melts into the card */}
@@ -40,7 +45,7 @@ function FamilyCard({ f }: { f: Family }) {
         ) : (
           <div className="pt-16" />
         )}
-        <div className="pointer-events-none absolute inset-2 z-10 rounded-t-[999px] rounded-b-lg border border-gold/30" />
+        <div className="pointer-events-none absolute inset-2 z-10 rounded-t-[999px] rounded-b-lg border border-[#D4AE5E]/60" />
         <p lang="mr" className="text-sm text-gold">{f.marathi}</p>
         <h3 className="mt-1 text-4xl leading-none">{f.side}</h3>
         <div
