@@ -9,6 +9,8 @@ type Photo = (typeof wedding.gallery)[number];
 const T_REVEAL = 1500; // couple photo starts to fade in while the curtains are still parting
 const T_STRIP = 3700; // remaining photos slide out into the film strip
 const T_SETTLED = 4800; // animation finished: carousel becomes swipeable
+const AUTO_MS = 3200; // auto-slide: time each photo stays in the centre
+const AUTO_PAUSE_MS = 6000; // auto-slide waits this long after the visitor touches / drags the strip
 const HERO_INDEX = 2; // which photo in `wedding.gallery` is the hero
 
 const tones: Record<string, string> = {
@@ -158,6 +160,8 @@ export default function Gallery() {
   const phaseRef = useRef(0);
   const activeRef = useRef(active);
   const drag = useRef({ down: false, moved: false, x: 0, left: 0 });
+  const pausedUntil = useRef(0);
+  const inView = useRef(false);
 
   // start automatically when the section scrolls into view
   useEffect(() => {
@@ -278,8 +282,29 @@ export default function Gallery() {
     c.scrollTo({ left: el.offsetLeft + el.offsetWidth / 2 - c.clientWidth / 2, behavior: "smooth" });
   };
 
+  // auto-slide: moves to the next photo every few seconds (loops back to the first)
+  useEffect(() => {
+    if (!settled || index !== null) return;
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+    const el = stageRef.current;
+    const io = el
+      ? new IntersectionObserver(([e]) => (inView.current = e.isIntersecting), { root: scroller ?? null, threshold: 0.3 })
+      : null;
+    if (el) io?.observe(el);
+    const id = setInterval(() => {
+      if (!inView.current || document.hidden || drag.current.down || Date.now() < pausedUntil.current) return;
+      goTo((activeRef.current + 1) % photos.length);
+    }, AUTO_MS);
+    return () => {
+      clearInterval(id);
+      io?.disconnect();
+    };
+  }, [settled, index, scroller, photos.length]);
+  const pauseAuto = () => (pausedUntil.current = Date.now() + AUTO_PAUSE_MS);
+
   // mouse drag (touch uses native scrolling)
   const onPointerDown = (e: React.PointerEvent) => {
+    pauseAuto();
     if (e.pointerType !== "mouse" || !settled) return;
     const c = trackRef.current!;
     drag.current = { down: true, moved: false, x: e.clientX, left: c.scrollLeft };
@@ -388,6 +413,8 @@ export default function Gallery() {
           }}
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
+          onTouchStart={pauseAuto}
+          onWheel={pauseAuto}
           onPointerUp={endDrag}
           onPointerLeave={endDrag}
           aria-label="Wedding photographs"
