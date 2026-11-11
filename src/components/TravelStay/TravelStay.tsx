@@ -112,8 +112,9 @@ export default function TravelStay() {
     <section id="venue" aria-labelledby="venue-title" className="px-5 py-6" style={{ color: INK_SOFT }}>
       <Reveal className="text-center">
         <p className="font-body text-[10px] uppercase tracking-[0.35em]" style={{ color: GOLD }}>Where &amp; how</p>
-        <h2 id="venue-title" className="section-title mt-2" style={{ color: INK }}>
-          Venue &amp; Travel Accommodation
+        <h2 id="venue-title" className="section-title mt-2" style={{ color: INK, whiteSpace: "normal" }}>
+          <span className="block">Venue &amp; Travel</span>
+          <span className="block">Accommodation</span>
         </h2>
       </Reveal>
 

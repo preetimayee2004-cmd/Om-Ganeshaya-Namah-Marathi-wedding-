@@ -130,7 +130,7 @@ export const wedding = {
       parents: ["Mr. Father Name", "Mrs. Mother Name"],
       message: "A personal message from the bride's family goes here.",
       members: ["Grandparents' names", "Siblings' names", "Uncles & Aunts"],
-      photo: undefined as string | undefined,
+      photo: "/family/bride.jpg" as string | undefined,
     },
     {
       side: "Groom's Family",
@@ -139,7 +139,7 @@ export const wedding = {
       parents: ["Mr. Father Name", "Mrs. Mother Name"],
       message: "A personal message from the groom's family goes here.",
       members: ["Grandparents' names", "Siblings' names", "Uncles & Aunts"],
-      photo: undefined as string | undefined,
+      photo: "/family/groom.jpg" as string | undefined,
     },
   ],
   // Placeholder venue and travel info: replace with the real details.

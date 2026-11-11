@@ -17,11 +17,30 @@ function FamilyCard({ f }: { f: Family }) {
   return (
     <div ref={ref}>
       <article
-        className="relative mx-auto max-w-sm rounded-t-[999px] rounded-b-xl border border-gold/50 bg-[#fbf5e8] px-6 pb-8 pt-16 text-center shadow-sm transition-all duration-[1100ms] ease-out"
+        className="relative mx-auto max-w-sm overflow-hidden rounded-t-[999px] rounded-b-xl border border-gold/50 bg-[#fbf5e8] px-6 pb-8 text-center shadow-sm transition-all duration-[1100ms] ease-out"
         style={{ clipPath: seen ? "inset(0 0 0 0)" : "inset(0 50% 0 50%)", opacity: seen ? 1 : 0 }}
         aria-label={f.side}
       >
-        <div className="pointer-events-none absolute inset-2 rounded-t-[999px] rounded-b-lg border border-gold/30" />
+        {/* family photo fills the arch and melts into the card */}
+        {f.photo ? (
+          <div className="-mx-6 mb-4" aria-hidden={false}>
+            <img
+              src={f.photo}
+              alt={`${f.side} photograph`}
+              loading="lazy"
+              className="block w-full object-cover"
+              style={{
+                aspectRatio: "4 / 4.4",
+                objectPosition: "center 30%",
+                WebkitMaskImage: "linear-gradient(to bottom, #000 72%, transparent 100%)",
+                maskImage: "linear-gradient(to bottom, #000 72%, transparent 100%)",
+              }}
+            />
+          </div>
+        ) : (
+          <div className="pt-16" />
+        )}
+        <div className="pointer-events-none absolute inset-2 z-10 rounded-t-[999px] rounded-b-lg border border-gold/30" />
         <p lang="mr" className="text-sm text-gold">{f.marathi}</p>
         <h3 className="mt-1 text-4xl leading-none">{f.side}</h3>
         <div
@@ -29,14 +48,6 @@ function FamilyCard({ f }: { f: Family }) {
           style={{ transform: seen ? "scaleX(1)" : "scaleX(0)" }}
         />
 
-        {f.photo && (
-          <img
-            src={f.photo}
-            alt={`${f.surname} portrait`}
-            loading="lazy"
-            className="mx-auto mt-5 h-28 w-28 rounded-full border-2 border-gold object-cover"
-          />
-        )}
 
         <p className="mt-5 font-body text-[10px] uppercase tracking-[0.3em] text-olive">{f.surname}</p>
         <ul className="mt-2 space-y-0.5 font-body text-base text-espresso">
