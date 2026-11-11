@@ -178,15 +178,13 @@ export const wedding = {
     { name: "Sample Friend", message: "So happy for you both. Can't wait to celebrate with you!" },
   ],
   // Add real photos by setting `src` (put files in /public/gallery). Without `src`, a placeholder tile shows.
+  // Photos live in /public/gallery. The middle one (index 2) is the hero of the Antarpat reveal.
   gallery: [
-    { alt: "Engagement portrait", caption: "Engagement", ratio: "3/4", tone: "wine" },
-    { alt: "Pre-wedding photograph", caption: "Pre-wedding", ratio: "1/1", tone: "olive" },
-    { alt: "Couple portrait", caption: "Together", ratio: "4/5", tone: "blush" },
-    { alt: "Candid moment", caption: "Candid", ratio: "4/3", tone: "gold" },
-    { alt: "Family photograph", caption: "Family", ratio: "4/3", tone: "olive" },
-    { alt: "Couple at sunset", caption: "Golden hour", ratio: "3/4", tone: "wine" },
-    { alt: "Ring ceremony", caption: "The ring", ratio: "1/1", tone: "gold" },
-    { alt: "Laughing together", caption: "Laughter", ratio: "4/5", tone: "blush" },
+    { alt: "Blessed moment on the steps", caption: "Blessings", ratio: "4/5", tone: "gold", src: "/gallery/kiss.jpg" },
+    { alt: "Couple in front of the pink Ganesh backdrop", caption: "Together", ratio: "4/5", tone: "gold", src: "/gallery/pink.jpg" },
+    { alt: "Couple in traditional Maharashtrian attire", caption: "Forever Begins", ratio: "4/5", tone: "gold", src: "/gallery/hero.jpg" },
+    { alt: "The bride arriving in a palkhi", caption: "The Palkhi", ratio: "4/5", tone: "gold", src: "/gallery/palki.jpg" },
+    { alt: "Celebrating at the wedding ceremony", caption: "Celebration", ratio: "4/5", tone: "gold", src: "/gallery/dance.jpg" },
   ] as { alt: string; caption: string; ratio: string; tone: string; src?: string }[],
   // ISO string with explicit offset so the countdown is correct for any viewer (IST here).
   // Date is Sunday 28 Feb 2027; the 11:30 AM start time is a placeholder until confirmed.
