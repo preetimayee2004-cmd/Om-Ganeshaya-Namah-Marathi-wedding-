@@ -22,27 +22,9 @@ export default function Footer() {
 
   return (
     <footer ref={ref} className="px-6 pb-10 pt-6 text-center text-[#4b0f16]">
-      <svg
-        viewBox="0 0 48 44"
-        className="mx-auto h-10 w-10 text-[#6d0f1b]"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.4"
-        aria-hidden
-        style={{
-          transform: seen ? "scale(1)" : "scale(0.6)",
-          opacity: seen ? 1 : 0,
-          transition: "all 1200ms cubic-bezier(.2,1.4,.4,1)",
-        }}
-      >
-        <path
-          d="M24 40C8 28 4 18 4 12a9 9 0 0 1 20-3 9 9 0 0 1 20 3c0 6-4 16-20 28Z"
-          fill="rgba(109,15,27,0.08)"
-        />
-      </svg>
 
       <p
-        className="mx-auto mt-5 max-w-[18rem] font-script text-4xl leading-tight text-[#6d0f1b]"
+        className="mx-auto max-w-[18rem] font-script text-4xl leading-tight text-[#6d0f1b]"
         style={{ opacity: seen ? 1 : 0, transition: "opacity 1600ms ease 400ms" }}
       >
         {wedding.finalNote}

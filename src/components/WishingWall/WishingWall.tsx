@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type FormEvent } from "react";
 import { wedding } from "../../config/wedding";
 import { useGuest } from "../../context/GuestContext";
 import { apiUrl } from "../../lib/api";
@@ -6,8 +6,27 @@ import { fetchApprovedBlessings, isDuplicate, limits, submitBlessing, validate }
 import Reveal, { useInView } from "../Layout/Reveal";
 
 const tilts = [-2.5, 1.8, -1.2, 2.4, -1.8];
+const WALL_MAX = 3; // only the latest three wishes are pinned on the wall
+const INK = "#6d0f1b";
+const INK_SOFT = "#4b0f16";
+const GOLD_LABEL = "#a8741a";
 
-function Note({ name, message, i }: { name: string; message: string; i: number }) {
+type Wish = { name: string; message: string; fresh?: boolean };
+
+function HeartIcon({ className = "", style }: { className?: string; style?: React.CSSProperties }) {
+  return (
+    <svg viewBox="0 0 24 22" className={className} style={style} aria-hidden>
+      <path
+        d="M12 21s-8.5-5.3-10.6-10.4C-.1 5.9 3.6 1.5 7.7 2.6c1.9.5 3.3 2 4.3 3.6 1-1.6 2.4-3.1 4.3-3.6 4.1-1.1 7.8 3.3 6.3 8C20.5 15.7 12 21 12 21Z"
+        fill="#b3243a"
+        stroke="#d4a53c"
+        strokeWidth="1"
+      />
+    </svg>
+  );
+}
+
+function Note({ name, message, i, fresh }: Wish & { i: number }) {
   const [ref, seen] = useInView<HTMLElement>(0.3);
   const tilt = tilts[i % tilts.length];
   return (
@@ -17,26 +36,31 @@ function Note({ name, message, i }: { name: string; message: string; i: number }
       style={{
         transform: seen ? `rotate(${tilt}deg)` : `translateY(-30px) rotate(${tilt * 4}deg)`,
         opacity: seen ? 1 : 0,
-        backgroundImage: "repeating-linear-gradient(transparent 0 25px, rgba(104,114,83,0.18) 25px 26px)",
+        backgroundImage: "repeating-linear-gradient(transparent 0 25px, rgba(168,116,26,0.16) 25px 26px)",
+        animation: fresh ? "wish-stick 700ms cubic-bezier(0.22, 1, 0.36, 1) both" : undefined,
       }}
     >
-      <span className="absolute -top-2 left-1/2 h-4 w-14 -translate-x-1/2 rotate-2 bg-blush/80" aria-hidden />
-      <p className="font-script text-2xl leading-[26px] text-espresso">{message}</p>
-      <p className="mt-3 text-right font-body text-[11px] uppercase tracking-widest text-wine">— {name}</p>
+      {fresh ? (
+        <HeartIcon className="absolute -top-3 left-1/2 h-7 w-7 -translate-x-1/2" style={{ animation: "wish-heart-pin 700ms 250ms cubic-bezier(.3,1.6,.5,1) both" }} />
+      ) : (
+        <span className="absolute -top-2 left-1/2 h-4 w-14 -translate-x-1/2 rotate-2 bg-[#efd28f]/80" aria-hidden />
+      )}
+      <p className="font-script text-2xl leading-[26px]" style={{ color: INK }}>{message}</p>
+      <p className="mt-3 text-right font-body text-[11px] uppercase tracking-widest" style={{ color: GOLD_LABEL }}>— {name}</p>
     </article>
   );
 }
 
 export default function WishingWall() {
   const { guestName, isPersonalised } = useGuest();
-  const [name, setName] = useState(isPersonalised ? guestName : "");
   const [message, setMessage] = useState("");
   const [honey, setHoney] = useState("");
-  const [errors, setErrors] = useState<{ name?: string; message?: string }>({});
+  const [error, setError] = useState<string | undefined>();
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [showAll, setShowAll] = useState(false);
   // Live mode: approved blessings come from the Sheet. Demo mode (no storage): sample wishes.
   const live = !!apiUrl;
-  const [wall, setWall] = useState<{ name: string; message: string }[]>(live ? [] : [...wedding.blessings]);
+  const [wall, setWall] = useState<Wish[]>(live ? [] : [...wedding.blessings]);
   useEffect(() => {
     if (!live) return;
     let off = false;
@@ -48,31 +72,86 @@ export default function WishingWall() {
     };
   }, [live]);
   const sendingRef = useRef(false);
-  const successRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (status === "sent") successRef.current?.focus();
-  }, [status]);
+  // the flying wish + heart burst
+  const sectionRef = useRef<HTMLElement>(null);
+  const wallRef = useRef<HTMLDivElement>(null);
+  const msgRef = useRef<HTMLTextAreaElement>(null);
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const [flyer, setFlyer] = useState<{ text: string; x: number; y: number; w: number; dx: number; dy: number; go: boolean } | null>(null);
+  const [burst, setBurst] = useState<{ id: number; x: number; y: number; hearts: { dx: number; dy: number; s: number; r: number; d: number }[] } | null>(null);
+
+  useLayoutEffect(() => {
+    if (flyer && !flyer.go) {
+      const raf = requestAnimationFrame(() => setFlyer((f) => (f ? { ...f, go: true } : f)));
+      return () => cancelAnimationFrame(raf);
+    }
+  }, [flyer]);
+
+  const name = isPersonalised && guestName.trim().length >= limits.nameMin ? guestName : "Guest";
+
+  const launch = (text: string) => {
+    const sec = sectionRef.current?.getBoundingClientRect();
+    const ta = msgRef.current?.getBoundingClientRect();
+    const wl = wallRef.current?.getBoundingClientRect();
+    const bt = btnRef.current?.getBoundingClientRect();
+    const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    const pin = () => {
+      setWall((w) => [{ name, message: text, fresh: true }, ...w.map((x) => ({ ...x, fresh: false }))]);
+      wallRef.current?.scrollTo({ left: 0, behavior: reduce ? "auto" : "smooth" });
+    };
+    if (!sec || !ta || !wl || reduce) {
+      pin();
+      return;
+    }
+    // hearts burst out of the button
+    if (bt) {
+      setBurst({
+        id: Date.now(),
+        x: bt.left + bt.width / 2 - sec.left,
+        y: bt.top + bt.height / 2 - sec.top,
+        hearts: Array.from({ length: 14 }, (_, i) => {
+          const a = -Math.PI / 2 + ((i / 13) - 0.5) * Math.PI * 1.3;
+          const d = 70 + Math.random() * 90;
+          return { dx: Math.cos(a) * d, dy: Math.sin(a) * d - 20, s: 12 + Math.random() * 10, r: (Math.random() - 0.5) * 60, d: Math.random() * 150 };
+        }),
+      });
+      window.setTimeout(() => setBurst(null), 1500);
+    }
+    // the wish lifts off the textarea and flies to the front of the wall
+    const w = Math.min(ta.width, wl.width * 0.78);
+    const x = ta.left + (ta.width - w) / 2 - sec.left;
+    const y = ta.top - sec.top;
+    const toX = wl.left + wl.width * 0.11 - sec.left;
+    const toY = wl.top + 16 - sec.top;
+    setFlyer({ text, x, y, w, dx: toX - x, dy: toY - y, go: false });
+    window.setTimeout(() => {
+      setFlyer(null);
+      pin();
+    }, 950);
+  };
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (sendingRef.current) return; // block double taps
     const errs = validate({ name, message });
-    setErrors(errs);
-    if (Object.keys(errs).length) return;
+    setError(errs.message);
+    if (errs.message) return;
     if (honey) {
       setStatus("sent"); // bots get a fake success; nothing is sent
       return;
     }
     if (isDuplicate({ name, message })) {
-      setErrors({ message: "You've already sent this blessing. Thank you!" });
+      setError("You've already sent this blessing. Thank you!");
       return;
     }
     sendingRef.current = true;
     setStatus("sending");
     try {
       await submitBlessing({ name, message });
+      const text = message.trim();
       setStatus("sent");
+      launch(text);
       setMessage("");
     } catch {
       setStatus("error");
@@ -82,97 +161,160 @@ export default function WishingWall() {
   };
 
   const inputCls =
-    "w-full rounded-md border border-gold/60 bg-[#fffdf6] px-4 py-3 font-body text-base text-espresso placeholder:text-espresso/40 focus:border-wine focus:outline-none focus:ring-2 focus:ring-wine/20";
+    "w-full rounded-md border border-[#e2c27a] bg-[#fffdf6] px-4 py-3 font-body text-base placeholder:text-[#4b0f16]/40 focus:border-[#c9992f] focus:outline-none focus:ring-2 focus:ring-[#e2c27a]/50";
 
   return (
-    <section id="blessings" aria-labelledby="blessings-title" className="py-6 text-[#4b0f16]">
+    <section ref={sectionRef} id="blessings" aria-labelledby="blessings-title" className="relative py-6" style={{ color: INK_SOFT }}>
       <Reveal className="px-5 text-center">
-        <p className="font-body text-[10px] uppercase tracking-[0.35em] text-[#a8741a]">Wishing wall</p>
-        <h2 id="blessings-title" className="mt-2 text-5xl text-[#6d0f1b]">Blessings &amp; Wishes</h2>
-        <p lang="mr" className="mt-1 text-sm font-semibold text-[#a8741a]">शुभाशीर्वाद</p>
+        <p className="font-body text-[10px] uppercase tracking-[0.35em]" style={{ color: GOLD_LABEL }}>Wishing wall</p>
+        <h2 id="blessings-title" className="mt-2 text-5xl" style={{ color: INK }}>Blessings &amp; Wishes</h2>
+        <p lang="mr" className="mt-1 text-sm font-semibold" style={{ color: GOLD_LABEL }}>शुभाशीर्वाद</p>
       </Reveal>
 
-      {wall.length > 0 && (
-        <div className="no-scrollbar mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto px-[11%] pb-6 pt-4" tabIndex={0} aria-label="Blessings from guests">
-          {wall.map((b, i) => (
-            <Note key={`${b.name}-${i}`} {...b} i={i} />
+      <div
+        ref={wallRef}
+        className="no-scrollbar mt-10 flex min-h-[150px] snap-x snap-mandatory gap-4 overflow-x-auto px-[11%] pb-6 pt-4"
+        tabIndex={0}
+        aria-label="Latest blessings from guests"
+      >
+        {wall.slice(0, WALL_MAX).map((b, i) => (
+          <Note key={`${b.name}-${b.message.slice(0, 12)}-${i}`} {...b} i={i} />
+        ))}
+      </div>
+      <p className="mt-4 px-5 text-center font-body text-[11px]" style={{ color: `${INK_SOFT}99` }}>
+        {live ? "Guests see your blessing once the couple approves it." : "Sample wishes shown. Guests see yours once the couple approves it."}
+      </p>
+
+      <Reveal className="mx-auto mt-8 max-w-sm px-5">
+        {/* view all wishes, above the input */}
+        <div className="mb-4 text-center">
+          <button
+            type="button"
+            onClick={() => setShowAll((s) => !s)}
+            aria-expanded={showAll}
+            aria-controls="all-wishes"
+            className="inline-flex min-h-10 items-center gap-2 rounded-xl border px-5 font-body text-[11px] font-bold uppercase tracking-[0.18em] transition active:scale-95"
+            style={{ borderColor: "#d9b25a", background: "linear-gradient(180deg,#fdf3d8,#f6e2ad)", color: INK }}
+          >
+            <HeartIcon className="h-3.5 w-3.5" />
+            {showAll ? "Hide wishes" : `View all wishes (${wall.length})`}
+          </button>
+        </div>
+        <div
+          id="all-wishes"
+          className="grid transition-all duration-500 ease-out"
+          style={{ gridTemplateRows: showAll ? "1fr" : "0fr", marginBottom: showAll ? 16 : 0 }}
+        >
+          <div className="overflow-hidden">
+            <ul className="max-h-[360px] space-y-3 overflow-y-auto rounded-xl border border-[#e2c27a] bg-[#fffaf0]/90 p-4">
+              {wall.map((b, i) => (
+                <li key={`all-${i}`} className="border-b border-[#efd9a5] pb-3 last:border-0 last:pb-0">
+                  <p className="font-script text-xl leading-snug" style={{ color: INK }}>{b.message}</p>
+                  <p className="mt-1 text-right font-body text-[10px] uppercase tracking-widest" style={{ color: GOLD_LABEL }}>— {b.name}</p>
+                </li>
+              ))}
+              {wall.length === 0 && <li className="text-center font-body text-sm">No wishes yet. Be the first!</li>}
+            </ul>
+          </div>
+        </div>
+
+        <form
+          onSubmit={onSubmit}
+          noValidate
+          className="relative space-y-4 rounded-xl p-5"
+          style={{
+            background: "linear-gradient(180deg, #fdf5e1 0%, #f8e8c2 100%)",
+            border: "1.5px solid #e2c27a",
+            boxShadow: "inset 0 0 0 4px #fdf5e1, inset 0 0 0 5px rgba(217,178,90,0.55), 0 6px 18px -8px rgba(120,80,20,0.35)",
+          }}
+        >
+          <div>
+            <label htmlFor="bl-msg" className="mb-1 block font-body text-xs uppercase tracking-widest" style={{ color: GOLD_LABEL }}>
+              Your blessing
+            </label>
+            <textarea
+              ref={msgRef}
+              id="bl-msg"
+              rows={4}
+              value={message}
+              onChange={(e) => {
+                setMessage(e.target.value);
+                if (status === "sent") setStatus("idle");
+              }}
+              placeholder="Write your wishes for the couple…"
+              aria-invalid={!!error}
+              aria-describedby={error ? "bl-msg-err" : undefined}
+              className={`${inputCls} resize-none`}
+              style={{ color: INK_SOFT }}
+            />
+            <div className="mt-1 flex justify-between text-sm">
+              <span id="bl-msg-err" role="alert" style={{ color: INK }}>{error}</span>
+              <span className="font-body text-xs" style={{ color: message.length > limits.msgMax ? INK : `${INK_SOFT}80` }}>
+                {message.length}/{limits.msgMax}
+              </span>
+            </div>
+          </div>
+          {/* honeypot: hidden from people, bots fill it */}
+          <input tabIndex={-1} autoComplete="off" aria-hidden value={honey} onChange={(e) => setHoney(e.target.value)} className="absolute -left-[9999px] h-0 w-0 opacity-0" name="website" />
+          {status === "error" && (
+            <p role="alert" className="text-sm" style={{ color: INK }}>Something went wrong. Please try again.</p>
+          )}
+          {status === "sent" && (
+            <p role="status" className="text-center font-body text-sm" style={{ color: INK }}>
+              Thank you! Your blessing is pinned on the wall ♡
+            </p>
+          )}
+          <button
+            ref={btnRef}
+            type="submit"
+            disabled={status === "sending"}
+            className="min-h-12 w-full rounded-xl font-body text-sm font-bold uppercase tracking-widest shadow-md transition active:scale-95 disabled:opacity-60"
+            style={{ background: "linear-gradient(180deg, #8f1427 0%, #6d0f1b 100%)", color: "#f9e7b0", border: "1.5px solid #d4a53c" }}
+          >
+            {status === "sending" ? "Sending…" : "Send Blessing"}
+          </button>
+        </form>
+      </Reveal>
+
+      {/* the wish flying up to the wall */}
+      {flyer && (
+        <div
+          aria-hidden
+          className="pointer-events-none absolute z-30 rounded-sm bg-[#fff8e6] px-5 pb-4 pt-5 shadow-[0_10px_26px_-8px_rgba(56,41,35,0.55)]"
+          style={{
+            left: flyer.x,
+            top: flyer.y,
+            width: flyer.w,
+            transform: flyer.go ? `translate(${flyer.dx}px, ${flyer.dy}px) rotate(-3deg) scale(0.92)` : "none",
+            transition: "transform 900ms cubic-bezier(0.55, 0, 0.25, 1)",
+          }}
+        >
+          <HeartIcon className="absolute -top-3 left-1/2 h-7 w-7 -translate-x-1/2" />
+          <p className="font-script text-2xl leading-[26px]" style={{ color: INK }}>{flyer.text}</p>
+        </div>
+      )}
+      {/* hearts bursting out of the button */}
+      {burst && (
+        <div aria-hidden className="pointer-events-none absolute z-30" style={{ left: burst.x, top: burst.y }} key={burst.id}>
+          {burst.hearts.map((h, i) => (
+            <HeartIcon
+              key={i}
+              className="absolute"
+              style={{
+                width: h.s,
+                height: h.s,
+                left: -h.s / 2,
+                top: -h.s / 2,
+                opacity: 0,
+                ["--dx" as string]: `${h.dx}px`,
+                ["--dy" as string]: `${h.dy}px`,
+                ["--rr" as string]: `${h.r}deg`,
+                animation: `wish-heart-burst 1100ms ${h.d}ms cubic-bezier(0.22, 1, 0.36, 1) forwards`,
+              }}
+            />
           ))}
         </div>
       )}
-      <p className="mt-6 px-5 text-center font-body text-[11px] text-espresso/50">
-        {live
-          ? wall.length > 0
-            ? "Yours appears after the couple approves it."
-            : "Be the first to leave a blessing. It appears once the couple approves it."
-          : "Sample wishes shown. Yours appears after the couple approves it."}
-      </p>
-
-      <Reveal className="mx-auto mt-10 max-w-sm px-5">
-        {status === "sent" ? (
-          <div
-            ref={successRef}
-            tabIndex={-1}
-            role="status"
-            className="rounded-xl border border-gold/60 bg-[#fbf5e8] px-6 py-10 text-center outline-none"
-          >
-            <p className="font-script text-4xl text-wine">Thank you!</p>
-            <p className="mt-2 font-body text-sm text-espresso/80">
-              Your blessing has been received. It will appear on the wall once the couple approves it.
-            </p>
-            <button onClick={() => setStatus("idle")} className="mt-5 min-h-11 font-body text-xs font-bold uppercase tracking-widest text-wine underline underline-offset-4">
-              Write another
-            </button>
-          </div>
-        ) : (
-          <form onSubmit={onSubmit} noValidate className="space-y-4 rounded-xl border border-gold/50 bg-[#fbf5e8] p-5">
-            <div>
-              <label htmlFor="bl-name" className="mb-1 block font-body text-xs uppercase tracking-widest text-olive">Your name</label>
-              <input
-                id="bl-name"
-                value={name}
-                maxLength={limits.nameMax + 10}
-                onChange={(e) => setName(e.target.value)}
-                autoComplete="name"
-                aria-invalid={!!errors.name}
-                aria-describedby={errors.name ? "bl-name-err" : undefined}
-                className={inputCls}
-              />
-              {errors.name && <p id="bl-name-err" role="alert" className="mt-1 text-sm text-wine">{errors.name}</p>}
-            </div>
-            <div>
-              <label htmlFor="bl-msg" className="mb-1 block font-body text-xs uppercase tracking-widest text-olive">Your blessing</label>
-              <textarea
-                id="bl-msg"
-                rows={4}
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                placeholder="Write your wishes for the couple…"
-                aria-invalid={!!errors.message}
-                aria-describedby={errors.message ? "bl-msg-err" : undefined}
-                className={`${inputCls} resize-none`}
-              />
-              <div className="mt-1 flex justify-between text-sm">
-                <span id="bl-msg-err" role="alert" className="text-wine">{errors.message}</span>
-                <span className={`font-body text-xs ${message.length > limits.msgMax ? "text-wine" : "text-espresso/50"}`}>
-                  {message.length}/{limits.msgMax}
-                </span>
-              </div>
-            </div>
-            {/* honeypot: hidden from people, bots fill it */}
-            <input tabIndex={-1} autoComplete="off" aria-hidden value={honey} onChange={(e) => setHoney(e.target.value)} className="absolute -left-[9999px] h-0 w-0 opacity-0" name="website" />
-            {status === "error" && (
-              <p role="alert" className="text-sm text-wine">Something went wrong. Please try again.</p>
-            )}
-            <button
-              type="submit"
-              disabled={status === "sending"}
-              className="min-h-12 w-full rounded-full bg-wine font-body text-sm font-bold uppercase tracking-widest text-ivory shadow-md transition active:scale-95 disabled:opacity-60"
-            >
-              {status === "sending" ? "Sending…" : "Send Blessing"}
-            </button>
-          </form>
-        )}
-      </Reveal>
     </section>
   );
 }

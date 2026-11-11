@@ -3,8 +3,8 @@ import { wedding } from "../../config/wedding";
 import Reveal from "../Layout/Reveal";
 
 // Golden card: the exact gold of the Save-the-Date border, deep maroon ink
-const GOLD = "linear-gradient(180deg, #F6DD93 0%, #E2B24F 55%, #EFCB73 100%)"; // same gold as the Save-the-Date border
-const CARD_BORDER = "#B8862F";
+const GOLD = "linear-gradient(180deg, #FCEFCB 0%, #F3DB9C 55%, #F8E8BC 100%)"; // a lighter take on the Save-the-Date gold
+const CARD_BORDER = "#D4AE5E";
 const INK = "#4A0E1A"; // deep maroon text
 const INK_SOFT = "#6B1A26";
 const tz = wedding.timeZone;

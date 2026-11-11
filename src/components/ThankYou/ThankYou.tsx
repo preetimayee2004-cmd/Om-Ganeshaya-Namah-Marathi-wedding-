@@ -1,4 +1,4 @@
-import { wedding, coupleOrder } from "../../config/wedding";
+import { wedding } from "../../config/wedding";
 import { CouplePlaceholder } from "../Couple/Couple";
 import { useInView } from "../Layout/Reveal";
 
@@ -48,14 +48,6 @@ export default function ThankYou() {
         {wedding.thankYouMessage}
       </p>
 
-      <div className="mx-auto my-6 h-px w-16 bg-[#a8741a]/70" style={fade(900)} />
-
-      <p className="font-script text-5xl text-[#6d0f1b]" style={fade(1000)}>
-        {coupleOrder[0]} <span className="text-3xl text-[#a8741a]">&amp;</span> {coupleOrder[1]}
-      </p>
-      <p className="mt-4 font-body text-[11px] uppercase leading-relaxed tracking-[0.25em] text-[#7a3a2a]" style={fade(1200)}>
-        {wedding.families.map((f) => f.surname).join("  ·  ")}
-      </p>
     </section>
   );
 }
