@@ -333,8 +333,9 @@ export default function Intro() {
     // 2.20s: Prana light bloom gently settles into golden halo, presenting full blessing murti
     later(() => setS2Settle(true), 2200);
 
-    // 4.30s: Hold complete blessing darshan, then smoothly flow into the watercolor splash transition!
-    later(() => runScene3(), 4300);
+    // 3.00s: only a brief darshan after the blessing settles (2.2s), then flow on automatically.
+    // Nothing on this screen is tappable: the guest cannot jump ahead, and it never waits for a tap.
+    later(() => runScene3(), 3000);
   };
 
   // -------------------------------------------------------------
