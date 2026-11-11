@@ -36,7 +36,7 @@ export default function Layout({ children }: { children: ReactNode }) {
           backgroundImage: 'url("/bg/stage.jpg")',
           backgroundSize: "cover",
           backgroundPosition: "center",
-          filter: "blur(7px)",
+          filter: "blur(4px)",
           transform: "scale(1.08)",
         }}
       />
