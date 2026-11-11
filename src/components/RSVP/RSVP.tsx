@@ -9,6 +9,7 @@ import { useScrollRoot } from "../Layout/ScrollRoot";
  * Everything inside the envelope box is positioned in the artwork's own pixel space (715 x 607) and converted to %.
  *  - /rsvp/envelope-clean.jpg : the envelope with the wax seal + tassel painted out (base layer)
  *  - /rsvp/envelope.jpg       : the untouched artwork; the seal / tassel are cut out of it as overlays that break away
+ *  - /rsvp/couple.png         : the illustrated bride and groom (rises out of the envelope together with the card)
  */
 const W = 715;
 const H = 607;
@@ -20,15 +21,21 @@ const FLAP_INNER = `polygon(${[[91, 187], [597, 187], [344, 378]].map(([x, y]) =
 // the card is only visible above the envelope and inside the open flap triangle (it sits in the pocket)
 const CARD_CLIP = `polygon(-60% -250%, 160% -250%, 160% ${py(185)}, ${px(600)} ${py(185)}, ${px(344)} ${py(382)}, ${px(88)} ${py(185)}, -60% ${py(185)})`;
 const SEAL = { x: 344, y: 341, r: 58 };
-const STAGE_ASPECT = `${W} / ${H + 330}`;
 
-// ===== timing (ms after "Joyfully Accept") =====
-const T_SEAL = 600; // seal breaks
-const T_FLAP = 1100; // flap opens
-const T_CARD = 800; // card slides up
-const T_MSG = 600; // message reveal
+// ===== layout (in container-width units, cqw) =====
+const SPACE_CLOSED = 25; // heading zone above the envelope
+const SPACE_OPEN = 62; // room for the couple + card once the envelope is open
+const ENV_SCALE = 112; // envelope is shown ~12% larger than the column
+
+// ===== timing (ms after "Joyfully Accept"), about 2.7 s in total =====
+const T_SEAL = 450; // seal breaks, then the flap opens
+const T_FLAP = 800; // flap opens
+const T_CARD = 700; // card + couple rise
+const T_TEXT = 500; // headline + message fade in
+const T_CAL = 2250; // calendar button appears last
 
 const EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
+const RADIUS = 12; // one border radius for cards and buttons
 const MASK_EDGE =
   "linear-gradient(to right, transparent, #000 7%, #000 93%, transparent), linear-gradient(to bottom, transparent, #000 7%, #000 93%, transparent)";
 
@@ -49,7 +56,7 @@ function downloadIcs() {
     `DTEND:${f(end)}`,
     `SUMMARY:${esc(title)}`,
     `LOCATION:${esc(`${wedding.venue.name}, ${wedding.venue.city}`)}`,
-    `DESCRIPTION:${esc("We are delighted to have you join our celebration.")}`,
+    `DESCRIPTION:${esc("We can't wait to celebrate this beautiful day with you!")}`,
     "END:VEVENT",
     "END:VCALENDAR",
   ].join("\r\n");
@@ -66,16 +73,16 @@ function downloadIcs() {
 export default function RSVP(_props: { inScene?: boolean } = {}) {
   const { guestName, isPersonalised } = useGuest();
   const scroller = useScrollRoot();
+  const sectionRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const sending = useRef(false);
-  const sectionRef = useRef<HTMLElement>(null);
   const [sectionW, setSectionW] = useState(400);
   const [fallPx, setFallPx] = useState(700);
   const [visible, setVisible] = useState(false);
 
   const [entered, setEntered] = useState(false);
   const [revealDone, setRevealDone] = useState(false);
-  // 0 closed | 1 seal breaking | 2 flap opening | 3 card rising | 4 message shown
+  // 0 closed | 1 seal breaking | 2 flap opening | 3 card rising | 4 text shown | 5 calendar shown
   const [stage, setStage] = useState(0);
   const [error, setError] = useState(false);
   const timers = useRef<number[]>([]);
@@ -127,12 +134,13 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
     sending.current = true;
     setError(false);
     const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    if (reduce) setStage(4);
+    if (reduce) setStage(5);
     else {
-      setStage(1);
-      later(() => setStage(2), T_SEAL);
-      later(() => setStage(3), T_SEAL + 450 + T_FLAP * 0.55);
-      later(() => setStage(4), T_SEAL + 450 + T_FLAP * 0.55 + T_CARD);
+      setStage(1); // button compresses, seal breaks
+      later(() => setStage(2), T_SEAL); // flap opens
+      later(() => setStage(3), T_SEAL + T_FLAP * 0.55); // card + couple rise
+      later(() => setStage(4), T_SEAL + T_FLAP * 0.55 + T_CARD); // headline + message
+      later(() => setStage(5), T_CAL); // calendar button last
     }
     try {
       await submitRsvp({
@@ -155,8 +163,8 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
 
   const fragments = useMemo(
     () =>
-      Array.from({ length: 16 }, (_, i) => {
-        const a = (i / 16) * Math.PI * 2 + Math.random() * 0.4;
+      Array.from({ length: 14 }, (_, i) => {
+        const a = (i / 14) * Math.PI * 2 + Math.random() * 0.4;
         const d = 26 + Math.random() * 34;
         return { dx: Math.cos(a) * d, dy: Math.sin(a) * d + 8, rot: Math.random() * 360, size: 2 + Math.random() * 3, delay: Math.random() * 120 };
       }),
@@ -184,11 +192,11 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
   const flapOpen = stage >= 2;
   const flapBack = stage >= 3; // once the flap has passed upright it lies behind the card
   const cardUp = stage >= 3;
-  const msgShown = stage >= 4;
+  const textShown = stage >= 4;
   const gone = (on: boolean): React.CSSProperties => ({ opacity: on ? 0 : 1 });
 
   return (
-    <section ref={sectionRef} id="rsvp" aria-labelledby="rsvp-title" className="relative px-5 py-6 text-[#4b0f16]">
+    <section ref={sectionRef} id="rsvp" aria-labelledby="rsvp-title" className="relative overflow-x-clip px-5 py-6 text-[#4b0f16]">
       {/* continuous falling petals (behind the envelope, the couple, the text and the buttons) */}
       {showPetals && (
         <div className="pointer-events-none absolute inset-0 overflow-hidden" style={{ zIndex: 0 }} aria-hidden>
@@ -244,28 +252,42 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
       <div
         ref={stageRef}
         className="relative mx-auto w-full max-w-[420px] select-none"
-        style={{ aspectRatio: STAGE_ASPECT, containerType: "inline-size", zIndex: 1 }}
+        style={{ containerType: "inline-size", zIndex: 1 }}
       >
-        {/* heading */}
-        <h2
-          id="rsvp-title"
-          className="absolute inset-x-0 text-center font-script font-normal leading-[1.05] text-[#6d0f1b]"
+        {/* heading zone (grows once the envelope opens, to make room for the card and the couple) */}
+        <div
+          className="relative"
           style={{
-            top: "3%",
-            fontSize: "11.5cqw",
-            opacity: entered && stage === 0 ? 1 : 0,
-            transform: entered && stage === 0 ? "none" : "translateY(10px)",
-            transition: stage === 0 ? `opacity 1200ms ${EASE} 250ms, transform 1200ms ${EASE} 250ms` : `opacity 500ms ${EASE}`,
+            height: `${stage >= 1 ? SPACE_OPEN : SPACE_CLOSED}cqw`,
+            transition: `height ${T_SEAL + T_FLAP * 0.55 + T_CARD}ms ${EASE}`,
           }}
         >
-          <span className="block">Your Presence,</span>
-          <span className="block" style={{ transitionDelay: "400ms" }}>Our Blessing</span>
-        </h2>
+          <h2
+            id="rsvp-title"
+            className="absolute inset-x-0 top-0 text-center font-script font-normal leading-[1.02] text-[#6d0f1b]"
+            style={{
+              fontSize: "10.5cqw",
+              opacity: entered && stage === 0 ? 1 : 0,
+              transform: entered && stage === 0 ? "none" : "translateY(10px)",
+              transition: stage === 0 ? `opacity 1200ms ${EASE} 250ms, transform 1200ms ${EASE} 250ms` : `opacity 350ms ${EASE}`,
+            }}
+          >
+            <span className="block">Your Presence,</span>
+            <span className="block">Our Blessing</span>
+            <svg viewBox="0 0 120 10" className="mx-auto mt-[1.6cqw] h-[2.4cqw] w-[26cqw] text-[#b98a2e]" fill="none" stroke="currentColor" strokeLinecap="round" aria-hidden>
+              <path d="M2 5h44M74 5h44" strokeWidth=".9" />
+              <path d="M60 .8l4.2 4.2L60 9.2 55.8 5z" fill="currentColor" strokeWidth=".4" />
+            </svg>
+          </h2>
+        </div>
 
-        {/* envelope rises into place with a slight 3D tilt */}
+        {/* envelope: larger than the column, rises into place with a slight 3D tilt */}
         <div
-          className="absolute bottom-0 left-0 w-full"
+          className="relative"
           style={{
+            width: `${ENV_SCALE}%`,
+            marginLeft: `${(100 - ENV_SCALE) / 2}%`,
+            marginTop: "-3cqw",
             aspectRatio: `${W} / ${H}`,
             opacity: entered ? 1 : 0,
             transform: entered ? "none" : "translateY(70px) perspective(900px) rotateX(18deg)",
@@ -304,78 +326,82 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
                   }}
                 />
 
+                {/* separation: a soft shadow around the envelope so the floral arch never merges into it */}
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute"
+                  style={{
+                    left: px(86),
+                    top: py(183),
+                    width: `${((516 / W) * 100).toFixed(3)}%`,
+                    height: `${((320 / H) * 100).toFixed(3)}%`,
+                    borderRadius: 3,
+                    boxShadow: "0 10px 22px rgba(45,8,14,0.5), 0 2px 6px rgba(45,8,14,0.4), 0 0 0 1px rgba(60,12,18,0.35)",
+                  }}
+                />
+
                 {/* inside of the envelope (shows once the flap lifts) */}
                 <div
                   className="absolute inset-0"
                   style={{ clipPath: FLAP_INNER, background: "linear-gradient(180deg, #2c0509 0%, #4b0a14 55%, #6a1020 100%)", zIndex: 1 }}
                 />
 
-                {/* invitation card slides up out of the pocket */}
+                {/* invitation card (short) + couple rise out of the pocket */}
                 <div className="pointer-events-none absolute inset-0" style={{ clipPath: CARD_CLIP, zIndex: 2 }}>
                   <div
-                    className="absolute flex flex-col items-center rounded-[10px] text-center"
+                    className="absolute text-center"
                     style={{
                       left: "21%",
                       width: "58%",
-                      top: "-52%",
-                      height: "110%",
-                      transform: cardUp ? "translateY(0)" : "translateY(106%)",
+                      top: py(-28),
+                      height: py(520),
+                      transform: cardUp ? "translateY(0)" : "translateY(112%)",
                       transition: `transform ${T_CARD}ms ${EASE}`,
-                      background: "linear-gradient(170deg, #fffaf0 0%, #f9efd9 60%, #f1e2c0 100%)",
-                      border: "2px solid #d4a53c",
-                      boxShadow: "inset 0 0 0 5px #fbf3df, inset 0 0 0 6px rgba(212,165,60,0.7), 0 6px 18px rgba(40,10,5,0.35)",
-                      padding: "0 7%",
                       containerType: "inline-size",
                     }}
                   >
-                    {/* gold shimmer, plays once */}
-                    {msgShown && (
-                      <span
-                        aria-hidden
-                        className="absolute inset-0 overflow-hidden rounded-[8px]"
-                        style={{ pointerEvents: "none" }}
-                      >
-                        <span
-                          className="absolute inset-y-0 w-1/2"
-                          style={{
-                            background: "linear-gradient(105deg, transparent, rgba(255,226,140,0.55), transparent)",
-                            animation: "rsvp-card-shine 1400ms 200ms ease-out 1 both",
-                          }}
-                        />
-                      </span>
-                    )}
+                    {/* the card itself */}
                     <div
-                      className="flex flex-col items-center justify-center"
+                      className="absolute inset-0"
                       style={{
-                        height: "74%",
-                        opacity: msgShown ? 1 : 0,
-                        transform: msgShown ? "none" : "translateY(10px)",
-                        transition: `opacity ${T_MSG}ms ease, transform ${T_MSG}ms ${EASE}`,
+                        borderRadius: RADIUS,
+                        background: "linear-gradient(170deg, #fffaf0 0%, #f9efd9 60%, #f1e2c0 100%)",
+                        border: "2px solid #d4a53c",
+                        boxShadow: "inset 0 0 0 4px #fbf3df, inset 0 0 0 5px rgba(212,165,60,0.7), 0 6px 16px rgba(40,10,5,0.35)",
                       }}
-                    >
+                    />
+                    {/* the couple stands on the card, rising out of the envelope with it */}
+                    <div className="absolute" style={{ left: "16.5%", width: "67%", top: "-86cqw" }}>
                       <img
                         src="/rsvp/couple.png"
                         alt="The bride and groom waving"
                         draggable={false}
-                        loading="lazy"
-                        className="w-[54cqw]"
+                        className="block w-full" loading="lazy" decoding="async"
                         style={{
                           transformOrigin: "50% 100%",
-                          animation: msgShown ? "rsvp-wave 2.6s ease-in-out infinite" : undefined,
-                          WebkitMaskImage: "linear-gradient(to bottom, #000 80%, transparent 100%)",
-                          maskImage: "linear-gradient(to bottom, #000 80%, transparent 100%)",
-                          filter: "drop-shadow(0 4px 6px rgba(80,30,20,0.25))",
+                          animation: textShown ? "rsvp-wave 2.8s ease-in-out infinite" : undefined,
+                          WebkitMaskImage: "linear-gradient(to bottom, #000 82%, transparent 100%)",
+                          maskImage: "linear-gradient(to bottom, #000 82%, transparent 100%)",
+                          filter: "drop-shadow(0 4px 6px rgba(80,30,20,0.28))",
                         }}
                       />
-                      <p className="mt-[1cqw] text-center font-script leading-none text-[#6d0f1b]" style={{ fontSize: "11cqw", whiteSpace: "nowrap" }}>
+                    </div>
+                    {/* headline + one supporting message */}
+                    <div
+                      className="absolute inset-x-0 flex flex-col items-center"
+                      style={{
+                        top: "9cqw",
+                        padding: "0 6%",
+                        opacity: textShown ? 1 : 0,
+                        transform: textShown ? "none" : "translateY(8px)",
+                        transition: `opacity ${T_TEXT}ms ease, transform ${T_TEXT}ms ${EASE}`,
+                      }}
+                    >
+                      <p role="status" className="font-script leading-none text-[#6d0f1b]" style={{ fontSize: "10.5cqw", whiteSpace: "nowrap" }}>
                         Yay! You&apos;re Coming! ♡
                       </p>
-                      <p
-                        role="status"
-                        className="mt-[3cqw] italic leading-[1.2] text-[#6d0f1b]"
-                        style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 600, fontSize: "8.4cqw" }}
-                      >
-                        We are delighted to have you join our celebration.
+                      <p className="mt-[3cqw] font-body leading-snug text-[#4b0f16]/90" style={{ fontSize: "5.6cqw" }}>
+                        We can&apos;t wait to celebrate this beautiful day with you!
                       </p>
                     </div>
                   </div>
@@ -408,8 +434,7 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
                       WebkitBackfaceVisibility: "hidden",
                       transform: "rotateY(180deg)",
                       transformOrigin: `${px(344)} 50%`,
-                      background:
-                        "linear-gradient(180deg, #f3e2bd 0%, #e6c98c 100%)",
+                      background: "linear-gradient(180deg, #f3e2bd 0%, #e6c98c 100%)",
                       boxShadow: "inset 0 0 0 3px #d4a53c",
                     }}
                   />
@@ -463,7 +488,7 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
                     }}
                   />
                 )}
-                {/* tiny gold fragments */}
+                {/* tiny gold sparkles */}
                 {sealOpen &&
                   fragments.map((f, i) => (
                     <span
@@ -492,34 +517,36 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
         </div>
       </div>
 
-      {/* Joyfully Accept: rounded-corner red and gold button (no decline) */}
+      {/* Joyfully Accept: slim maroon and antique-gold button (compresses, then folds away) */}
       <div
         className="relative mx-auto flex flex-col items-center overflow-hidden"
         style={{
           zIndex: 1,
-          maxHeight: stage === 0 ? 120 : 0,
+          maxHeight: stage === 0 ? 90 : 0,
           opacity: stage === 0 && entered ? 1 : 0,
-          marginTop: stage === 0 ? 20 : 0,
-          transition: `opacity 500ms ease ${stage === 0 ? "600ms" : "0ms"}, max-height 700ms ${EASE} 200ms, margin-top 700ms ${EASE} 200ms`,
+          marginTop: stage === 0 ? 0 : 0,
+          transition: `opacity ${stage === 0 ? "500ms ease 600ms" : "350ms ease 120ms"}, max-height 600ms ${EASE} 300ms, margin-top 600ms ${EASE} 300ms`,
         }}
       >
         <button
           onClick={accept}
           disabled={stage !== 0}
-          className="relative inline-flex min-h-[56px] min-w-[236px] items-center justify-center gap-3 rounded-2xl px-8 transition active:scale-[0.97]"
+          className="relative inline-flex min-h-[44px] min-w-[210px] items-center justify-center gap-2.5 px-6 transition active:scale-[0.97]"
           style={{
-            background:
-              "radial-gradient(ellipse at 50% 0%, rgba(255,160,150,0.28), transparent 70%), linear-gradient(180deg, #a3162b 0%, #7d0f20 100%)",
-            border: "2px solid #d9b25a",
-            boxShadow: "inset 0 0 0 3px #7d0f20, inset 0 0 0 4px rgba(217,178,90,0.75), 0 6px 16px rgba(60,5,15,0.35)",
+            borderRadius: RADIUS,
+            background: "linear-gradient(180deg, #8f1427 0%, #6d0f1b 100%)",
+            border: "1.5px solid #d4a53c",
+            boxShadow: "inset 0 0 0 2px #6d0f1b, inset 0 0 0 3px rgba(217,178,90,0.55), 0 3px 8px rgba(60,5,15,0.3)",
+            transform: stage >= 1 ? "scale(0.9)" : "none",
+            transition: `transform 280ms ${EASE}`,
           }}
         >
-          <svg viewBox="0 0 40 28" className="h-7 w-9 text-[#f3d98b]" fill="none" stroke="currentColor" strokeWidth="1.3" aria-hidden>
+          <svg viewBox="0 0 40 28" className="h-5 w-7 text-[#f3d98b]" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden>
             <path d="M20 3c4 5 4 12 0 17-4-5-4-12 0-17Z" />
             <path d="M20 20c-6-1-10-5-11-10 6 0 10 3 11 10Zm0 0c6-1 10-5 11-10-6 0-10 3-11 10Z" />
             <path d="M6 24c6 3 22 3 28 0" />
           </svg>
-          <span className="text-[24px] font-semibold leading-none text-[#f9e7b0]" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
+          <span className="text-[19px] font-semibold leading-none tracking-wide text-[#f9e7b0]" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
             Joyfully Accept
           </span>
         </button>
@@ -530,26 +557,25 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
         )}
       </div>
 
-      {/* after accepting: cute couple waves, confirmation text and Add to Calendar (below the envelope) */}
+      {/* Add to Calendar appears last, beneath the envelope */}
       <div
         className="relative mx-auto flex flex-col items-center overflow-hidden"
         style={{
           zIndex: 1,
-          maxHeight: stage >= 3 ? 160 : 0,
-          opacity: stage >= 3 ? 1 : 0,
-          marginTop: stage >= 3 ? 8 : 0,
-          transition: `opacity 700ms ease, max-height 900ms ${EASE}, margin-top 900ms ${EASE}`,
+          maxHeight: stage >= 5 ? 80 : 0,
+          opacity: stage >= 5 ? 1 : 0,
+          transform: stage >= 5 ? "none" : "translateY(8px)",
+          marginTop: stage >= 5 ? 12 : 0,
+          transition: `opacity 500ms ease, transform 500ms ${EASE}, max-height 600ms ${EASE}, margin-top 600ms ${EASE}`,
         }}
-        aria-hidden={stage < 3}
+        aria-hidden={stage < 5}
       >
-        <p className="mx-auto mt-1 max-w-[17rem] text-center font-body text-[13px] leading-snug text-[#4b0f16]/85">
-          We can&apos;t wait to celebrate this beautiful day with you!
-        </p>
         <button
           onClick={downloadIcs}
-          tabIndex={stage >= 4 ? 0 : -1}
-          className="mt-4 inline-flex min-h-10 items-center gap-2 rounded-full px-5 font-body text-[11px] font-bold uppercase tracking-[0.18em] transition active:scale-95"
+          tabIndex={stage >= 5 ? 0 : -1}
+          className="inline-flex min-h-[44px] items-center gap-2 px-5 font-body text-[11px] font-bold uppercase tracking-[0.18em] transition active:scale-95"
           style={{
+            borderRadius: RADIUS,
             background: "linear-gradient(180deg, #7A3B24, #5A2614)",
             color: "#F6DFA2",
             border: "1.5px solid #D4A53C",

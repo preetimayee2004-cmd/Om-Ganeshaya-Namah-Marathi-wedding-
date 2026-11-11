@@ -2,10 +2,9 @@ import { useState } from "react";
 import { wedding } from "../../config/wedding";
 import Reveal from "../Layout/Reveal";
 
-// Golden silk card: warm antique-gold base with a soft diagonal sheen, deep maroon ink
-const GOLD =
-  "linear-gradient(112deg, #E7C46C 0%, #DCAE4F 14%, #F2D88E 30%, #DBAC4B 46%, #EDCF80 62%, #D6A444 80%, #E6C26A 100%)";
-const CARD_BORDER = "#B07F25";
+// Golden card: the exact gold of the Save-the-Date border, deep maroon ink
+const GOLD = "linear-gradient(180deg, #F6DD93 0%, #E2B24F 55%, #EFCB73 100%)"; // same gold as the Save-the-Date border
+const CARD_BORDER = "#B8862F";
 const INK = "#4A0E1A"; // deep maroon text
 const INK_SOFT = "#6B1A26";
 const tz = wedding.timeZone;
