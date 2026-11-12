@@ -110,22 +110,6 @@ function drawSilkFoil(ctx: CanvasRenderingContext2D, w: number, h: number) {
     }
   }
 
-  // embossed mandala rings behind the centre motif
-  ctx.save();
-  ctx.translate(w / 2, h / 2);
-  [58, 44].forEach((r) => {
-    ctx.beginPath();
-    ctx.arc(1, 1, r, 0, TAU);
-    ctx.strokeStyle = "rgba(0,0,0,0.3)";
-    ctx.lineWidth = 1;
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.arc(0, 0, r, 0, TAU);
-    ctx.strokeStyle = "rgba(255,206,150,0.16)";
-    ctx.stroke();
-  });
-  ctx.restore();
-
   // depth: soft vignette
   const vg = ctx.createRadialGradient(w / 2, h / 2, h * 0.25, w / 2, h / 2, w * 0.62);
   vg.addColorStop(0, "rgba(0,0,0,0)");
@@ -148,50 +132,6 @@ function drawSilkFoil(ctx: CanvasRenderingContext2D, w: number, h: number) {
   });
   ctx.restore();
 
-  // centre: small gold lotus medallion flanked by fine lines and diamonds
-  ctx.save();
-  ctx.translate(w / 2, h / 2);
-  ctx.strokeStyle = gold;
-  ctx.fillStyle = "rgba(48,6,13,0.85)";
-  ctx.lineWidth = 1.2;
-  ctx.beginPath();
-  ctx.arc(0, 0, 21, 0, TAU);
-  ctx.fill();
-  ctx.stroke();
-  ctx.lineWidth = 0.6;
-  ctx.beginPath();
-  ctx.arc(0, 0, 17.5, 0, TAU);
-  ctx.stroke();
-  for (let i = 0; i < 8; i++) {
-    ctx.save();
-    ctx.rotate((i * TAU) / 8);
-    ctx.beginPath();
-    ctx.ellipse(0, -9, 3.2, 7.5, 0, 0, TAU);
-    ctx.fillStyle = "rgba(226,178,79,0.28)";
-    ctx.fill();
-    ctx.lineWidth = 0.9;
-    ctx.stroke();
-    ctx.restore();
-  }
-  ctx.fillStyle = gold;
-  ctx.beginPath();
-  ctx.arc(0, 0, 2.6, 0, TAU);
-  ctx.fill();
-  [-1, 1].forEach((d) => {
-    ctx.beginPath();
-    ctx.moveTo(d * 30, 0);
-    ctx.lineTo(d * 78, 0);
-    ctx.lineWidth = 0.8;
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(d * 82, -3.5);
-    ctx.lineTo(d * 85.5, 0);
-    ctx.lineTo(d * 82, 3.5);
-    ctx.lineTo(d * 78.5, 0);
-    ctx.closePath();
-    ctx.fill();
-  });
-  ctx.restore();
 }
 
 /** small traditional lotus used as an icon */
