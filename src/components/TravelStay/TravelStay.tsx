@@ -1,6 +1,7 @@
 import { wedding } from "../../config/wedding";
 import { useGuest } from "../../context/GuestContext";
 import Reveal from "../Layout/Reveal";
+import ContactCard from "../Contact/ContactCard";
 
 const INK = "#6d0f1b";
 const INK_SOFT = "#4b0f16";
@@ -145,7 +146,7 @@ function IconClock() {
 }
 
 export default function TravelStay() {
-  const { venue, travel, contacts } = wedding;
+  const { venue, travel } = wedding;
   const { guestName, isPersonalised } = useGuest();
 
   const date = new Intl.DateTimeFormat("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: tz }).format(new Date(wedding.date));
@@ -264,44 +265,7 @@ export default function TravelStay() {
             </>
           ) : null}, our families are always happy to help.
         </p>
-        <svg viewBox="0 0 120 12" className="mx-auto mt-3 h-3 w-28" aria-hidden>
-          <path d="M2 6h44M74 6h44" stroke="#c9a35a" strokeWidth=".9" />
-          <path d="M60 1c1.6 2 1.6 4.5 0 7-1.6-2.5-1.6-5 0-7Zm0 7.5c-2.4-.3-4.4-1.8-5-4.2 2.4 0 4.2 1.6 5 4.2Zm0 0c2.4-.3 4.4-1.8 5-4.2-2.4 0-4.2 1.6-5 4.2Z" fill="#c9a35a" />
-        </svg>
-
-        <ul className="mt-6 grid grid-cols-2 gap-x-3 gap-y-6">
-          {contacts.map((c) => (
-            <li key={c.name + c.role} className="relative">
-              {/* lotus finial on the arch */}
-              <svg viewBox="0 0 24 14" className="absolute left-1/2 top-[-9px] z-10 h-3.5 w-5 -translate-x-1/2" fill="#d4a53c" aria-hidden>
-                <path d="M12 1c2 2.5 2 6 0 9-2-3-2-6.5 0-9Z" />
-                <path d="M12 11c-3-.4-5.6-2.4-6.4-5.4 3 0 5.4 2 6.4 5.4Zm0 0c3-.4 5.6-2.4 6.4-5.4-3 0-5.4 2-6.4 5.4Z" />
-              </svg>
-              <div
-                className="flex h-full flex-col items-center px-3 pb-4 pt-9"
-                style={{
-                  borderRadius: "calc(var(--u) * 999) calc(var(--u) * 999) calc(var(--u) * 10) calc(var(--u) * 10) / calc(var(--u) * 70) calc(var(--u) * 70) calc(var(--u) * 10) calc(var(--u) * 10)",
-                  background: "linear-gradient(180deg, #fffaf0 0%, #fbf0d9 100%)",
-                  border: "calc(var(--u) * 1.5) solid #dcc08a",
-                  boxShadow: "inset 0 0 0 calc(var(--u) * 4) #fffaf0, inset 0 0 0 calc(var(--u) * 5) #e9d4a6, 0 calc(var(--u) * 6) calc(var(--u) * 14) calc(var(--u) * -8) rgba(120,80,20,0.35)",
-                }}
-              >
-                <p className="text-[22px] leading-tight" style={{ fontFamily: SERIF, fontWeight: 600, color: INK }}>{c.name}</p>
-                <p className="mt-0.5 font-body text-[9.5px] font-bold uppercase tracking-[0.18em]" style={{ color: GOLD }}>{c.role}</p>
-                <a
-                  href={`tel:${c.phone}`}
-                  className="btn-gold mt-3"
-                  aria-label={`Call ${c.name}, ${c.role}`}
-                >
-                  <svg viewBox="0 0 16 16" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>
-                    <path d="M3.5 2.5h2.2l1.1 3-1.5 1a8 8 0 0 0 4.2 4.2l1-1.5 3 1.1v2.2a1.5 1.5 0 0 1-1.6 1.5A11 11 0 0 1 2 4.1a1.5 1.5 0 0 1 1.5-1.6Z" />
-                  </svg>
-                  Call
-                </a>
-              </div>
-            </li>
-          ))}
-        </ul>
+        <ContactCard />
       </Reveal>
     </section>
   );

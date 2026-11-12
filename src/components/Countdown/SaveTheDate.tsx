@@ -12,13 +12,13 @@ function Heart({ className = "" }: { className?: string }) {
     <svg viewBox="0 0 24 22" className={className} aria-hidden="true">
       <defs>
         <linearGradient id="std-heart-g" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#8B5230" />
-          <stop offset="1" stopColor="#6B3A1E" />
+          <stop offset="0" stopColor="#e8434f" />
+          <stop offset="1" stopColor="#a3101f" />
         </linearGradient>
       </defs>
-      <path d="M12 20.5s-8.3-5.2-10.4-10.2C.1 5.9 3.6 1.7 7.7 2.7c1.9.5 3.3 2 4.3 3.6 1-1.6 2.4-3.1 4.3-3.6 4.1-1 7.6 3.2 6.1 7.6C20.3 15.3 12 20.5 12 20.5Z" fill="url(#std-heart-g)" stroke="#4f2a14" strokeWidth=".8" />
-      <path d="M7 6.2c-1.4.3-2.4 1.6-2.3 3" stroke="#f1d2b4" strokeWidth="1.2" strokeLinecap="round" fill="none" opacity=".85" />
-      <circle cx="16.6" cy="6.4" r=".9" fill="#f1d2b4" opacity=".6" />
+      <path d="M12 20.5s-8.3-5.2-10.4-10.2C.1 5.9 3.6 1.7 7.7 2.7c1.9.5 3.3 2 4.3 3.6 1-1.6 2.4-3.1 4.3-3.6 4.1-1 7.6 3.2 6.1 7.6C20.3 15.3 12 20.5 12 20.5Z" fill="url(#std-heart-g)" stroke="#7a0c18" strokeWidth=".6" />
+      <path d="M7 6.2c-1.4.3-2.4 1.6-2.3 3" stroke="#ffd6da" strokeWidth="1.3" strokeLinecap="round" fill="none" opacity=".85" />
+      <circle cx="16.6" cy="6.4" r=".9" fill="#ffe3e6" opacity=".75" />
     </svg>
   );
 }
@@ -27,13 +27,11 @@ function Heart({ className = "" }: { className?: string }) {
  * Timeline after the calendar scrolls into view (all CSS, ~3.5 s, replays on every page load):
  *   0    - 1600  the page unrolls from its maroon binding; a soft roll-shadow rides the edge down;
  *                 month, weekdays and each week row fade in 30 ms apart; the rings swing ±3°
- *   1800 - 2470  a brown heart drops from above, tilting -12° -> +8° -> 0°, squashes on landing
- *   2470 - 3000  two small bounces settle it above the 28; the gold circle draws; a ripple spreads
- *   3000 - 3400  two heartbeat pulses; the date, weekday and muhurat fade up
- *   3500 ->      a slow 3 px idle float
+ *   1750 - 2270  a glossy red heart pops up behind the 28 (0 -> 1.28 -> 0.9 -> 1), the 28 turns
+ *                 ivory on it, a ripple and three sparkles spread
+ *   2350 - 2750  two heartbeat pulses; the date, weekday and muhurat fade up (done by ~3.1 s)
  */
-const T = { heart: 1800, land: 2470, beat: 3000, date: 3000, details: 3100, float: 3500 };
-const HEART_LIFT = 22; // design px above the centre of the date cell (clear of the date above, resting on the ring)
+const T = { pop: 1750, beat: 2350, date: 2500, details: 2650 };
 const ROW_STEP = 30; // ms between rows fading in
 
 const WEEKDAYS = ["S", "M", "T", "W", "T", "F", "S"];
@@ -107,7 +105,7 @@ export default function SaveTheDate() {
     const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
     const t = window.setTimeout(() => {
       if (startedRef.current && !sound.isMuted()) weddingAudio.playTempleBell();
-    }, reduce ? 0 : T.land);
+    }, reduce ? 0 : T.pop);
     return () => window.clearTimeout(t);
   }, [seen]);
 
@@ -177,17 +175,6 @@ export default function SaveTheDate() {
                       )}
                       {isDay && (
                         <>
-                          <svg className="std-ring pointer-events-none absolute" viewBox="0 0 60 50" aria-hidden="true">
-                            <path
-                              d="M44 9 C33 2 12 5 6 19 C1 31 12 44 30 45 C47 46 57 35 55 22 C53 11 41 5 26 7"
-                              fill="none"
-                              stroke="#b8862f"
-                              strokeWidth="2.6"
-                              strokeLinecap="round"
-                              pathLength={1}
-                            />
-                            <path d="M26 7 C22 8 19 10 17 13" fill="none" stroke="#C9963A" strokeWidth="1.6" strokeLinecap="round" pathLength={1} className="std-tail" />
-                          </svg>
                           {/* ripple + sparkles where the heart lands */}
                           <span className="std-ripple pointer-events-none absolute left-1/2 top-1/2 rounded-full border border-[#C9963A]" aria-hidden="true" />
                           {[-1, 0, 1].map((k) => (
@@ -198,12 +185,12 @@ export default function SaveTheDate() {
                               aria-hidden="true"
                             />
                           ))}
-                          {/* the heart: home position above the 28, then drop / bounce / beat / float layers */}
-                          <span className="std-heart-home pointer-events-none absolute left-1/2 top-1/2 z-[2] block leading-none">
+                          {/* the heart: centred behind the 28, then pop / beat layers */}
+                          <span className="std-heart-home pointer-events-none absolute left-1/2 top-1/2 z-0 block leading-none">
                             <span className="std-heart-drop block">
                               <span className="std-heart-float block">
                                 <span className="std-heart-beat block">
-                                  <Heart className="block h-[15px] w-[16px] drop-shadow-[0_1px_2px_rgba(60,30,10,0.35)]" />
+                                  <Heart className="block h-[36px] w-[39px] drop-shadow-[0_2px_3px_rgba(120,10,20,0.35)]" />
                                 </span>
                               </span>
                             </span>
@@ -251,22 +238,19 @@ const STYLES = `
 .std-page { box-shadow: 0 calc(var(--u) * 10) calc(var(--u) * 24) rgba(74, 26, 22, 0.16), 0 1px 2px rgba(74, 26, 22, 0.12); }
 .std-binding { box-shadow: 0 calc(var(--u) * 3) calc(var(--u) * 6) rgba(60, 10, 15, 0.28); }
 .std-ring-hook { transform-origin: 50% 85%; }
-.std-ring { width: calc(var(--u) * 50); height: calc(var(--u) * 42); left: 50%; top: 50%; transform: translate(-50%, -50%) rotate(-6deg); }
-.std-ring path { stroke-dasharray: 1; stroke-dashoffset: 0; }
 .std-curl { height: calc(var(--u) * 18); opacity: 0;
   background: linear-gradient(180deg, rgba(120, 80, 30, 0) 0%, rgba(120, 80, 30, 0.22) 45%, #f3dfae 55%, #e7c98a 80%, rgba(120, 80, 30, 0) 100%);
   border-radius: 50% / 40%; }
 .std-ripple { width: calc(var(--u) * 30); height: calc(var(--u) * 30); opacity: 0; transform: translate(-50%, -50%) scale(.4); }
 .std-spark { opacity: 0; }
 /* the heart's resting place: centred on the 28, lifted above the number */
-.std-heart-home { transform: translate(-50%, calc(-50% - var(--u) * ${HEART_LIFT})); }
-.std-heart-drop, .std-heart-beat { transform-origin: 50% 90%; }
+.std-heart-home { transform: translate(-50%, -46%); }
+.std-heart-drop, .std-heart-beat { transform-origin: 50% 55%; }
 
 @media (prefers-reduced-motion: no-preference) {
   /* before the calendar is in view: rolled up, nothing below the binding */
   .std-page { clip-path: inset(0 0 100% 0); }
   .std-row, .std-heart-drop, .std-date, .std-details { opacity: 0; }
-  .std-ring path { stroke-dashoffset: 1; }
 
   /* 1. unroll */
   .std-on .std-page { animation: std-unroll 1500ms ${ROLL} 100ms both; }
@@ -275,17 +259,15 @@ const STYLES = `
   .std-on .std-ring-hook { animation: std-swing 1200ms ease-in-out 100ms both; }
 
   /* 2. heart drops, bounces twice, squashes and stretches */
-  .std-on .std-heart-drop { animation: std-drop 1200ms linear ${T.heart}ms both; }
-  .std-on .std-ring path { animation: std-draw 650ms cubic-bezier(.55,.1,.35,1) ${T.land - 20}ms both; }
-  .std-on .std-ring .std-tail { animation-duration: 220ms; animation-delay: ${T.land + 600}ms; }
-  .std-on .std-ripple { animation: std-ripple 650ms ease-out ${T.land}ms both; }
-  .std-on .std-spark { animation: std-spark 600ms ease-out ${T.land + 40}ms both; }
+  .std-on .std-heart-drop { animation: std-pop 520ms cubic-bezier(.2,.9,.3,1) ${T.pop}ms both; }
+  .std-on .std-day { animation: std-ink 260ms ease-out ${T.pop + 160}ms both; }
+  .std-on .std-ripple { animation: std-ripple 650ms ease-out ${T.pop + 150}ms both; }
+  .std-on .std-spark { animation: std-spark 600ms ease-out ${T.pop + 180}ms both; }
   .std-on .std-heart-beat { animation: std-beat 400ms ease-in-out ${T.beat}ms 2; }
 
   /* 3. the date, then a slow idle float */
   .std-on .std-date { animation: std-up 400ms ease-out ${T.date}ms both; }
   .std-on .std-details { animation: std-up 400ms ease-out ${T.details}ms both; }
-  .std-on .std-heart-float { animation: std-float 2800ms ease-in-out ${T.float}ms infinite; }
 }
 
 /* ends open above (and a little around) so the falling heart and the shadow are never clipped */
@@ -297,22 +279,17 @@ const STYLES = `
 }
 @keyframes std-fade { from { opacity: 0; transform: translateY(calc(var(--u) * -3)); } to { opacity: 1; transform: none; } }
 @keyframes std-swing { 0% { transform: rotate(0); } 25% { transform: rotate(3deg); } 55% { transform: rotate(-3deg); } 80% { transform: rotate(1.5deg); } 100% { transform: rotate(0); } }
-@keyframes std-drop {
-  0%   { opacity: 0; transform: translateY(calc(var(--u) * -380)) rotate(-12deg); animation-timing-function: cubic-bezier(.5,0,.9,.6); }
-  8%   { opacity: 1; }
-  30%  { transform: translateY(calc(var(--u) * -230)) rotate(8deg); animation-timing-function: cubic-bezier(.4,0,1,1); }
-  56%  { opacity: 1; transform: translateY(0) rotate(0) scale(1.08, .85); animation-timing-function: cubic-bezier(0,.5,.5,1); }
-  68%  { transform: translateY(calc(var(--u) * -14)) scale(.95, 1.1); animation-timing-function: cubic-bezier(.5,0,1,.5); }
-  79%  { transform: translateY(0) scale(1.04, .92); animation-timing-function: cubic-bezier(0,.5,.5,1); }
-  87%  { transform: translateY(calc(var(--u) * -5)) scale(.98, 1.04); animation-timing-function: cubic-bezier(.5,0,1,.5); }
-  94%  { transform: translateY(0) scale(1.02, .97); }
+@keyframes std-pop {
+  0%   { opacity: 0; transform: scale(0) rotate(-10deg); }
+  55%  { opacity: 1; transform: scale(1.28) rotate(4deg); }
+  78%  { transform: scale(.9) rotate(-2deg); }
   100% { opacity: 1; transform: none; }
 }
-@keyframes std-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+@keyframes std-ink { from { color: #6d0f1b; } to { color: #fff8ec; text-shadow: 0 1px 2px rgba(90, 0, 10, 0.45); } }
 @keyframes std-ripple { 0% { opacity: .8; transform: translate(-50%, -50%) scale(.4); } 100% { opacity: 0; transform: translate(-50%, -50%) scale(2); } }
 @keyframes std-spark { 0% { opacity: 0; transform: translate(-50%, -50%) rotate(45deg) scale(.4); } 30% { opacity: 1; }
   100% { opacity: 0; transform: translate(calc(-50% + var(--sx)), calc(-50% + var(--sy))) rotate(45deg) scale(1); } }
 @keyframes std-beat { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.12); } }
 @keyframes std-up { from { opacity: 0; transform: translateY(calc(var(--u) * 12)); } to { opacity: 1; transform: none; } }
-@keyframes std-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(calc(var(--u) * -3)); } }
+@media (prefers-reduced-motion: reduce) { .std-day { color: #fff8ec; text-shadow: 0 1px 2px rgba(90, 0, 10, 0.45); } }
 `;

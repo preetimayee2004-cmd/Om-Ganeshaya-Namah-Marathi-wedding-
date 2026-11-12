@@ -45,7 +45,7 @@ function Note({ name, message, i, fresh }: Wish & { i: number }) {
       ) : (
         <span className="absolute -top-2 left-1/2 h-4 w-14 -translate-x-1/2 rotate-2 bg-[#efd28f]/80" aria-hidden />
       )}
-      <p className="font-script text-2xl leading-[26px]" style={{ color: INK }}>{message}</p>
+      <p className="text-[19px] font-semibold italic leading-[1.35]" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", color: INK }}>{message}</p>
       <p className="mt-3 text-right font-body text-[11px] uppercase tracking-widest" style={{ color: GOLD_LABEL }}>— {name}</p>
     </article>
   );
@@ -205,7 +205,7 @@ export default function WishingWall() {
             <ul className="max-h-[360px] space-y-3 overflow-y-auto rounded-xl border border-[#e2c27a] bg-[#fffaf0]/90 p-4">
               {wall.map((b, i) => (
                 <li key={`all-${i}`} className="border-b border-[#efd9a5] pb-3 last:border-0 last:pb-0">
-                  <p className="font-script text-xl leading-snug" style={{ color: INK }}>{b.message}</p>
+                  <p className="text-[18px] font-semibold italic leading-[1.35]" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", color: INK }}>{b.message}</p>
                   <p className="mt-1 text-right font-body text-[10px] uppercase tracking-widest" style={{ color: GOLD_LABEL }}>— {b.name}</p>
                 </li>
               ))}
@@ -290,7 +290,7 @@ export default function WishingWall() {
           }}
         >
           <HeartIcon className="absolute -top-3 left-1/2 h-7 w-7 -translate-x-1/2" />
-          <p className="font-script text-2xl leading-[26px]" style={{ color: INK }}>{flyer.text}</p>
+          <p className="text-[19px] font-semibold italic leading-[1.35]" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", color: INK }}>{flyer.text}</p>
         </div>
       )}
       {/* hearts bursting out of the button */}

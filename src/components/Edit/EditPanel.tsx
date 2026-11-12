@@ -168,6 +168,7 @@ const SECTIONS: Section[] = [
           { path: "name", label: "Naam", kind: "text" },
           { path: "role", label: "Rishta / kaam", kind: "text", hint: "jaise: Bride's Brother" },
           { path: "phone", label: "Phone (country code ke saath, jaise +919876543210)", kind: "text" },
+          { path: "note", label: "Chhota vivaran (coordinators ke liye, jaise: Stay, travel & pickups)", kind: "text" },
         ],
         newItem: () => ({ name: "", role: "", phone: "+91" }),
         min: 1,

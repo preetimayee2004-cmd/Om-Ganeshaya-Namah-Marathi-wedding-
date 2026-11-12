@@ -170,6 +170,13 @@
   .btn-gold:active { transform: scale(0.95); }
   .btn-gold:disabled { cursor: default; opacity: 0.6; }
   .btn-gold svg { color: #E2BE6E; }
+  /* the original light-gold pill, kept for the opening / invitation screen */
+  .btn-gold.btn-light {
+    background: linear-gradient(180deg, #FCEFCB 0%, #F3DB9C 55%, #F8E8BC 100%);
+    box-shadow: inset 0 0 0 2px rgba(255, 248, 225, 0.7), inset 0 0 0 3px rgba(212, 174, 94, 0.45), 0 3px 10px rgba(110, 70, 10, 0.22);
+    color: #6d0f1b;
+  }
+  .btn-gold.btn-light svg { color: #6d0f1b; }
 }
 
 @layer utilities {

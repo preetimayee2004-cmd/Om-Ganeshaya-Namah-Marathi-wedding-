@@ -191,9 +191,9 @@ export const wedding = {
   contacts: [
     { name: "Contact Name", role: "Bride's Brother", phone: "+910000000011" },
     { name: "Contact Name", role: "Groom's Sister", phone: "+910000000012" },
-    { name: "Contact Name", role: "Guest Coordinator", phone: "+910000000013" },
-    { name: "Contact Name", role: "Wedding Coordinator", phone: "+910000000014" },
-  ],
+    { name: "Contact Name", role: "Guest Coordinator", phone: "+910000000013", note: "Stay, travel & pickups" },
+    { name: "Contact Name", role: "Wedding Coordinator", phone: "+910000000014", note: "Venue, timings & rituals" },
+  ] as { name: string; role: string; phone: string; note?: string }[],
   // Approved blessings shown on the wall. SAMPLE entries: replace with real, moderated ones.
   blessings: [
     { name: "Sample Guest", message: "May your journey together be filled with love, laughter and endless joy." },
