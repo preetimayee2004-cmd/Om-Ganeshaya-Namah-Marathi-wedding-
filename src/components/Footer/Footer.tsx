@@ -44,7 +44,7 @@ export default function Footer() {
 
       <button
         onClick={toTop}
-        className="mt-8 min-h-11 rounded-full border border-[#a8741a]/60 bg-[#fbf5e8]/90 px-8 font-body text-xs font-bold uppercase tracking-widest text-[#6d0f1b] shadow-sm transition active:scale-95 cursor-pointer"
+        className="btn-gold mt-8"
       >
         Back to top ↑
       </button>

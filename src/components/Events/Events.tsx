@@ -156,13 +156,7 @@ export default function Events() {
                             href={e.mapUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex min-h-8 items-center gap-1.5 rounded-full px-3.5 font-body text-[10.5px] font-bold uppercase tracking-[0.2em]"
-                            style={{
-                              background: "linear-gradient(180deg, #7A3B24, #5A2614)",
-                              color: "#F6DFA2",
-                              border: "calc(var(--u) * 1.5) solid #D4A53C",
-                              boxShadow: "0 1px calc(var(--u) * 4) rgba(60,30,10,0.35)",
-                            }}
+                            className="btn-gold"
                           >
                             <svg viewBox="0 0 16 16" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>
                               <path d="M8 14s4.5-4 4.5-7.5a4.5 4.5 0 1 0-9 0C3.5 10 8 14 8 14Z" />

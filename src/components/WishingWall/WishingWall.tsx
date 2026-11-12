@@ -190,8 +190,7 @@ export default function WishingWall() {
             onClick={() => setShowAll((s) => !s)}
             aria-expanded={showAll}
             aria-controls="all-wishes"
-            className="inline-flex min-h-10 items-center gap-2 rounded-xl border px-5 font-body text-[11px] font-bold uppercase tracking-[0.18em] transition active:scale-95"
-            style={{ borderColor: "#d9b25a", background: "linear-gradient(180deg,#fdf3d8,#f6e2ad)", color: INK }}
+            className="btn-gold"
           >
             <HeartIcon className="h-3.5 w-3.5" />
             {showAll ? "Hide wishes" : `View all wishes (${wall.length})`}
@@ -265,8 +264,7 @@ export default function WishingWall() {
             ref={btnRef}
             type="submit"
             disabled={status === "sending"}
-            className="min-h-11 w-full rounded-xl font-body text-sm font-bold uppercase tracking-widest shadow-md transition active:scale-95 disabled:opacity-60"
-            style={{ background: "linear-gradient(180deg, #8f1427 0%, #6d0f1b 100%)", color: "#f9e7b0", border: "calc(var(--u) * 1.5) solid #d4a53c" }}
+            className="btn-gold w-full"
           >
             {status === "sending" ? "Sending…" : "Send Blessing"}
           </button>

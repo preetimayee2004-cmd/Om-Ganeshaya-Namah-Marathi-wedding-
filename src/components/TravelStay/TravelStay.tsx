@@ -148,14 +148,7 @@ export default function TravelStay() {
           href={venue.mapUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-5 inline-flex min-h-[46px] items-center gap-2 px-6 font-body text-[12px] font-bold uppercase tracking-[0.18em] transition active:scale-95"
-          style={{
-            borderRadius: "calc(var(--u) * 12)",
-            background: "linear-gradient(180deg, #8f1427 0%, #6d0f1b 100%)",
-            color: "#f9e7b0",
-            border: "calc(var(--u) * 1.5) solid #d4a53c",
-            boxShadow: "0 calc(var(--u) * 3) calc(var(--u) * 8) rgba(60,5,15,0.3)",
-          }}
+          className="btn-gold mt-5"
         >
           <svg viewBox="0 0 16 16" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>
             <path d="M8 14s4.5-4 4.5-7.5a4.5 4.5 0 1 0-9 0C3.5 10 8 14 8 14Z" />
@@ -221,8 +214,7 @@ export default function TravelStay() {
                 <p className="mt-0.5 font-body text-[9.5px] font-bold uppercase tracking-[0.18em]" style={{ color: GOLD }}>{c.role}</p>
                 <a
                   href={`tel:${c.phone}`}
-                  className="mt-3 inline-flex min-h-10 items-center gap-1.5 rounded-full px-5 font-body text-[11px] font-bold uppercase tracking-[0.18em] transition active:scale-95"
-                  style={{ background: "linear-gradient(180deg, #8f1427 0%, #6d0f1b 100%)", color: "#f9e7b0", boxShadow: "0 calc(var(--u) * 3) calc(var(--u) * 8) rgba(60,5,15,0.3)" }}
+                  className="btn-gold mt-3"
                   aria-label={`Call ${c.name}, ${c.role}`}
                 >
                   <svg viewBox="0 0 16 16" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>

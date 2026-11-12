@@ -560,24 +560,18 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
         <button
           onClick={accept}
           disabled={stage !== 0}
-          className="relative inline-flex min-h-[44px] min-w-[210px] items-center justify-center gap-2.5 px-6 transition active:scale-[0.97]"
+          className="btn-gold relative"
           style={{
-            borderRadius: RADIUS,
-            background: "linear-gradient(180deg, #8f1427 0%, #6d0f1b 100%)",
-            border: "calc(var(--u) * 1.5) solid #d4a53c",
-            boxShadow: "inset 0 0 0 calc(var(--u) * 2) #6d0f1b, inset 0 0 0 calc(var(--u) * 3) rgba(217,178,90,0.55), 0 calc(var(--u) * 3) calc(var(--u) * 8) rgba(60,5,15,0.3)",
             transform: stage >= 1 ? "scale(0.9)" : "none",
             transition: `transform 280ms ${EASE}`,
           }}
         >
-          <svg viewBox="0 0 40 28" className="h-5 w-7 text-[#f3d98b]" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden>
+          <svg viewBox="0 0 40 28" className="h-5 w-7" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden>
             <path d="M20 3c4 5 4 12 0 17-4-5-4-12 0-17Z" />
             <path d="M20 20c-6-1-10-5-11-10 6 0 10 3 11 10Zm0 0c6-1 10-5 11-10-6 0-10 3-11 10Z" />
             <path d="M6 24c6 3 22 3 28 0" />
           </svg>
-          <span className="text-[19px] font-semibold leading-none tracking-wide text-[#f9e7b0]" style={{ fontFamily: SERIF }}>
-            Joyfully Accept
-          </span>
+          <span>Joyfully Accept</span>
         </button>
         {/* "We can't wait to celebrate with you!" framed by gold rules */}
         <div className="mt-4 flex w-full max-w-[360px] items-center gap-3 px-1" aria-hidden={false}>
@@ -612,14 +606,7 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
         <button
           onClick={downloadIcs}
           tabIndex={stage >= 5 ? 0 : -1}
-          className="inline-flex min-h-[44px] items-center gap-2 px-5 font-body text-[11px] font-bold uppercase tracking-[0.18em] transition active:scale-95"
-          style={{
-            borderRadius: RADIUS,
-            background: "linear-gradient(180deg, #7A3B24, #5A2614)",
-            color: "#F6DFA2",
-            border: "calc(var(--u) * 1.5) solid #D4A53C",
-            boxShadow: "0 calc(var(--u) * 2) calc(var(--u) * 6) rgba(60,30,10,0.35)",
-          }}
+          className="btn-gold"
         >
           <svg viewBox="0 0 16 16" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden>
             <rect x="2" y="3" width="12" height="11" rx="1.5" />

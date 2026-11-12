@@ -135,8 +135,8 @@ export const wedding = {
     {
       side: "Groom's Family",
       marathi: "वर पक्ष",
-      surname: "Groom Surname Family", // TODO: groom's family surname not given yet
-      parents: ["Shri. Anil", "Smt. Sunita"],
+      surname: "Deshpande Family", // example surname: replace with the real one
+      parents: ["Shri. Anil Deshpande", "Smt. Sunita Deshpande"],
       message: "Please join us with your family to bless our dear Shreyash.",
       members: ["आजी-आजोबा", "काका-काकू", "मामा-मामी"],
       photo: "/family/groom.jpg" as string | undefined,
