@@ -1108,7 +1108,7 @@ export default function Intro() {
                 boxShadow: "inset 0 0 0 calc(var(--u) * 2) rgba(255,248,225,0.7), inset 0 0 0 calc(var(--u) * 3) rgba(212,174,94,0.45), 0 calc(var(--u) * 3) calc(var(--u) * 10) rgba(110,70,10,0.22)",
               }}
             >
-              <span className="font-serif text-[12.5px] font-semibold tracking-[0.14em] uppercase text-[#6d0f1b]">
+              <span className="font-serif text-[12.5px] font-bold tracking-[0.14em] uppercase text-[#6d0f1b]">
                 Open Invitation
               </span>
               <span className="text-[#C9963A] text-[11px] leading-none transition-transform duration-300 group-hover:translate-y-0.5 animate-bounce">
