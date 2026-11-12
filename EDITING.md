@@ -36,4 +36,4 @@ RSVP couple ke liye transparent background wali PNG chahiye.
 
 ## Background music
 
-`public/audio/bgm.mp3` naam se koi gaana rakhiye; site wahi bajayegi. Na ho to halka tanpura bajta hai.
+`public/audio/bgm.mp3` naam se koi gaana rakhiye; site wahi bajayegi. File na ho to koi background music nahi bajta (sirf ghanti, scratch jaisi chhoti awaazein).
