@@ -6,9 +6,9 @@ import { useScrollRoot } from "../Layout/ScrollRoot";
 type Photo = (typeof wedding.gallery)[number];
 
 // ===== ANTARPAT REVEAL TIMING (ms after the section comes into view) =====
-const T_REVEAL = 1500; // couple photo starts to fade in while the curtains are still parting
-const T_STRIP = 3700; // remaining photos slide out into the film strip
-const T_SETTLED = 4800; // animation finished: carousel becomes swipeable
+const T_REVEAL = 800; // couple photo starts to fade in while the curtains are still parting
+const T_STRIP = 1700; // remaining photos slide out into the film strip
+const T_SETTLED = 2100; // the carousel starts gliding (and becomes swipeable) about 2 s after arriving
 const SLIDE_MS = 3400; // film strip glides continuously: one photo passes the centre every SLIDE_MS
 const RESUME_MS = 1000; // after the visitor touches / drags, the glide resumes after this long
 const HERO_INDEX = 2; // which photo in `wedding.gallery` is the hero
@@ -175,7 +175,7 @@ export default function Gallery() {
           io.disconnect();
         }
       },
-      { root: scroller ?? null, threshold: 0.45 },
+      { root: scroller ?? null, threshold: 0.2 },
     );
     io.observe(el);
     return () => io.disconnect();

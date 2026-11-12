@@ -113,7 +113,7 @@ function Row({ e, i, first, last }: { e: Ev; i: number; first: boolean; last: bo
         <Stub hidden={last} />
       </div>
       <div className={`tl-text min-w-0 self-center ${left ? "order-2 pl-3 text-left" : "order-1 pr-3 text-right"}`}>
-        <h3 id={`tl-${e.id}`} className="font-script text-[36px] font-normal leading-[1.05] [overflow-wrap:anywhere]" style={{ color: MAROON, ...t(0) }}>
+        <h3 id={`tl-${e.id}`} className={`font-script ${e.name.length > 14 ? "text-[29px]" : "text-[36px]"} font-normal leading-[1.05] [overflow-wrap:anywhere]`} style={{ color: MAROON, ...t(0) }}>
           {e.name}
         </h3>
         <p lang="mr" className="mt-0.5 font-marathi text-[13px]" style={{ color: GOLD, ...t(1) }}>
@@ -125,7 +125,7 @@ function Row({ e, i, first, last }: { e: Ev; i: number; first: boolean; last: bo
         <div className="mt-3" style={t(3)}>
           <button
             type="button"
-            className="btn-gold whitespace-nowrap !px-3 !text-[10px] !tracking-[0.05em]"
+            className="btn-gold btn-outline whitespace-nowrap !px-3 !text-[10px] !tracking-[0.05em]"
             aria-expanded={open}
             aria-controls={`tl-more-${e.id}`}
             onClick={() => setOpen((o) => !o)}
@@ -133,22 +133,137 @@ function Row({ e, i, first, last }: { e: Ev; i: number; first: boolean; last: bo
             {open ? "Hide details" : "Tap to view details"}
           </button>
         </div>
-        {open && (
-          <div id={`tl-more-${e.id}`} className="tl-more mt-3">
-            <p className="text-[15px] font-medium leading-snug" style={{ fontFamily: SERIF, color: INK }}>
-              {whenLine(e.start)}
+      </div>
+      {open && (
+        <div className="order-3 col-span-2 mt-4">
+          <EventDetails e={e} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+const timeOnly = (iso: string) =>
+  new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit", hour12: true, timeZone: tz }).format(new Date(iso)).toUpperCase();
+const listNames = (xs: string[]) => (xs.length < 2 ? xs.join("") : `${xs.slice(0, -1).join(", ")} & ${xs[xs.length - 1]}`);
+
+/** one-event calendar file, so "Calendar" adds just this ceremony */
+function downloadEventIcs(e: Ev) {
+  const start = new Date(e.start);
+  const end = new Date(start.getTime() + 3 * 3600 * 1000);
+  const f = (d: Date) => d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+  const esc = (s: string) => s.replace(/([,;\\])/g, "\\$1").replace(/\n/g, "\\n");
+  const ics = [
+    "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Wedding Invitation//EN", "BEGIN:VEVENT",
+    `UID:${e.id}-${f(start)}@wedding-invitation`, `DTSTAMP:${f(new Date())}`, `DTSTART:${f(start)}`, `DTEND:${f(end)}`,
+    `SUMMARY:${esc(e.name)}`, `LOCATION:${esc(e.venue)}`, `DESCRIPTION:${esc(e.description)}`,
+    "END:VEVENT", "END:VCALENDAR",
+  ].join("\r\n");
+  const url = URL.createObjectURL(new Blob([ics], { type: "text/calendar;charset=utf-8" }));
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `${e.id}.ics`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+const Icon = {
+  clock: (
+    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden>
+      <circle cx="10" cy="10" r="7.5" />
+      <path d="M10 5.5V10l3 2" />
+    </svg>
+  ),
+  place: (
+    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" aria-hidden>
+      <path d="M10 2.5l1 2h-2zM4 8h12L10 4.5zM5 8v8M15 8v8M8 16v-4a2 2 0 0 1 4 0v4M3 16.5h14" />
+    </svg>
+  ),
+  wear: (
+    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M10 6.2a1.8 1.8 0 1 0-1.8-1.8M10 6.2v1.3L2.8 13a1 1 0 0 0 .6 1.8h13.2a1 1 0 0 0 .6-1.8L10 7.5" />
+    </svg>
+  ),
+};
+
+function Tile({ icon, value, label }: { icon: JSX.Element; value: string; label: string }) {
+  return (
+    <div className="flex min-w-0 flex-col items-center rounded-[8px] px-1.5 py-2.5 text-center" style={{ background: "#f6ead2" }}>
+      <span className="block" style={{ width: u(20), height: u(20), color: MAROON }}>{icon}</span>
+      <span className="mt-1 text-[15px] font-semibold leading-tight [overflow-wrap:anywhere]" style={{ fontFamily: SERIF, color: INK }}>{value}</span>
+      <span className="mt-0.5 font-body text-[10px] font-bold uppercase tracking-[0.14em]" style={{ color: GOLD }}>{label}</span>
+    </div>
+  );
+}
+
+/** the expanded event: time / place / wear tiles, description, dress code, calendar + directions */
+function EventDetails({ e }: { e: Ev }) {
+  const wear = e.dressCode[0]?.name ?? "Festive";
+  const place = e.venue.split(",")[0];
+  return (
+    <div
+      id={`tl-more-${e.id}`}
+      className="tl-more relative overflow-hidden rounded-[12px] px-4 pb-4 pt-3 text-left"
+      style={{ background: "#fffaf0", border: `${u(1)} solid #ecdcbf`, borderTop: `${u(3)} dashed ${MAROON}`, boxShadow: `0 ${u(6)} ${u(16)} ${u(-8)} rgba(120,80,20,0.3)` }}
+    >
+      {/* header: the event's picture, its Marathi name faint in the corner */}
+      <div className="relative flex items-center justify-between">
+        <img src={e.image} alt="" aria-hidden className="h-[44px] w-[44px] rounded-[6px] object-cover" draggable={false} />
+        <span lang="mr" aria-hidden className="pointer-events-none font-marathi text-[30px] font-semibold leading-none" style={{ color: "rgba(122,20,32,0.13)" }}>
+          {e.marathi}
+        </span>
+      </div>
+
+      <div className="mt-3 grid grid-cols-3 gap-2">
+        <Tile icon={Icon.clock} value={timeOnly(e.start)} label="Time" />
+        <Tile icon={Icon.place} value={place} label="Place" />
+        <Tile icon={Icon.wear} value={wear} label="Wear" />
+      </div>
+
+      <p className="mt-4 border-l-2 pl-3 text-[16px] italic leading-snug" style={{ fontFamily: SERIF, color: "#5a3a2a", borderColor: "#c9a056" }}>
+        {e.description}
+      </p>
+
+      {e.dressCode.length > 0 && (
+        <div className="mt-4 flex items-end justify-between gap-3">
+          <div className="min-w-0">
+            <p className="font-body text-[10.5px] font-bold uppercase tracking-[0.16em]" style={{ color: GOLD }}>Dress code</p>
+            <p className="mt-0.5 text-[15px] font-semibold leading-snug" style={{ fontFamily: SERIF, color: INK }}>
+              {listNames(e.dressCode.map((d) => d.name))}
             </p>
-            <p className="mt-1 text-[16px] font-bold leading-snug" style={{ fontFamily: SERIF, color: MAROON }}>
-              {e.venue}
-            </p>
-            <p className="mt-1.5 text-[13.5px] italic leading-snug" style={{ fontFamily: SERIF, color: "#8a6a5a" }}>
-              {e.description}
-            </p>
-            <div className="mt-2.5">
-              <PinButton href={e.mapUrl} name={e.name} />
-            </div>
           </div>
-        )}
+          <div className="flex shrink-0">
+            {e.dressCode.map((d, k) => (
+              <span
+                key={d.name}
+                aria-hidden
+                className="block rounded-full"
+                style={{ width: u(22), height: u(22), background: d.color, border: `${u(2)} solid #fffaf0`, marginLeft: k ? u(-7) : 0 }}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="my-4 border-t border-dashed" style={{ borderColor: "#e3cfa6" }} />
+
+      <div className="grid grid-cols-2 gap-2.5">
+        <button type="button" className="btn-gold !px-2" onClick={() => downloadEventIcs(e)}>
+          <svg viewBox="0 0 16 16" className="h-[14px] w-[14px]" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden>
+            <rect x="2" y="3" width="12" height="11" rx="1.5" />
+            <path d="M2 6.5h12M5.5 1.5v3M10.5 1.5v3" />
+          </svg>
+          Calendar
+        </button>
+        <a href={e.mapUrl} target="_blank" rel="noopener noreferrer" className="btn-gold btn-outline !px-2">
+          <svg viewBox="0 0 16 16" className="h-[14px] w-[14px]" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>
+            <path d="M8 14s4.5-4 4.5-7.5a4.5 4.5 0 1 0-9 0C3.5 10 8 14 8 14Z" />
+            <circle cx="8" cy="6.5" r="1.6" />
+          </svg>
+          Directions
+        </a>
       </div>
     </div>
   );
@@ -194,7 +309,7 @@ export default function Events() {
             <Diamond size={6} style={{ left: 0, top: "50%", translate: "-50% -50%" }} />
           </span>
         </div>
-        <h2 id="events-title" className="mt-1 font-script text-[52px] font-normal leading-tight" style={{ color: MAROON }}>
+        <h2 id="events-title" className="section-title mt-2" style={{ color: MAROON }}>
           Time Line
         </h2>
         <svg viewBox="0 0 160 14" className="mx-auto block" style={{ width: u(120), height: u(11) }} fill="none" stroke={GOLD} strokeWidth="1" aria-hidden>

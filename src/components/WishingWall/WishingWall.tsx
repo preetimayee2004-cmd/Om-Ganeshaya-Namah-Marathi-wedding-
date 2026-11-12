@@ -169,6 +169,11 @@ export default function WishingWall() {
         <p className="font-body text-[10px] uppercase tracking-[0.35em]" style={{ color: GOLD_LABEL }}>Wishing wall</p>
         <h2 id="blessings-title" className="section-title mt-2" style={{ color: INK }}>Blessings &amp; Wishes</h2>
         <p lang="mr" className="mt-1 text-sm font-semibold" style={{ color: GOLD_LABEL }}>शुभाशीर्वाद</p>
+        {isPersonalised && (
+          <p className="mx-auto mt-2 max-w-[18rem] text-[17px] italic leading-snug" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
+            <span className="guest-name not-italic">{guestName}</span>, leave a blessing for the couple
+          </p>
+        )}
       </Reveal>
 
       <div
@@ -190,7 +195,7 @@ export default function WishingWall() {
             onClick={() => setShowAll((s) => !s)}
             aria-expanded={showAll}
             aria-controls="all-wishes"
-            className="btn-gold"
+            className="btn-gold btn-outline"
           >
             <HeartIcon className="h-3.5 w-3.5" />
             {showAll ? "Hide wishes" : `View all wishes (${wall.length})`}

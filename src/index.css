@@ -51,6 +51,7 @@
   .screen:not(.screen--mockup) .invite-zoom { zoom: 1.1; }
   /* couple section: lift the names/parents block so it clears the couple's heads */
   .screen:not(.screen--mockup) .couple-text { padding-top: calc(var(--u) * 96); }
+  .screen:not(.screen--mockup) .couple-text.has-guest { padding-top: calc(var(--u) * 72); }
   /* "Dear <guest>," adds a line to the invitation screen: start it higher so the venue stays above the roofs */
   .screen:not(.screen--mockup) .intro-fit-top.has-guest { padding-top: 12%; }
 }
@@ -72,6 +73,9 @@
   padding: calc(env(safe-area-inset-top, 0px) + 10px) 16px 0;
 }
 .screen--mockup .top-controls { padding: 7px 18px 0; }
+
+/* "Dear <guest>," adds a line above the couple's names: start the block that much higher */
+.couple-text.has-guest { padding-top: calc(var(--u) * 104); }
 
 /* the guest's own name, wherever the invitation addresses them */
 .guest-name {
@@ -177,6 +181,14 @@
     color: #6d0f1b;
   }
   .btn-gold.btn-light svg { color: #6d0f1b; }
+  /* outline ("stroke") variant: no fill, maroon border and lettering */
+  .btn-gold.btn-outline {
+    background: rgba(255, 250, 242, 0.88);
+    box-shadow: none;
+    border: 1.5px solid #7a1420;
+    color: #7a1420;
+  }
+  .btn-gold.btn-outline svg { color: #7a1420; }
 }
 
 @layer utilities {
@@ -504,7 +516,8 @@ html { background: #2b1d18; }
 @media (prefers-reduced-motion: reduce) { [style*="wish-"] { animation: none !important } }
 
 /* one section-heading style everywhere: single line, same size, never cut */
-.section-title { font-size: 30px; line-height: 1.15; white-space: nowrap; letter-spacing: 0; }
+/* section headings: plain, bold Cormorant so they read clearly (not the script face) */
+.section-title { font-family: "Cormorant Garamond", Georgia, serif; font-weight: 700; font-size: 30px; line-height: 1.15; white-space: nowrap; letter-spacing: 0.01em; }
 
 /* Thank-you card: hanging bells swing gently */
 @keyframes ty-swing { from { transform: rotate(-4deg) } to { transform: rotate(4deg) } }
@@ -525,4 +538,14 @@ html { background: #2b1d18; }
   border: 1px solid rgba(201, 160, 86, 0.7);
   pointer-events: none;
   z-index: -1;
+}
+
+/* invitation + couple screens: the text blocks sway gently in 3D, all the time */
+@keyframes tilt-3d {
+  0%   { transform: perspective(calc(var(--u) * 700)) rotateX(3deg) rotateY(-5deg); }
+  50%  { transform: perspective(calc(var(--u) * 700)) rotateX(-2deg) rotateY(5deg); }
+  100% { transform: perspective(calc(var(--u) * 700)) rotateX(3deg) rotateY(-5deg); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .tilt-3d { animation: tilt-3d 7s ease-in-out infinite; transform-origin: 50% 40%; will-change: transform; }
 }

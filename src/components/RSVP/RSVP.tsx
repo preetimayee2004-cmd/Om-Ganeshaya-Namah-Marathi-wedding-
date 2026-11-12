@@ -283,10 +283,10 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
               transition: stage === 0 ? `opacity 1200ms ${EASE} 250ms, transform 1200ms ${EASE} 250ms` : `opacity 350ms ${EASE}`,
             }}
           >
-            <span className="block leading-[1.1]" style={{ fontSize: "10cqw", fontWeight: 600, letterSpacing: "0.01em" }}>
+            <span className="block leading-[1.1]" style={{ fontSize: "10cqw", fontWeight: 700, letterSpacing: "0.01em" }}>
               Your Presence,
             </span>
-            <span className="block font-script leading-[1.05]" style={{ fontSize: "16cqw", marginTop: "-0.5cqw" }}>
+            <span className="block leading-[1.1]" style={{ fontSize: "10cqw", fontWeight: 700 }}>
               Our Blessing
             </span>
             {/* divider: gold hairlines with small diamonds and a four-petal centre */}
@@ -556,7 +556,7 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
         className="relative mx-auto flex flex-col items-center overflow-hidden"
         style={{
           zIndex: 1,
-          maxHeight: stage === 0 ? 140 : 0,
+          maxHeight: stage === 0 ? "calc(var(--u) * 190)" : 0,
           opacity: stage === 0 && entered ? 1 : 0,
           marginTop: stage === 0 ? 0 : 0,
           transition: `opacity ${stage === 0 ? "500ms ease 600ms" : "350ms ease 120ms"}, max-height 600ms ${EASE} 300ms`,
@@ -578,6 +578,9 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
           </svg>
           <span>Joyfully Accept</span>
         </button>
+        <p className="mt-2 font-body text-[12.5px] font-semibold tracking-[0.06em] text-[#8a5f15]">
+          <span aria-hidden>↑ </span>Tap on the Accept button
+        </p>
         {/* "We can't wait to celebrate with you!" framed by gold rules */}
         <div className="mt-4 flex w-full max-w-[360px] items-center gap-3 px-1" aria-hidden={false}>
           <span className="h-px flex-1" style={{ background: "linear-gradient(90deg, transparent, #b5782a)" }} />

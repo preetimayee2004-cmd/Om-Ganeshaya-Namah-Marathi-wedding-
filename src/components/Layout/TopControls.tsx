@@ -25,8 +25,8 @@ export default function TopControls({ mode }: { mode: "fixed" | "sticky" }) {
   const { muted, introActive } = useSoundState();
   const off = muted;
   // same gold pill as the Open Invitation button (.btn-gold)
-  // light gold while the opening / invitation screen is showing, maroon like the rest of the site after it
-  const pill = `btn-gold pointer-events-auto${introActive ? " btn-light" : ""}`;
+    // outline (stroke) pills, the same everywhere
+  const pill = "btn-gold btn-outline pointer-events-auto";
 
   const row = (
     <div className="top-controls pointer-events-none flex items-center justify-between">

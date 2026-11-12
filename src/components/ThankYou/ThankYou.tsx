@@ -179,12 +179,12 @@ export default function ThankYou() {
           <ArchPortrait />
         </div>
 
-        <h2 id="thanks-title" className="relative -mt-1 font-script text-[42px] leading-tight" style={{ color: MAROON, WebkitTextStroke: "0.4px #7a1420", ...handwrite(seen, 500) }}>
+        <h2 id="thanks-title" className="section-title relative mt-1 !text-[26px] leading-tight" style={{ color: MAROON, ...handwrite(seen, 500) }}>
           A Celebration of Love
         </h2>
         <LotusDivider w={80} style={{ marginTop: "calc(var(--u) * 6)" }} />
-        <p lang="mr" className="relative mt-1 font-marathi text-[44px] font-bold leading-tight" style={{ color: MAROON, ...fade(500) }}>
-          <span className="mr-3 font-normal opacity-80">॥</span>धन्यवाद<span className="ml-3 font-normal opacity-80">॥</span>
+        <p lang="mr" className="relative mt-1 font-marathi text-[24px] font-bold leading-tight" style={{ color: MAROON, ...fade(500) }}>
+          <span className="mr-2 font-normal opacity-80">॥</span>धन्यवाद<span className="ml-2 font-normal opacity-80">॥</span>
         </p>
         <LotusDivider w={65} />
 

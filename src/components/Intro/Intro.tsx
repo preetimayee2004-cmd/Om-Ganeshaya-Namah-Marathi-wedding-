@@ -1055,7 +1055,7 @@ export default function Intro() {
           }}
         >
           {/* Top Zone: Clean English Invitation Typography positioned in clear sunset sky */}
-          <div className={`intro-fit-top invite-zoom relative z-10 px-6 pt-[20%] text-center flex flex-col items-center${isPersonalised ? " has-guest" : ""}`}>
+          <div className={`tilt-3d intro-fit-top invite-zoom relative z-10 px-6 pt-[20%] text-center flex flex-col items-center${isPersonalised ? " has-guest" : ""}`}>
             {/* Invitation Heading */}
             <div
               className="relative z-10 flex flex-col items-center"
@@ -1334,7 +1334,7 @@ export default function Intro() {
           </div>
 
           {/* Top Sky Region: Couple Names, Romantic Marathi Quotation, Parents (positioned below floral toran to prevent overlap) */}
-          <div className="couple-text relative z-10 px-6 pt-32 text-center">
+          <div className={`tilt-3d couple-text relative z-10 px-6 pt-32 text-center${isPersonalised ? " has-guest" : ""}`}>
             {/* Marathi Romantic Quotation (2.20s – 2.80s) */}
             <div
               style={{
@@ -1343,6 +1343,11 @@ export default function Intro() {
                 transition: `opacity 600ms ${EASE_PRIMARY}, transform 600ms ${EASE_PRIMARY}`,
               }}
             >
+              {isPersonalised && (
+                <p className="mb-1 font-serif text-[17px] italic text-[#7a3a2a]">
+                  Dear <span className="guest-name not-italic">{guestName}</span>,
+                </p>
+              )}
               <p lang="mr" className="font-marathi text-2xl font-bold text-[#6d0f1b]">
                 दोन मने, एक गाठ
               </p>
