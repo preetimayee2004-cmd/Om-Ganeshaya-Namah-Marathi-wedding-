@@ -1034,7 +1034,7 @@ export default function Intro() {
           }}
         >
           {/* Top Zone: Clean English Invitation Typography positioned in clear sunset sky */}
-          <div className="intro-fit-top relative z-10 px-6 pt-[20%] text-center flex flex-col items-center">
+          <div className="intro-fit-top invite-zoom relative z-10 px-6 pt-[20%] text-center flex flex-col items-center">
             {/* Invitation Heading */}
             <div
               className="relative z-10 flex flex-col items-center"
@@ -1103,7 +1103,7 @@ export default function Intro() {
 
           {/* Refined Slim Pill Button: chota aur patla, thin gold border, maroon serif typography, smaller arrow */}
           <div
-            className="relative z-20 flex flex-col items-center pb-7 pt-2"
+            className="invite-zoom relative z-20 flex flex-col items-center pb-7 pt-2"
             style={{
               opacity: s4Hold ? 1 : 0,
               transform: s4Hold ? "translateY(0)" : "translateY(calc(var(--u) * 10))",

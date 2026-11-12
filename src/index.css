@@ -42,6 +42,15 @@
   .screen.screen--mockup > .screen-content { --u: calc(100cqw / 390); --vh: 1cqh; }
 }
 
+/* Invitation screen (intro scene 4): keep the text and button at the size they had in the laptop
+   mockup before the screen-scaling change. That mockup display was ~316px wide with 44px names,
+   i.e. 390/316 = 1.23x the 390px design, so the block is zoomed by that on every screen. */
+.invite-zoom { zoom: 1.23; }
+/* short 16:9 phones (320x568, 360x640, 375x667): at 1.23 the venue line slides behind the palace roofs */
+@media (max-width: 500px) and (min-aspect-ratio: 1/2) {
+  .screen:not(.screen--mockup) .invite-zoom { zoom: 1.1; }
+}
+
 /* Landscape phones (~390px tall) cannot hold the portrait full-screen intro, so only there the
    intro's design px is also limited by the height (~470 design px of content must fit). Portrait
    phones, tablets and the laptop mockup never match this query and are unchanged. */
@@ -49,6 +58,7 @@
   /* full-screen intro scenes: shrink to fit the short screen */
   .screen-content .intro-fit.fixed { --u: min(calc(min(100vw, 430px) / 390), calc(100dvh / 470)); }
   .screen-content .intro-fit.fixed .intro-fit-top { padding-top: 6dvh; }
+  .screen-content .intro-fit.fixed .invite-zoom { zoom: 1; }
   /* settled couple hero (part of the scrolling page): keep the portrait phone height and scroll */
   .screen-content .intro-fit.relative { height: calc(var(--u) * 844); min-height: 0; }
 }
