@@ -42,6 +42,10 @@ const NAME_STROKE = { WebkitTextStroke: "0.7px #6d0f1b" } as const;
 const inkWipe = (show: boolean, delay: number, ms = 1100): CSSProperties => {
   const mask = "linear-gradient(90deg, #000 40%, transparent 60%)";
   return {
+    // the mask only covers the element's box, and script swashes reach past it: pad the box
+    // (and pull it back with negative margins) so no stroke of the name gets clipped
+    padding: "0.3em 0.4em 0.22em",
+    margin: "-0.3em -0.4em -0.22em",
     WebkitMaskImage: mask,
     maskImage: mask,
     WebkitMaskSize: "260% 100%",
