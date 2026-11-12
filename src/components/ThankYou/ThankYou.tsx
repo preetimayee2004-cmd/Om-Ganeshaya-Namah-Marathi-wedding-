@@ -18,7 +18,7 @@ export default function ThankYou() {
   const [ref, seen] = useInView<HTMLElement>(0.1);
   const fade = (delay: number) => ({
     opacity: seen ? 1 : 0,
-    transform: seen ? "none" : "translateY(10px)",
+    transform: seen ? "none" : "translateY(calc(var(--u) * 10))",
     transition: `opacity 600ms ease ${delay}ms, transform 600ms ease ${delay}ms`,
   });
 

@@ -218,7 +218,7 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
               className="absolute"
               style={{
                 left: `${pt.left}%`,
-                top: -30,
+                top: "calc(var(--u) * -30)",
                 width: pt.size,
                 height: pt.size,
                 opacity: 0,
@@ -279,7 +279,7 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
             style={{
               fontFamily: SERIF,
               opacity: entered && stage === 0 ? 1 : 0,
-              transform: entered && stage === 0 ? "none" : "translateY(10px)",
+              transform: entered && stage === 0 ? "none" : "translateY(calc(var(--u) * 10))",
               transition: stage === 0 ? `opacity 1200ms ${EASE} 250ms, transform 1200ms ${EASE} 250ms` : `opacity 350ms ${EASE}`,
             }}
           >
@@ -311,7 +311,7 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
             marginTop: 0,
             aspectRatio: `${W} / ${H}`,
             opacity: entered ? 1 : 0,
-            transform: entered ? "none" : "translateY(70px) perspective(900px) rotateX(18deg)",
+            transform: entered ? "none" : "translateY(calc(var(--u) * 70)) perspective(calc(var(--u) * 900)) rotateX(18deg)",
             transformOrigin: "50% 100%",
             transition: `opacity 1200ms ease, transform 1000ms ${EASE}`,
           }}
@@ -332,7 +332,7 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
                     : undefined
               }
             >
-              <div className="relative h-full w-full" style={{ perspective: "1400px", perspectiveOrigin: "50% 35%" }}>
+              <div className="relative h-full w-full" style={{ perspective: "calc(var(--u) * 1400)", perspectiveOrigin: "50% 35%" }}>
                 {/* base: envelope + corner flowers, seal and tassel removed */}
                 <img src="/rsvp/envelope-only.png" alt="" draggable={false} className="absolute inset-0 h-full w-full" />
 
@@ -362,8 +362,8 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
                       style={{
                         borderRadius: RADIUS,
                         background: "linear-gradient(170deg, #fffaf0 0%, #f9efd9 60%, #f1e2c0 100%)",
-                        border: "2px solid #d4a53c",
-                        boxShadow: "inset 0 0 0 4px #fbf3df, inset 0 0 0 5px rgba(212,165,60,0.7), 0 6px 16px rgba(40,10,5,0.35)",
+                        border: "calc(var(--u) * 2) solid #d4a53c",
+                        boxShadow: "inset 0 0 0 calc(var(--u) * 4) #fbf3df, inset 0 0 0 calc(var(--u) * 5) rgba(212,165,60,0.7), 0 calc(var(--u) * 6) calc(var(--u) * 16) rgba(40,10,5,0.35)",
                       }}
                     />
                     {/* the couple stands on the card, rising out of the envelope with it */}
@@ -380,7 +380,7 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
                           animation: textShown ? "rsvp-wave 2.8s ease-in-out infinite" : undefined,
                           WebkitMaskImage: "linear-gradient(to bottom, #000 82%, transparent 100%)",
                           maskImage: "linear-gradient(to bottom, #000 82%, transparent 100%)",
-                          filter: "drop-shadow(0 4px 6px rgba(80,30,20,0.28))",
+                          filter: "drop-shadow(0 calc(var(--u) * 4) calc(var(--u) * 6) rgba(80,30,20,0.28))",
                         }}
                       />
                     </div>
@@ -391,7 +391,7 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
                         top: "9cqw",
                         padding: "0 6%",
                         opacity: textShown ? 1 : 0,
-                        transform: textShown ? "none" : "translateY(8px)",
+                        transform: textShown ? "none" : "translateY(calc(var(--u) * 8))",
                         transition: `opacity ${T_TEXT}ms ease, transform ${T_TEXT}ms ${EASE}`,
                       }}
                     >
@@ -456,15 +456,15 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
                       transform: "rotateY(180deg)",
                       transformOrigin: `${px(599)} 50%`,
                       background: "linear-gradient(180deg, #f3e2bd 0%, #e6c98c 100%)",
-                      boxShadow: "inset 0 0 0 3px #d4a53c",
+                      boxShadow: "inset 0 0 0 calc(var(--u) * 3) #d4a53c",
                     }}
                   />
                 </div>
 
                 {/* wax seal (two halves) and tassel: pixel-exact cut-outs of the artwork */}
                 {([
-                  ["rsvp-seal-l", "translate(-16px, 9px) rotate(-16deg)"],
-                  ["rsvp-seal-r", "translate(16px, 11px) rotate(18deg)"],
+                  ["rsvp-seal-l", "translate(calc(var(--u) * -16), calc(var(--u) * 9)) rotate(-16deg)"],
+                  ["rsvp-seal-r", "translate(calc(var(--u) * 16), calc(var(--u) * 11)) rotate(18deg)"],
                 ] as const).map(([id, move]) => (
                   <img
                     key={id}
@@ -498,7 +498,7 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
                     height: `${((PIECE.h / H) * 100).toFixed(3)}%`,
                     clipPath: "url(#rsvp-tassel)",
                     zIndex: 6,
-                    transform: sealOpen ? "translateY(18px)" : "none",
+                    transform: sealOpen ? "translateY(calc(var(--u) * 18))" : "none",
                     ...gone(sealOpen),
                     transition: `transform ${T_SEAL}ms ${EASE}, opacity ${T_SEAL * 0.8}ms ease`,
                   }}
@@ -564,8 +564,8 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
           style={{
             borderRadius: RADIUS,
             background: "linear-gradient(180deg, #8f1427 0%, #6d0f1b 100%)",
-            border: "1.5px solid #d4a53c",
-            boxShadow: "inset 0 0 0 2px #6d0f1b, inset 0 0 0 3px rgba(217,178,90,0.55), 0 3px 8px rgba(60,5,15,0.3)",
+            border: "calc(var(--u) * 1.5) solid #d4a53c",
+            boxShadow: "inset 0 0 0 calc(var(--u) * 2) #6d0f1b, inset 0 0 0 calc(var(--u) * 3) rgba(217,178,90,0.55), 0 calc(var(--u) * 3) calc(var(--u) * 8) rgba(60,5,15,0.3)",
             transform: stage >= 1 ? "scale(0.9)" : "none",
             transition: `transform 280ms ${EASE}`,
           }}
@@ -582,11 +582,11 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
         {/* "We can't wait to celebrate with you!" framed by gold rules */}
         <div className="mt-4 flex w-full max-w-[360px] items-center gap-3 px-1" aria-hidden={false}>
           <span className="h-px flex-1" style={{ background: "linear-gradient(90deg, transparent, #b5782a)" }} />
-          <span className="relative -ml-1 -mr-1 h-1.5 w-1.5 rotate-45 bg-[#b5782a]" style={{ marginRight: -6 }} />
-          <p className="whitespace-nowrap text-center italic leading-none text-[#7a1420]" style={{ fontFamily: SERIF, fontWeight: 600, fontSize: "clamp(16px, 4.8vw, 20px)" }}>
+          <span className="relative -ml-1 -mr-1 h-1.5 w-1.5 rotate-45 bg-[#b5782a]" style={{ marginRight: "calc(var(--u) * -6)" }} />
+          <p className="whitespace-nowrap text-center italic leading-none text-[#7a1420]" style={{ fontFamily: SERIF, fontWeight: 600, fontSize: "calc(var(--u) * 20)" }}>
             We can&apos;t wait to celebrate with you!
           </p>
-          <span className="relative h-1.5 w-1.5 rotate-45 bg-[#b5782a]" style={{ marginLeft: -6 }} />
+          <span className="relative h-1.5 w-1.5 rotate-45 bg-[#b5782a]" style={{ marginLeft: "calc(var(--u) * -6)" }} />
           <span className="h-px flex-1" style={{ background: "linear-gradient(270deg, transparent, #b5782a)" }} />
         </div>
         {error && (
@@ -603,7 +603,7 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
           zIndex: 1,
           maxHeight: stage >= 5 ? 80 : 0,
           opacity: stage >= 5 ? 1 : 0,
-          transform: stage >= 5 ? "none" : "translateY(8px)",
+          transform: stage >= 5 ? "none" : "translateY(calc(var(--u) * 8))",
           marginTop: stage >= 5 ? 12 : 0,
           transition: `opacity 500ms ease, transform 500ms ${EASE}, max-height 600ms ${EASE}, margin-top 600ms ${EASE}`,
         }}
@@ -617,8 +617,8 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
             borderRadius: RADIUS,
             background: "linear-gradient(180deg, #7A3B24, #5A2614)",
             color: "#F6DFA2",
-            border: "1.5px solid #D4A53C",
-            boxShadow: "0 2px 6px rgba(60,30,10,0.35)",
+            border: "calc(var(--u) * 1.5) solid #D4A53C",
+            boxShadow: "0 calc(var(--u) * 2) calc(var(--u) * 6) rgba(60,30,10,0.35)",
           }}
         >
           <svg viewBox="0 0 16 16" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden>

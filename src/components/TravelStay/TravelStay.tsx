@@ -87,9 +87,9 @@ const MODES = [
 
 const cardFrame: React.CSSProperties = {
   background: "#fbf1dc",
-  border: "1.5px solid #dcc08a",
-  boxShadow: "inset 0 0 0 4px #fbf1dc, inset 0 0 0 5px #e4cd9c",
-  borderRadius: 14,
+  border: "calc(var(--u) * 1.5) solid #dcc08a",
+  boxShadow: "inset 0 0 0 calc(var(--u) * 4) #fbf1dc, inset 0 0 0 calc(var(--u) * 5) #e4cd9c",
+  borderRadius: "calc(var(--u) * 14)",
 };
 
 function Dots() {
@@ -150,11 +150,11 @@ export default function TravelStay() {
           rel="noopener noreferrer"
           className="mt-5 inline-flex min-h-[46px] items-center gap-2 px-6 font-body text-[12px] font-bold uppercase tracking-[0.18em] transition active:scale-95"
           style={{
-            borderRadius: 12,
+            borderRadius: "calc(var(--u) * 12)",
             background: "linear-gradient(180deg, #8f1427 0%, #6d0f1b 100%)",
             color: "#f9e7b0",
-            border: "1.5px solid #d4a53c",
-            boxShadow: "0 3px 8px rgba(60,5,15,0.3)",
+            border: "calc(var(--u) * 1.5) solid #d4a53c",
+            boxShadow: "0 calc(var(--u) * 3) calc(var(--u) * 8) rgba(60,5,15,0.3)",
           }}
         >
           <svg viewBox="0 0 16 16" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>
@@ -211,10 +211,10 @@ export default function TravelStay() {
               <div
                 className="flex h-full flex-col items-center px-3 pb-4 pt-9"
                 style={{
-                  borderRadius: "999px 999px 10px 10px / 70px 70px 10px 10px",
+                  borderRadius: "calc(var(--u) * 999) calc(var(--u) * 999) calc(var(--u) * 10) calc(var(--u) * 10) / calc(var(--u) * 70) calc(var(--u) * 70) calc(var(--u) * 10) calc(var(--u) * 10)",
                   background: "linear-gradient(180deg, #fffaf0 0%, #fbf0d9 100%)",
-                  border: "1.5px solid #dcc08a",
-                  boxShadow: "inset 0 0 0 4px #fffaf0, inset 0 0 0 5px #e9d4a6, 0 6px 14px -8px rgba(120,80,20,0.35)",
+                  border: "calc(var(--u) * 1.5) solid #dcc08a",
+                  boxShadow: "inset 0 0 0 calc(var(--u) * 4) #fffaf0, inset 0 0 0 calc(var(--u) * 5) #e9d4a6, 0 calc(var(--u) * 6) calc(var(--u) * 14) calc(var(--u) * -8) rgba(120,80,20,0.35)",
                 }}
               >
                 <p className="text-[22px] leading-tight" style={{ fontFamily: SERIF, fontWeight: 600, color: INK }}>{c.name}</p>
@@ -222,7 +222,7 @@ export default function TravelStay() {
                 <a
                   href={`tel:${c.phone}`}
                   className="mt-3 inline-flex min-h-10 items-center gap-1.5 rounded-full px-5 font-body text-[11px] font-bold uppercase tracking-[0.18em] transition active:scale-95"
-                  style={{ background: "linear-gradient(180deg, #8f1427 0%, #6d0f1b 100%)", color: "#f9e7b0", boxShadow: "0 3px 8px rgba(60,5,15,0.3)" }}
+                  style={{ background: "linear-gradient(180deg, #8f1427 0%, #6d0f1b 100%)", color: "#f9e7b0", boxShadow: "0 calc(var(--u) * 3) calc(var(--u) * 8) rgba(60,5,15,0.3)" }}
                   aria-label={`Call ${c.name}, ${c.role}`}
                 >
                   <svg viewBox="0 0 16 16" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>

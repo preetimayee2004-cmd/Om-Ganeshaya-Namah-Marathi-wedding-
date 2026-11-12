@@ -2,9 +2,80 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ===== Screen-proportional sizing =====
+   The whole design is drawn for a 390px-wide phone. --u is one design px on the current screen
+   (16px = 4.1cqw), --vh is 1% of the visible screen height. postcss-screen-units.js rewrites every
+   px/rem/vw/vh in the CSS to these, so a 320px phone, a 430px Pro Max, a tablet column and the
+   laptop mockup all show the same proportions.
+   Registered as <length> so the value is fixed where it is set (the .screen content) and nested
+   inline-size containers further down (the peacock frame, RSVP card) do not change it. */
+@property --u { syntax: "<length>"; inherits: true; initial-value: 1px; }
+@property --vh { syntax: "<length>"; inherits: true; initial-value: 1vh; }
+:root { --u: 1px; --vh: 1vh; }
+
+/* real phone / tablet: .screen is the page column (max 430px). No containment here: it would turn
+   the column into the containing block of the fixed full-screen intro. Its width is exactly
+   min(100vw, 430px), which is what 100cqw would be. */
+.screen {
+  width: 100%;
+  max-width: 430px;
+  margin-inline: auto;
+  overflow-x: clip;
+}
+.screen > .screen-content {
+  --u: calc(min(100vw, 430px) / 390);
+  --vh: 1vh;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@supports (height: 1dvh) {
+  .screen > .screen-content { --vh: 1dvh; }
+}
+/* laptop: the same .screen is the mockup's display, already a containing block (translateZ), so it
+   can be a size container: 100cqw is the display width, 1cqh one percent of its height */
+.screen.screen--mockup {
+  container-type: size;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+@supports (width: 1cqw) {
+  .screen.screen--mockup > .screen-content { --u: calc(100cqw / 390); --vh: 1cqh; }
+}
+
+/* Landscape phones (~390px tall) cannot hold the portrait full-screen intro, so only there the
+   intro's design px is also limited by the height (~470 design px of content must fit). Portrait
+   phones, tablets and the laptop mockup never match this query and are unchanged. */
+@media (orientation: landscape) and (max-height: 500px) {
+  /* full-screen intro scenes: shrink to fit the short screen */
+  .screen-content .intro-fit.fixed { --u: min(calc(min(100vw, 430px) / 390), calc(100dvh / 470)); }
+  .screen-content .intro-fit.fixed .intro-fit-top { padding-top: 6dvh; }
+  /* settled couple hero (part of the scrolling page): keep the portrait phone height and scroll */
+  .screen-content .intro-fit.relative { height: calc(var(--u) * 844); min-height: 0; }
+}
+
+/* Touch targets: every button/link gets an invisible hit area of at least 44x44 real px,
+   centred on it, so small pill buttons and icons look the same but are easy to tap. */
+:root { --tap: 44px; }
+.screen-content :is(button, a[href], [role="button"]):not(.absolute, .fixed, .sticky, [style*="position"]) {
+  position: relative;
+}
+.screen-content :is(button, a[href], [role="button"])::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: max(100%, var(--tap));
+  height: max(100%, var(--tap));
+  transform: translate(-50%, -50%);
+}
+
 @layer base {
+  html, body {
+    overflow-x: clip;
+  }
   html {
     -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
   }
   body {
@@ -364,4 +435,4 @@ html { background: #2b1d18; }
 @media (prefers-reduced-motion: reduce) { [style*="wish-"] { animation: none !important } }
 
 /* one section-heading style everywhere: single line, same size, never cut */
-.section-title { font-size: min(30px, 8.3vw); line-height: 1.15; white-space: nowrap; letter-spacing: 0; }
+.section-title { font-size: 30px; line-height: 1.15; white-space: nowrap; letter-spacing: 0; }

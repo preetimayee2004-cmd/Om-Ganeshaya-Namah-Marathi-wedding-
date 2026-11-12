@@ -22,7 +22,7 @@ function FamilyCard({ f }: { f: Family }) {
           clipPath: seen ? "inset(0 0 0 0)" : "inset(0 50% 0 50%)",
           opacity: seen ? 1 : 0,
           background: "linear-gradient(180deg, #FCEFCB 0%, #F3DB9C 55%, #F8E8BC 100%)", // light gold, like the event cards
-          border: "1.5px solid #D4AE5E",
+          border: "calc(var(--u) * 1.5) solid #D4AE5E",
         }}
         aria-label={f.side}
       >

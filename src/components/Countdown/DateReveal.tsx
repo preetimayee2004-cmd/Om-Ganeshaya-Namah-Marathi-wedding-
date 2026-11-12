@@ -521,7 +521,7 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
       ref={containerRef}
       className="relative mx-auto w-full max-w-[430px] cursor-default select-none overflow-hidden rounded-3xl border-2 border-[#D4AF37]/60 shadow-[0_12px_45px_rgba(109,15,27,0.18),inset_0_1px_2px_rgba(255,255,255,0.95)]"
       style={{
-        boxShadow: "0 16px 48px -8px rgba(109,15,27,0.22), 0 0 0 1px rgba(212,175,55,0.35)",
+        boxShadow: "0 calc(var(--u) * 16) calc(var(--u) * 48) calc(var(--u) * -8) rgba(109,15,27,0.22), 0 0 0 1px rgba(212,175,55,0.35)",
       }}
     >
       {/* Background Soft Peach Watercolor Sky matching the website theme */}
@@ -547,7 +547,7 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
         <img
           src="/border/peacock-border.png"
           alt="Traditional Royal Maharashtrian Peacock Floral Border"
-          className="h-14 w-full object-cover object-center sm:h-16"
+          className="w-full object-cover object-center h-16"
           draggable={false}
         />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[2px] bg-gradient-to-r from-transparent via-[#8A5A12] to-transparent" />
@@ -571,7 +571,7 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
       <div className="relative z-10 px-5 pt-4 pb-0 text-center">
         <h2
           className="font-bold uppercase text-[#6d0f1b]"
-          style={{ fontFamily: '"Cormorant Garamond", Georgia, serif', fontSize: "clamp(24px, 7vw, 30px)", letterSpacing: "0.3em", paddingLeft: "0.3em", lineHeight: 1.1, fontWeight: 700 }}
+          style={{ fontFamily: '"Cormorant Garamond", Georgia, serif', fontSize: "calc(var(--u) * 30)", letterSpacing: "0.3em", paddingLeft: "0.3em", lineHeight: 1.1, fontWeight: 700 }}
         >
           Save The Date
         </h2>
@@ -593,7 +593,7 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
         <div
           className="relative overflow-hidden rounded-2xl border-2 border-[#C9963A] bg-gradient-to-b from-[#7d1626] via-[#5e0d1a] to-[#430911] p-1.5 shadow-[0_14px_30px_-8px_rgba(60,8,16,0.55),0_2px_6px_rgba(60,8,16,0.35),inset_0_1px_3px_rgba(255,236,180,0.45),inset_0_-2px_6px_rgba(0,0,0,0.35)]"
           style={{
-            minHeight: "150px",
+            minHeight: "calc(var(--u) * 150)",
           }}
         >
           {/* Inner gold hairline + refined corners (kept above the foil so they stay after the reveal) */}
@@ -624,16 +624,16 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
               }}
             >
               {/* Auspicious Shubh Vivah Date */}
-              <div className="flex items-center justify-center gap-2.5 sm:gap-3">
-                <span className="font-serif text-3xl sm:text-4xl font-bold tracking-wider text-[#6d0f1b]">
+              <div className="flex items-center justify-center gap-3">
+                <span className="font-serif text-4xl font-bold tracking-wider text-[#6d0f1b]">
                   28
                 </span>
                 <span className="text-[#a8741a] text-xl font-serif">♦</span>
-                <span className="font-serif text-3xl sm:text-4xl font-bold tracking-wider text-[#6d0f1b]">
+                <span className="font-serif text-4xl font-bold tracking-wider text-[#6d0f1b]">
                   02
                 </span>
                 <span className="text-[#a8741a] text-xl font-serif">♦</span>
-                <span className="font-serif text-3xl sm:text-4xl font-bold tracking-wider text-[#6d0f1b]">
+                <span className="font-serif text-4xl font-bold tracking-wider text-[#6d0f1b]">
                   2027
                 </span>
               </div>
@@ -677,7 +677,7 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
                 height: `${p.size}px`,
                 backgroundColor: p.color,
                 opacity: p.alpha,
-                boxShadow: `0 0 4px ${p.color}`,
+                boxShadow: `0 0 calc(var(--u) * 4) ${p.color}`,
                 transform: "translate(-50%, -50%)",
               }}
             />
@@ -687,9 +687,9 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
           {!hasInteracted && !isRevealed && (
             <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center" aria-hidden>
               <div className="relative h-8 w-24">
-                <span className="absolute inset-x-1 top-1/2 h-[2px] -translate-y-1/2 rounded-full" style={{ background: "repeating-linear-gradient(90deg, rgba(246,221,147,0.75) 0 4px, transparent 4px 9px)" }} />
+                <span className="absolute inset-x-1 top-1/2 h-[2px] -translate-y-1/2 rounded-full" style={{ background: "repeating-linear-gradient(90deg, rgba(246,221,147,0.75) 0 calc(var(--u) * 4), transparent calc(var(--u) * 4) calc(var(--u) * 9))" }} />
                 <div className="absolute left-0 top-0" style={{ animation: "scratch-hand 1.6s ease-in-out infinite" }}>
-                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" style={{ filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.55)) drop-shadow(0 0 6px rgba(255,235,160,0.8))" }}>
+                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" style={{ width: "calc(var(--u) * 26)", height: "calc(var(--u) * 26)", filter: "drop-shadow(0 calc(var(--u) * 2) calc(var(--u) * 4) rgba(0,0,0,0.55)) drop-shadow(0 0 calc(var(--u) * 6) rgba(255,235,160,0.8))" }}>
                     <path
                       d="M12 2a1.5 1.5 0 0 0-1.5 1.5v7.2l-1.3-1.3a1.5 1.5 0 0 0-2.1 0 1.5 1.5 0 0 0 0 2.1l3.5 3.5c1 1 2.2 1.7 3.5 1.7h2.4a4.5 4.5 0 0 0 4.5-4.5V9.5a1.5 1.5 0 0 0-3 0v1a1.5 1.5 0 0 0-3 0V9a1.5 1.5 0 0 0-3 0v-5.5A1.5 1.5 0 0 0 12 2z"
                       fill="#FFFDF7"
@@ -726,7 +726,7 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
             className="h-full w-full rounded-[60%_40%_60%_40%]"
             style={{
               backgroundColor: petal.color,
-              boxShadow: "0 2px 4px rgba(0,0,0,0.15)",
+              boxShadow: "0 calc(var(--u) * 2) calc(var(--u) * 4) rgba(0,0,0,0.15)",
               backgroundImage: "radial-gradient(ellipse at 30% 30%, #FFE082, transparent 70%)",
             }}
           />
@@ -740,7 +740,7 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
             <Lotus className="h-4 w-4" />
             <p
               className="text-[#6d0f1b]"
-              style={{ fontFamily: '"Cormorant Garamond", Georgia, serif', fontStyle: "italic", fontWeight: 600, fontSize: "clamp(17px, 4.8vw, 20px)", letterSpacing: "0.06em", lineHeight: 1.2 }}
+              style={{ fontFamily: '"Cormorant Garamond", Georgia, serif', fontStyle: "italic", fontWeight: 600, fontSize: "calc(var(--u) * 20)", letterSpacing: "0.06em", lineHeight: 1.2 }}
             >
               Scratch to reveal
             </p>
@@ -749,7 +749,7 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
         ) : (
           <div className="flex items-center gap-1.5 py-0.5">
             <span className="text-[#D4AF37]">✦</span>
-            <p className="font-serif text-xs sm:text-sm font-bold tracking-wider text-[#6d0f1b]">
+            <p className="font-serif text-sm font-bold tracking-wider text-[#6d0f1b]">
               Save the Date · 28 February 2027
             </p>
             <span className="text-[#D4AF37]">✦</span>
@@ -774,7 +774,7 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
         <img
           src="/border/peacock-border.png"
           alt="Traditional Royal Maharashtrian Peacock Floral Border"
-          className="h-12 w-full object-cover object-center sm:h-14"
+          className="w-full object-cover object-center h-14"
           style={{ transform: "scale(-1, -1)" }}
           draggable={false}
         />

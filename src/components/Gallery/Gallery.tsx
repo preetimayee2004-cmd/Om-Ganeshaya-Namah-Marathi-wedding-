@@ -370,11 +370,11 @@ export default function Gallery() {
 
   const current = index !== null ? photos[index] : null;
   const petals = [
-    { left: "22%", dx: "30px", delay: "1.2s", dur: "9s" },
-    { left: "40%", dx: "-26px", delay: "3.4s", dur: "10s" },
-    { left: "58%", dx: "34px", delay: "2.2s", dur: "8.5s" },
-    { left: "74%", dx: "-30px", delay: "5s", dur: "9.5s" },
-    { left: "32%", dx: "22px", delay: "6.6s", dur: "10.5s" },
+    { left: "22%", dx: "calc(var(--u) * 30)", delay: "1.2s", dur: "9s" },
+    { left: "40%", dx: "calc(var(--u) * -26)", delay: "3.4s", dur: "10s" },
+    { left: "58%", dx: "calc(var(--u) * 34)", delay: "2.2s", dur: "8.5s" },
+    { left: "74%", dx: "calc(var(--u) * -30)", delay: "5s", dur: "9.5s" },
+    { left: "32%", dx: "calc(var(--u) * 22)", delay: "6.6s", dur: "10.5s" },
   ];
 
   return (
@@ -422,9 +422,9 @@ export default function Gallery() {
                 style={{
                   aspectRatio: "4 / 5",
                   opacity: 0,
-                  border: "3px solid #fbf3df",
+                  border: "calc(var(--u) * 3) solid #fbf3df",
                   outline: "1px solid rgba(201,153,47,0.8)",
-                  boxShadow: "0 10px 22px rgba(60,25,10,0.35)",
+                  boxShadow: "0 calc(var(--u) * 10) calc(var(--u) * 22) rgba(60,25,10,0.35)",
                   background: "#fbf3df",
                   willChange: "transform, opacity",
                 }}
@@ -493,7 +493,7 @@ export default function Gallery() {
             touchX.current = null;
           }}
         >
-          <div className="flex items-center justify-between px-4 pt-14 text-ivory lg:pt-12">
+          <div className="flex items-center justify-between px-4 text-ivory pt-12">
             <span className="font-body text-xs tracking-widest">
               {index + 1} / {photos.length}
             </span>

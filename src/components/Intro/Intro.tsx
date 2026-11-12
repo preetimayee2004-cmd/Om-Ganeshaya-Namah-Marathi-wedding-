@@ -572,8 +572,8 @@ export default function Intro() {
       aria-label="Maharashtrian Wedding Cinematic Invitation"
       className={
         stage >= 6
-          ? "relative h-screen min-h-[100dvh] w-full select-none overflow-hidden bg-[#F8DFBF]"
-          : "fixed inset-0 z-[95] select-none overflow-hidden bg-[#F8DFBF]"
+          ? "intro-fit relative h-screen min-h-[100dvh] w-full select-none overflow-hidden bg-[#F8DFBF]"
+          : "intro-fit fixed inset-0 z-[95] select-none overflow-hidden bg-[#F8DFBF]"
       }
       onWheel={handleWheel}
       onTouchStart={handleTouchStart}
@@ -621,7 +621,7 @@ export default function Intro() {
             }}
           >
             {/* 3D Perspective Double Doors (Left & Right leaves swinging open) */}
-            <div className="absolute inset-0 pointer-events-none" style={{ perspective: "1400px" }}>
+            <div className="absolute inset-0 pointer-events-none" style={{ perspective: "calc(var(--u) * 1400)" }}>
               {/* LEFT DOOR LEAF */}
               <div
                 className="absolute left-0 top-0 bottom-0 w-1/2 overflow-hidden"
@@ -630,7 +630,7 @@ export default function Intro() {
                   transform: s1DoorOpen ? "rotateY(-100deg) translateX(-4%)" : "rotateY(0deg) translateX(0)",
                   opacity: s1DoorOpen ? 0 : 1,
                   transition: `transform 1200ms ${EASE_PRIMARY}, opacity 700ms 450ms ${EASE_PRIMARY}`,
-                  filter: "drop-shadow(12px 0 28px rgba(30,15,5,0.65))",
+                  filter: "drop-shadow(calc(var(--u) * 12) 0 calc(var(--u) * 28) rgba(30,15,5,0.65))",
                 }}
               >
                 {/* Left Door Image: pinned to left edge, width 200% */}
@@ -658,7 +658,7 @@ export default function Intro() {
                   transform: s1DoorOpen ? "rotateY(100deg) translateX(4%)" : "rotateY(0deg) translateX(0)",
                   opacity: s1DoorOpen ? 0 : 1,
                   transition: `transform 1200ms ${EASE_PRIMARY}, opacity 700ms 450ms ${EASE_PRIMARY}`,
-                  filter: "drop-shadow(-12px 0 28px rgba(30,15,5,0.65))",
+                  filter: "drop-shadow(calc(var(--u) * -12) 0 calc(var(--u) * 28) rgba(30,15,5,0.65))",
                 }}
               >
                 {/* Right Door Image: pinned to right edge, width 200% */}
@@ -684,7 +684,7 @@ export default function Intro() {
               <div
                 className="pointer-events-none absolute inset-y-0 left-1/2 z-25 -translate-x-1/2 w-8"
                 style={{
-                  background: "radial-gradient(ellipse 20px 80% at 50% 50%, rgba(255,245,190,0.95) 0%, rgba(245,190,55,0.65) 45%, transparent 75%)",
+                  background: "radial-gradient(ellipse calc(var(--u) * 20) 80% at 50% 50%, rgba(255,245,190,0.95) 0%, rgba(245,190,55,0.65) 45%, transparent 75%)",
                   animation: "mm-crack-glow 650ms ease-out forwards",
                 }}
               />
@@ -703,7 +703,7 @@ export default function Intro() {
                       width: 3 + (i % 3),
                       height: 3 + (i % 3),
                       opacity: 0.75,
-                      boxShadow: "0 0 8px #fcd475",
+                      boxShadow: "0 0 calc(var(--u) * 8) #fcd475",
                       animation: `mm-float ${3 + (i % 3)}s ease-in-out ${i * 0.35}s infinite`,
                     }}
                   />
@@ -743,7 +743,7 @@ export default function Intro() {
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
                     style={{
-                      filter: "drop-shadow(0 4px 10px rgba(50,20,5,0.6)) drop-shadow(0 0 12px rgba(255,235,160,0.95))",
+                      filter: "drop-shadow(0 calc(var(--u) * 4) calc(var(--u) * 10) rgba(50,20,5,0.6)) drop-shadow(0 0 calc(var(--u) * 12) rgba(255,235,160,0.95))",
                     }}
                   >
                     <path
@@ -765,7 +765,7 @@ export default function Intro() {
                 className="pointer-events-none absolute left-1/2 top-[69%] z-30 -translate-x-1/2 text-center"
                 style={{
                   opacity: s1Scale ? 0 : 1,
-                  transform: s1Scale ? "translate(-50%, 6px)" : "translate(-50%, 0)",
+                  transform: s1Scale ? "translate(-50%, calc(var(--u) * 6))" : "translate(-50%, 0)",
                   transition: `opacity 250ms ${EASE_PRIMARY}, transform 250ms ${EASE_PRIMARY}`,
                 }}
               >
@@ -786,7 +786,7 @@ export default function Intro() {
                       width: pt.size,
                       height: pt.size,
                       backgroundColor: pt.color,
-                      boxShadow: `0 0 8px ${pt.color}`,
+                      boxShadow: `0 0 calc(var(--u) * 8) ${pt.color}`,
                       animation: "mm-sparkle 650ms ease-out forwards",
                       ["--tx" as any]: `${pt.tx}px`,
                       ["--ty" as any]: `${pt.ty}px`,
@@ -848,8 +848,8 @@ export default function Intro() {
             <div
               className="pointer-events-none absolute left-1/2 top-[31%] -translate-x-1/2 -translate-y-1/2 rounded-full"
               style={{
-                width: "260px",
-                height: "260px",
+                width: "calc(var(--u) * 260)",
+                height: "calc(var(--u) * 260)",
                 background: "radial-gradient(circle, rgba(255,230,120,0.65) 0%, rgba(245,180,45,0.3) 45%, rgba(220,130,20,0.08) 65%, transparent 75%)",
                 opacity: s2Halo ? 0.95 : 0,
                 transform: s2Halo ? "translate(-50%, -50%) scale(1.15)" : "translate(-50%, -50%) scale(0.65)",
@@ -861,8 +861,8 @@ export default function Intro() {
             <div
               className="pointer-events-none absolute left-1/2 top-[41%] -translate-x-1/2 -translate-y-1/2 rounded-full"
               style={{
-                width: "320px",
-                height: "320px",
+                width: "calc(var(--u) * 320)",
+                height: "calc(var(--u) * 320)",
                 background: "radial-gradient(circle at 50% 50%, rgba(255,248,205,0.95) 0%, rgba(255,215,80,0.7) 35%, rgba(226,170,50,0.25) 60%, transparent 80%)",
                 mixBlendMode: "screen",
                 opacity: s2GlowAwaken && !s2Settle ? 0.95 : s2Settle ? 0.25 : 0,
@@ -875,8 +875,8 @@ export default function Intro() {
             <div
               className="pointer-events-none absolute left-1/2 top-[64.2%] z-20 -translate-x-1/2 -translate-y-1/2 rounded-full"
               style={{
-                width: "280px",
-                height: "50px",
+                width: "calc(var(--u) * 280)",
+                height: "calc(var(--u) * 50)",
                 background: "radial-gradient(ellipse at center, rgba(255,225,120,0.3) 0%, transparent 70%)",
                 opacity: s2MantraGlow ? 1 : 0,
                 transition: `opacity 800ms ${EASE_PRIMARY}`,
@@ -893,11 +893,11 @@ export default function Intro() {
                   className="pointer-events-none absolute"
                   style={{
                     left: p.left,
-                    top: "-30px",
+                    top: "calc(var(--u) * -30)",
                     width: p.size,
                     height: p.size * 1.3,
                     animation: `mm-rose-petal ${p.duration} ease-in-out ${p.delay} infinite`,
-                    filter: "drop-shadow(0 4px 6px rgba(60, 10, 15, 0.35))",
+                    filter: "drop-shadow(0 calc(var(--u) * 4) calc(var(--u) * 6) rgba(60, 10, 15, 0.35))",
                   }}
                   viewBox="0 0 24 30"
                   fill="none"
@@ -930,7 +930,7 @@ export default function Intro() {
                     width: 3 + (i % 3),
                     height: 3 + (i % 3),
                     opacity: 0.85,
-                    boxShadow: "0 0 8px #fde188",
+                    boxShadow: "0 0 calc(var(--u) * 8) #fde188",
                     animation: `mm-float ${3 + (i % 3)}s ease-in-out ${i * 0.25}s infinite`,
                   }}
                 />
@@ -973,8 +973,8 @@ export default function Intro() {
           <div
             className="absolute left-1/2 top-[46%] -translate-x-1/2 -translate-y-1/2"
             style={{
-              width: "480px",
-              height: "480px",
+              width: "calc(var(--u) * 480)",
+              height: "calc(var(--u) * 480)",
               transform: s3SplashSpread
                 ? "translate(-50%, -50%) scale(3.5)"
                 : "translate(-50%, -50%) scale(0.08)",
@@ -987,7 +987,7 @@ export default function Intro() {
               viewBox="0 0 1000 1000"
               className="h-full w-full"
               style={{
-                filter: "url(#mm-watercolor-filter) drop-shadow(0 0 16px rgba(226, 178, 79, 0.7)) drop-shadow(0 0 35px rgba(247, 233, 205, 0.9))",
+                filter: "url(#mm-watercolor-filter) drop-shadow(0 0 calc(var(--u) * 16) rgba(226, 178, 79, 0.7)) drop-shadow(0 0 calc(var(--u) * 35) rgba(247, 233, 205, 0.9))",
               }}
             >
               {/* Outer Translucent Watercolor Amber Fringe */}
@@ -1034,17 +1034,17 @@ export default function Intro() {
           }}
         >
           {/* Top Zone: Clean English Invitation Typography positioned in clear sunset sky */}
-          <div className="relative z-10 px-6 pt-[21vh] sm:pt-[20%] text-center flex flex-col items-center">
+          <div className="intro-fit-top relative z-10 px-6 pt-[20%] text-center flex flex-col items-center">
             {/* Invitation Heading */}
             <div
               className="relative z-10 flex flex-col items-center"
               style={{
                 opacity: s4Heading ? 1 : 0,
-                transform: s4Heading ? "translateY(0)" : "translateY(8px)",
+                transform: s4Heading ? "translateY(0)" : "translateY(calc(var(--u) * 8))",
                 transition: `opacity 600ms ${EASE_PRIMARY}, transform 600ms ${EASE_PRIMARY}`,
               }}
             >
-              <h2 className="font-serif text-[15px] sm:text-base font-medium tracking-wide text-[#6d0f1b] leading-snug drop-shadow-[0_1px_3px_rgba(255,255,255,0.95)]">
+              <h2 className="font-serif text-base font-medium tracking-wide text-[#6d0f1b] leading-snug drop-shadow-[0_1px_3px_rgba(255,255,255,0.95)]">
                 With Joyful Hearts,<br />We Invite You
               </h2>
             </div>
@@ -1058,13 +1058,13 @@ export default function Intro() {
                 transition: `opacity 500ms ${EASE_PRIMARY}, transform 500ms ${EASE_PRIMARY}`,
               }}
             >
-              <p className="font-script text-4xl sm:text-[44px] font-normal leading-tight text-[#6d0f1b] drop-shadow-[0_1px_2px_rgba(255,255,255,0.7)]">
+              <p className="font-script text-[44px] font-normal leading-tight text-[#6d0f1b] drop-shadow-[0_1px_2px_rgba(255,255,255,0.7)]">
                 {first}
               </p>
-              <p className="my-0 font-serif italic text-base sm:text-lg font-light text-[#C9963A] leading-none opacity-90">
+              <p className="my-0 font-serif italic text-lg font-light text-[#C9963A] leading-none opacity-90">
                 &amp;
               </p>
-              <p className="font-script text-4xl sm:text-[44px] font-normal leading-tight text-[#6d0f1b] drop-shadow-[0_1px_2px_rgba(255,255,255,0.7)]">
+              <p className="font-script text-[44px] font-normal leading-tight text-[#6d0f1b] drop-shadow-[0_1px_2px_rgba(255,255,255,0.7)]">
                 {second}
               </p>
             </div>
@@ -1078,9 +1078,9 @@ export default function Intro() {
                 transition: `opacity 600ms 150ms ${EASE_PRIMARY}, transform 600ms 150ms ${EASE_PRIMARY}`,
               }}
             >
-              <span className="h-[0.8px] w-12 sm:w-16 bg-gradient-to-r from-transparent via-[#C9963A] to-[#C9963A]" />
+              <span className="h-[0.8px] w-16 bg-gradient-to-r from-transparent via-[#C9963A] to-[#C9963A]" />
               <span className="text-[#C9963A] text-[9px] leading-none opacity-85">❖</span>
-              <span className="h-[0.8px] w-12 sm:w-16 bg-gradient-to-l from-transparent via-[#C9963A] to-[#C9963A]" />
+              <span className="h-[0.8px] w-16 bg-gradient-to-l from-transparent via-[#C9963A] to-[#C9963A]" />
             </div>
 
             {/* Time and place (no date here) */}
@@ -1088,14 +1088,14 @@ export default function Intro() {
               className="relative z-10 mt-3 flex flex-col items-center text-center"
               style={{
                 opacity: s4Lines[0] ? 1 : 0,
-                transform: s4Lines[0] ? "translateY(0)" : "translateY(6px)",
+                transform: s4Lines[0] ? "translateY(0)" : "translateY(calc(var(--u) * 6))",
                 transition: `opacity 600ms 300ms ${EASE_PRIMARY}, transform 600ms 300ms ${EASE_PRIMARY}`,
               }}
             >
-              <p className="font-serif text-[14px] sm:text-[15px] font-semibold tracking-[0.12em] text-[#6d0f1b] drop-shadow-[0_1px_2px_rgba(255,255,255,0.85)]">
+              <p className="font-serif text-[15px] font-semibold tracking-[0.12em] text-[#6d0f1b] drop-shadow-[0_1px_2px_rgba(255,255,255,0.85)]">
                 <span className="font-medium italic tracking-[0.06em]">Muhurat</span> · {weddingTime}
               </p>
-              <p className="mt-0.5 font-serif text-[13px] sm:text-sm font-medium italic text-[#4b0f16] drop-shadow-[0_1px_2px_rgba(255,255,255,0.85)]">
+              <p className="mt-0.5 font-serif text-sm font-medium italic text-[#4b0f16] drop-shadow-[0_1px_2px_rgba(255,255,255,0.85)]">
                 {wedding.venue.name}, {wedding.venue.city}
               </p>
             </div>
@@ -1103,10 +1103,10 @@ export default function Intro() {
 
           {/* Refined Slim Pill Button: chota aur patla, thin gold border, maroon serif typography, smaller arrow */}
           <div
-            className="relative z-20 flex flex-col items-center pb-6 sm:pb-7 pt-2"
+            className="relative z-20 flex flex-col items-center pb-7 pt-2"
             style={{
               opacity: s4Hold ? 1 : 0,
-              transform: s4Hold ? "translateY(0)" : "translateY(10px)",
+              transform: s4Hold ? "translateY(0)" : "translateY(calc(var(--u) * 10))",
               transition: `opacity 500ms 100ms ${EASE_PRIMARY}, transform 500ms 100ms ${EASE_PRIMARY}`,
             }}
           >
@@ -1114,17 +1114,17 @@ export default function Intro() {
               type="button"
               onClick={triggerCoupleTransition}
               aria-label="Open Invitation"
-              className="group cursor-pointer inline-flex h-[34px] sm:h-[36px] items-center justify-center gap-1.5 rounded-full px-4 sm:px-5 transition-all duration-300 hover:scale-105 active:scale-95"
+              className="group cursor-pointer inline-flex h-[36px] items-center justify-center gap-1.5 rounded-full px-5 transition-all duration-300 hover:scale-105 active:scale-95"
               style={{
                 background: "linear-gradient(180deg, #FCEFCB 0%, #F3DB9C 55%, #F8E8BC 100%)",
-                border: "1.5px solid #D4AE5E",
-                boxShadow: "inset 0 0 0 2px rgba(255,248,225,0.7), inset 0 0 0 3px rgba(212,174,94,0.45), 0 3px 10px rgba(110,70,10,0.22)",
+                border: "calc(var(--u) * 1.5) solid #D4AE5E",
+                boxShadow: "inset 0 0 0 calc(var(--u) * 2) rgba(255,248,225,0.7), inset 0 0 0 calc(var(--u) * 3) rgba(212,174,94,0.45), 0 calc(var(--u) * 3) calc(var(--u) * 10) rgba(110,70,10,0.22)",
               }}
             >
-              <span className="font-serif text-[11.5px] sm:text-[12.5px] font-semibold tracking-[0.14em] uppercase text-[#6d0f1b]">
+              <span className="font-serif text-[12.5px] font-semibold tracking-[0.14em] uppercase text-[#6d0f1b]">
                 Open Invitation
               </span>
-              <span className="text-[#C9963A] text-[10px] sm:text-[11px] leading-none transition-transform duration-300 group-hover:translate-y-0.5 animate-bounce">
+              <span className="text-[#C9963A] text-[11px] leading-none transition-transform duration-300 group-hover:translate-y-0.5 animate-bounce">
                 ↓
               </span>
             </button>
@@ -1146,8 +1146,8 @@ export default function Intro() {
           <div
             className="absolute left-1/2 bottom-0 -translate-x-1/2"
             style={{
-              width: "520px",
-              height: "520px",
+              width: "calc(var(--u) * 520)",
+              height: "calc(var(--u) * 520)",
               transform: s5SplashUp
                 ? "translate(-50%, 15%) scale(3.5)"
                 : "translate(-50%, 65%) scale(0.1)",
@@ -1159,7 +1159,7 @@ export default function Intro() {
               viewBox="0 0 1000 1000"
               className="h-full w-full"
               style={{
-                filter: "url(#mm-watercolor-filter) drop-shadow(0 0 18px rgba(226, 178, 79, 0.7)) drop-shadow(0 0 40px rgba(247, 233, 205, 0.9))",
+                filter: "url(#mm-watercolor-filter) drop-shadow(0 0 calc(var(--u) * 18) rgba(226, 178, 79, 0.7)) drop-shadow(0 0 calc(var(--u) * 40) rgba(247, 233, 205, 0.9))",
               }}
             >
               {/* Outer Translucent Watercolor Amber Fringe */}
@@ -1207,7 +1207,7 @@ export default function Intro() {
                   width: p.size,
                   height: p.size,
                   background: "#F6D98A",
-                  boxShadow: "0 0 6px 1px rgba(246,217,138,0.9)",
+                  boxShadow: "0 0 calc(var(--u) * 6) 1px rgba(246,217,138,0.9)",
                   opacity: 0,
                   ["--tx" as string]: `${p.tx}px`,
                   ["--ty" as string]: `${p.ty}px`,
@@ -1311,12 +1311,12 @@ export default function Intro() {
           </div>
 
           {/* Top Sky Region: Couple Names, Romantic Marathi Quotation, Parents (positioned below floral toran to prevent overlap) */}
-          <div className="relative z-10 px-6 pt-28 sm:pt-32 text-center">
+          <div className="relative z-10 px-6 pt-32 text-center">
             {/* Marathi Romantic Quotation (2.20s – 2.80s) */}
             <div
               style={{
                 opacity: s6Quotation ? 1 : 0,
-                transform: s6Quotation ? "translateY(0)" : "translateY(10px)",
+                transform: s6Quotation ? "translateY(0)" : "translateY(calc(var(--u) * 10))",
                 transition: `opacity 600ms ${EASE_PRIMARY}, transform 600ms ${EASE_PRIMARY}`,
               }}
             >
@@ -1333,7 +1333,7 @@ export default function Intro() {
               className="mt-3"
               style={{
                 opacity: s6Names ? 1 : 0,
-                transform: s6Names ? "translateY(0)" : "translateY(10px)",
+                transform: s6Names ? "translateY(0)" : "translateY(calc(var(--u) * 10))",
                 transition: `opacity 600ms ${EASE_PRIMARY}, transform 600ms ${EASE_PRIMARY}`,
               }}
             >
@@ -1369,14 +1369,14 @@ export default function Intro() {
               className="space-y-0.5"
               style={{
                 opacity: s6Quotation ? 1 : 0,
-                transform: s6Quotation ? "translateY(0)" : "translateY(8px)",
+                transform: s6Quotation ? "translateY(0)" : "translateY(calc(var(--u) * 8))",
                 transition: `opacity 600ms ${EASE_PRIMARY}, transform 600ms ${EASE_PRIMARY}`,
               }}
             >
-              <p className="font-serif text-[13px] sm:text-sm font-medium tracking-wide text-[#4b0f16]">
+              <p className="font-serif text-sm font-medium tracking-wide text-[#4b0f16]">
                 {wedding.parentsEn.groom}
               </p>
-              <p className="font-serif text-[13px] sm:text-sm font-medium tracking-wide text-[#4b0f16]">
+              <p className="font-serif text-sm font-medium tracking-wide text-[#4b0f16]">
                 {wedding.parentsEn.bride}
               </p>
             </div>

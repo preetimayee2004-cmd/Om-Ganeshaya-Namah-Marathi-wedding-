@@ -61,10 +61,10 @@ export default function PinnedScene({ children }: { children: ReactNode }) {
             </div>
 
             <div className="space-y-0.5">
-              <p className="font-serif text-[13px] sm:text-sm font-medium tracking-wide text-[#4b0f16]">
+              <p className="font-serif text-sm font-medium tracking-wide text-[#4b0f16]">
                 {wedding.parentsEn.groom}
               </p>
-              <p className="font-serif text-[13px] sm:text-sm font-medium tracking-wide text-[#4b0f16]">
+              <p className="font-serif text-sm font-medium tracking-wide text-[#4b0f16]">
                 {wedding.parentsEn.bride}
               </p>
             </div>
@@ -104,7 +104,7 @@ export default function PinnedScene({ children }: { children: ReactNode }) {
         </div>
 
         {/* Scrollable Celebration Cards */}
-        <div id="story" style={{ padding: "28px 12px 48px" }} className="flex flex-col gap-7">
+        <div id="story" style={{ padding: "calc(var(--u) * 28) calc(var(--u) * 12) calc(var(--u) * 48)" }} className="flex flex-col gap-7">
           {children}
         </div>
       </div>

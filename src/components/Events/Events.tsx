@@ -52,8 +52,8 @@ export default function Events() {
                   className="relative overflow-hidden rounded-[10px] shadow-[0_2px_6px_rgba(90,60,30,0.18)]"
                   style={{
                     background: GOLD,
-                    border: `1.5px solid ${CARD_BORDER}`,
-                    boxShadow: "inset 0 0 0 3px rgba(255,244,205,0.45), inset 0 0 0 4px rgba(176,127,37,0.55), 0 3px 8px rgba(110,70,10,0.28)",
+                    border: `calc(var(--u) * 1.5) solid ${CARD_BORDER}`,
+                    boxShadow: "inset 0 0 0 calc(var(--u) * 3) rgba(255,244,205,0.45), inset 0 0 0 calc(var(--u) * 4) rgba(176,127,37,0.55), 0 calc(var(--u) * 3) calc(var(--u) * 8) rgba(110,70,10,0.28)",
                   }}
                 >
                   <Corner className="left-1 top-1" />
@@ -66,7 +66,7 @@ export default function Events() {
                   >
                     <span
                       className="h-[68px] w-[100px] shrink-0 overflow-hidden rounded-lg"
-                      style={{ border: `1px solid ${CARD_BORDER}`, boxShadow: "0 1px 3px rgba(90,60,30,0.3)" }}
+                      style={{ border: `1px solid ${CARD_BORDER}`, boxShadow: "0 1px calc(var(--u) * 3) rgba(90,60,30,0.3)" }}
                     >
                       <img
                         src={`/events/${e.art}.jpg`}
@@ -132,8 +132,8 @@ export default function Events() {
                                   className="h-7 w-7 rounded-full"
                                   style={{
                                     background: d.color,
-                                    border: "2px solid #fff8e6",
-                                    boxShadow: "0 0 0 1.5px #8A5F15, 0 2px 4px rgba(90,60,30,0.3)",
+                                    border: "calc(var(--u) * 2) solid #fff8e6",
+                                    boxShadow: "0 0 0 calc(var(--u) * 1.5) #8A5F15, 0 calc(var(--u) * 2) calc(var(--u) * 4) rgba(90,60,30,0.3)",
                                   }}
                                 />
                                 <span className="font-body text-[10.5px] font-medium leading-tight">{d.name}</span>
@@ -160,8 +160,8 @@ export default function Events() {
                             style={{
                               background: "linear-gradient(180deg, #7A3B24, #5A2614)",
                               color: "#F6DFA2",
-                              border: "1.5px solid #D4A53C",
-                              boxShadow: "0 1px 4px rgba(60,30,10,0.35)",
+                              border: "calc(var(--u) * 1.5) solid #D4A53C",
+                              boxShadow: "0 1px calc(var(--u) * 4) rgba(60,30,10,0.35)",
                             }}
                           >
                             <svg viewBox="0 0 16 16" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>

@@ -19,8 +19,8 @@ function Milestone({ m, i }: { m: (typeof wedding.story)[number]; i: number }) {
         className="rounded-sm bg-[#fff8e6] p-4 shadow-[0_6px_18px_-10px_rgba(56,41,35,0.5)] transition-all duration-700 ease-out"
         style={{
           opacity: seen ? 1 : 0,
-          transform: seen ? `rotate(${i % 2 ? 0.8 : -0.8}deg)` : "translateY(18px) rotate(0deg)",
-          backgroundImage: "repeating-linear-gradient(transparent 0 25px, rgba(104,114,83,0.12) 25px 26px)",
+          transform: seen ? `rotate(${i % 2 ? 0.8 : -0.8}deg)` : "translateY(calc(var(--u) * 18)) rotate(0deg)",
+          backgroundImage: "repeating-linear-gradient(transparent 0 calc(var(--u) * 25), rgba(104,114,83,0.12) calc(var(--u) * 25) calc(var(--u) * 26))",
         }}
       >
         <p className="font-body text-[10px] uppercase tracking-[0.3em] text-olive">

@@ -9,7 +9,7 @@ import { useScrollRoot } from "../Layout/ScrollRoot";
  * the opening and the scroll scene line up exactly.
  */
 export const BORDER = "8.85cqw";
-export const u = (val: number) => `calc(${val} * min(100cqw, 430px) / 390)`;
+export const u = (val: number) => `calc(var(--u) * ${val})`;
 
 /** the peacock frame + ivory paper; repeats down any height, so it can wrap a scrolling page */
 export const frameStyle: CSSProperties = {

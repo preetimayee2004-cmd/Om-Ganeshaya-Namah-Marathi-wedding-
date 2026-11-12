@@ -18,7 +18,7 @@ export default function CoupleHero() {
       </div>
 
       {/* Top Sky Region Typography: Matching Scene 6 (positioned below floral toran to prevent overlap) */}
-      <div className="absolute inset-x-0 top-0 z-10 px-6 pt-28 sm:pt-32 text-center">
+      <div className="absolute inset-x-0 top-0 z-10 px-6 pt-32 text-center">
         <p lang="mr" className="font-marathi text-2xl font-bold text-[#6d0f1b] drop-shadow-sm">
           दोन मने, एक गाठ
         </p>
@@ -42,10 +42,10 @@ export default function CoupleHero() {
         </div>
 
         <div className="space-y-0.5">
-          <p className="font-serif text-[13px] sm:text-sm font-medium tracking-wide text-[#4b0f16]">
+          <p className="font-serif text-sm font-medium tracking-wide text-[#4b0f16]">
             {wedding.parentsEn.groom}
           </p>
-          <p className="font-serif text-[13px] sm:text-sm font-medium tracking-wide text-[#4b0f16]">
+          <p className="font-serif text-sm font-medium tracking-wide text-[#4b0f16]">
             {wedding.parentsEn.bride}
           </p>
         </div>

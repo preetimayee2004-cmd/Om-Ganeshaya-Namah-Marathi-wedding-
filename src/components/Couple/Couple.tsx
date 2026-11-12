@@ -90,7 +90,7 @@ export default function Couple() {
             className="absolute inset-x-4 bottom-6 top-12 transition-all delay-700 duration-1000 ease-out"
             style={{
               opacity: archSeen ? 1 : 0,
-              transform: archSeen ? "translateY(0) scale(1)" : "translateY(18px) scale(0.96)",
+              transform: archSeen ? "translateY(0) scale(1)" : "translateY(calc(var(--u) * 18)) scale(0.96)",
             }}
           >
             <CouplePlaceholder />
@@ -107,14 +107,14 @@ export default function Couple() {
           className="flex items-baseline justify-center gap-3 font-script text-5xl text-wine transition-all duration-1000 ease-out"
           style={{
             opacity: archSeen ? 1 : 0,
-            transform: archSeen ? "none" : "translateY(10px)",
+            transform: archSeen ? "none" : "translateY(calc(var(--u) * 10))",
             transitionDelay: "1100ms",
           }}
         >
           <span
             className="transition-all duration-1000 ease-out"
             style={{
-              transform: archSeen ? "translateX(0)" : "translateX(-24px)",
+              transform: archSeen ? "translateX(0)" : "translateX(calc(var(--u) * -24))",
               transitionDelay: "1100ms",
             }}
           >
@@ -124,7 +124,7 @@ export default function Couple() {
           <span
             className="transition-all duration-1000 ease-out"
             style={{
-              transform: archSeen ? "translateX(0)" : "translateX(24px)",
+              transform: archSeen ? "translateX(0)" : "translateX(calc(var(--u) * 24))",
               transitionDelay: "1100ms",
             }}
           >

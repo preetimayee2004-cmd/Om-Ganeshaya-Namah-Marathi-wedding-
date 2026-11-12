@@ -34,9 +34,9 @@ function Note({ name, message, i, fresh }: Wish & { i: number }) {
       ref={ref}
       className="relative w-[78%] shrink-0 snap-center rounded-sm bg-[#fff8e6] px-5 pb-5 pt-7 shadow-[0_8px_22px_-10px_rgba(56,41,35,0.5)] transition-all duration-700 ease-out"
       style={{
-        transform: seen ? `rotate(${tilt}deg)` : `translateY(-30px) rotate(${tilt * 4}deg)`,
+        transform: seen ? `rotate(${tilt}deg)` : `translateY(calc(var(--u) * -30)) rotate(${tilt * 4}deg)`,
         opacity: seen ? 1 : 0,
-        backgroundImage: "repeating-linear-gradient(transparent 0 25px, rgba(168,116,26,0.16) 25px 26px)",
+        backgroundImage: "repeating-linear-gradient(transparent 0 calc(var(--u) * 25), rgba(168,116,26,0.16) calc(var(--u) * 25) calc(var(--u) * 26))",
         animation: fresh ? "wish-stick 700ms cubic-bezier(0.22, 1, 0.36, 1) both" : undefined,
       }}
     >
@@ -221,8 +221,8 @@ export default function WishingWall() {
           className="relative space-y-2.5 rounded-xl p-3.5"
           style={{
             background: "linear-gradient(180deg, #fdf5e1 0%, #f8e8c2 100%)",
-            border: "1.5px solid #e2c27a",
-            boxShadow: "inset 0 0 0 4px #fdf5e1, inset 0 0 0 5px rgba(217,178,90,0.55), 0 6px 18px -8px rgba(120,80,20,0.35)",
+            border: "calc(var(--u) * 1.5) solid #e2c27a",
+            boxShadow: "inset 0 0 0 calc(var(--u) * 4) #fdf5e1, inset 0 0 0 calc(var(--u) * 5) rgba(217,178,90,0.55), 0 calc(var(--u) * 6) calc(var(--u) * 18) calc(var(--u) * -8) rgba(120,80,20,0.35)",
           }}
         >
           <div>
@@ -266,7 +266,7 @@ export default function WishingWall() {
             type="submit"
             disabled={status === "sending"}
             className="min-h-11 w-full rounded-xl font-body text-sm font-bold uppercase tracking-widest shadow-md transition active:scale-95 disabled:opacity-60"
-            style={{ background: "linear-gradient(180deg, #8f1427 0%, #6d0f1b 100%)", color: "#f9e7b0", border: "1.5px solid #d4a53c" }}
+            style={{ background: "linear-gradient(180deg, #8f1427 0%, #6d0f1b 100%)", color: "#f9e7b0", border: "calc(var(--u) * 1.5) solid #d4a53c" }}
           >
             {status === "sending" ? "Sending…" : "Send Blessing"}
           </button>

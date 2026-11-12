@@ -51,7 +51,7 @@ export function InviteText({ show, meetReady = false, onMeet }: { show: boolean;
           alignItems: "center",
           justifyContent: "center",
           gap: u(8),
-          boxShadow: "0 4px 14px rgba(109,15,27,.3)",
+          boxShadow: "0 calc(var(--u) * 4) calc(var(--u) * 14) rgba(109,15,27,.3)",
           opacity: meetReady ? 1 : 0,
           pointerEvents: meetReady ? "auto" : "none",
           transition: "opacity 900ms ease-in-out",
@@ -69,7 +69,7 @@ export function InviteText({ show, meetReady = false, onMeet }: { show: boolean;
 export function CoupleText({ show, instant = false, onCue, cueShow = true }: { show: boolean; instant?: boolean; onCue?: () => void; cueShow?: boolean }) {
   const { groom, bride } = wedding.couple;
   const t = (dur: number, delay: number) => (instant ? "none" : `opacity ${dur}ms ease-out ${delay}ms, transform ${dur}ms ease-out ${delay}ms`);
-  const line = (delay: number): CSSProperties => ({ opacity: show ? 1 : 0, transform: show ? "translateY(0)" : "translateY(12px)", transition: t(900, delay) });
+  const line = (delay: number): CSSProperties => ({ opacity: show ? 1 : 0, transform: show ? "translateY(0)" : "translateY(calc(var(--u) * 12))", transition: t(900, delay) });
   return (
     <>
       <div style={block}>

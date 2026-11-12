@@ -74,7 +74,7 @@ export default function Invitation() {
           clipPath: cardSeen ? "inset(0 0 0 0)" : "inset(0 0 100% 0)",
           backgroundImage:
             "radial-gradient(rgba(198,161,91,0.10) 1px, transparent 1px)",
-          backgroundSize: "14px 14px",
+          backgroundSize: "calc(var(--u) * 14) calc(var(--u) * 14)",
         }}
       >
         <Corner className="left-2 top-2" />

@@ -15,10 +15,11 @@ export default function Layout({ children }: { children: ReactNode }) {
   if (!isDesktop) {
     return (
       <ScrollRootContext.Provider value={null}>
-        {/* overflow-x-clip: slide-in reveals start off to the side; never let them add a horizontal scrollbar */}
-        <main className="mx-auto min-h-screen w-full max-w-[430px] paper overflow-x-clip">
-          {children}
-        </main>
+        {/* .screen: the 430px phone column; every size inside scales with its width (see index.css).
+            overflow-x clip: slide-in reveals start off to the side; never let them add a horizontal scrollbar */}
+        <div className="screen paper">
+          <main className="screen-content min-h-screen">{children}</main>
+        </div>
       </ScrollRootContext.Provider>
     );
   }
@@ -45,9 +46,10 @@ export default function Layout({ children }: { children: ReactNode }) {
       <div
         className="relative rounded-[3.3rem] bg-[#2b1f27] p-[8px] shadow-[0_30px_70px_-20px_rgba(60,40,20,0.55)]"
         style={{
-          height: "min(94.3vh, 960px)",
+          // capped at 926px tall so the display (width - 16px bezel) never exceeds the 430px column
+          height: "min(94.3vh, 926px)",
           aspectRatio: "414 / 860",
-          width: "calc(min(94.3vh, 960px) * 414 / 860)",
+          width: "calc(min(94.3vh, 926px) * 414 / 860)",
           maxWidth: "100vw",
           minWidth: 0,
           flex: "none",
@@ -62,7 +64,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         {/* Screen. translateZ(0) makes position:fixed children stay inside the phone. */}
         <div
           ref={setScreen}
-          className="no-scrollbar relative h-full w-full overflow-y-auto overflow-x-hidden rounded-[2.7rem] paper"
+          className="screen screen--mockup no-scrollbar relative rounded-[2.7rem] paper"
           style={{ transform: "translateZ(0)" }}
         >
           {/* dynamic island */}
@@ -70,7 +72,7 @@ export default function Layout({ children }: { children: ReactNode }) {
             <span className="mt-[10px] h-[28px] w-[100px] rounded-full bg-black" />
           </div>
           <ScrollRootContext.Provider value={screen}>
-            <main>{children}</main>
+            <main className="screen-content">{children}</main>
           </ScrollRootContext.Provider>
         </div>
       </div>
