@@ -3,7 +3,7 @@ import { weddingAudio } from "../components/Countdown/weddingAudio";
 
 /**
  * One sound switch for the whole site (top-left speaker button) plus the intro's Skip hook.
- *  - Background music: /audio/bgm.mp3 if that file exists, otherwise a soft synthesized tanpura drone.
+ *  - Background music: /audio/bgm.mp3 if that file exists, otherwise none.
  *  - Muting also silences every sound effect (temple bell, scratch, shehnai, party popper).
  * Music can only start from a tap (browser autoplay rules): the door tap, Skip, or the speaker button.
  */
@@ -37,9 +37,8 @@ function playMusic() {
       fileAudio.volume = 0.5;
     }
     void fileAudio.play().catch(() => {});
-  } else {
-    weddingAudio.startDrone();
   }
+  // no music file: stay silent (the synthesized tanpura drone was removed on request)
 }
 
 function pauseMusic() {
