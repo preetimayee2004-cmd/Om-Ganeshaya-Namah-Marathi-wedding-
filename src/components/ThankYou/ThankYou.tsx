@@ -138,8 +138,6 @@ export default function ThankYou() {
       {/* paper, margin and gold frame come from the shared .framed-page card around all sections */}
       <div className="relative mx-auto max-w-[400px] overflow-hidden px-6 pb-[64px] pt-5 text-center">
 
-        <FlowerVine />
-        <FlowerVine flip />
         <Bell chain={46} className="left-[54px]" />
         <Bell chain={120} className="left-[30px]" delay={0.8} />
         <Bell chain={46} className="right-[54px]" delay={0.4} />
@@ -197,8 +195,6 @@ export default function ThankYou() {
           ॥ शुभमंगल सावधान ॥
         </p>
 
-        <LotusPlant />
-        <LotusPlant flip />
         {/* woven border along the bottom */}
         <div
           className="pointer-events-none absolute inset-x-0 bottom-0 h-[20px]"
