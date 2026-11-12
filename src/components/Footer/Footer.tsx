@@ -1,8 +1,10 @@
 import { wedding, coupleOrder } from "../../config/wedding";
 import { useInView } from "../Layout/Reveal";
 import { useScrollRoot } from "../Layout/ScrollRoot";
+import { useGuest } from "../../context/GuestContext";
 
 export default function Footer() {
+  const { guestName, isPersonalised } = useGuest();
   const [ref, seen] = useInView<HTMLElement>(0.1);
   const root = useScrollRoot();
 
@@ -27,6 +29,11 @@ export default function Footer() {
         className="mx-auto max-w-[18rem] text-[20px] italic leading-snug text-[#6d0f1b]"
         style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 600, opacity: seen ? 1 : 0, transition: "opacity 1600ms ease 400ms" }}
       >
+        {isPersonalised && (
+          <>
+            Dear <span className="guest-name not-italic">{guestName}</span>,{" "}
+          </>
+        )}
         {wedding.finalNote}
       </p>
 

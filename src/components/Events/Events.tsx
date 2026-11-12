@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { wedding } from "../../config/wedding";
 import Reveal from "../Layout/Reveal";
+import { useGuest } from "../../context/GuestContext";
 
 // Golden card: the exact gold of the Save-the-Date border, deep maroon ink
 const GOLD = "linear-gradient(180deg, #FCEFCB 0%, #F3DB9C 55%, #F8E8BC 100%)"; // a lighter take on the Save-the-Date gold
@@ -25,6 +26,7 @@ function Corner({ className = "" }: { className?: string }) {
 }
 
 export default function Events() {
+  const { guestName, isPersonalised } = useGuest();
   const [openId, setOpenId] = useState<string | null>(null);
 
   return (
@@ -37,7 +39,13 @@ export default function Events() {
           Wedding Celebrations
         </h2>
         <p className="mx-auto mt-2 max-w-[16rem] font-body text-sm text-espresso/70">
-          Tap an event to see the details.
+          {isPersonalised ? (
+            <>
+              <span className="guest-name">{guestName}</span>, tap an event to see the details.
+            </>
+          ) : (
+            "Tap an event to see the details."
+          )}
         </p>
       </Reveal>
 

@@ -1370,6 +1370,30 @@ export default function Intro() {
           </div>
         </div>
       </div>
+      {/* Scroll hint at the bottom of the couple section */}
+      {stage >= 6 && (
+        <button
+          type="button"
+          onClick={() => {
+            const next = document.getElementById("countdown");
+            if (next) next.scrollIntoView({ behavior: "smooth", block: "start" });
+          }}
+          className="absolute inset-x-0 bottom-[22px] z-40 mx-auto flex w-max flex-col items-center gap-0.5 font-serif text-[15px] font-bold uppercase tracking-[0.2em] text-[#6d0f1b]"
+          style={{
+            opacity: s6Finished ? 1 : 0,
+            transition: "opacity 800ms ease",
+            textShadow: "0 0 6px rgba(255,248,230,0.95), 0 0 14px rgba(255,248,230,0.9)",
+            filter: "drop-shadow(0 0 4px rgba(255,248,230,0.95))",
+          }}
+          aria-label="Scroll down to see the invitation details"
+        >
+          Scroll Down
+          <svg viewBox="0 0 24 24" className="h-[26px] w-[26px]" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" style={{ animation: "zv-chevron 1.4s ease-in-out infinite" }} aria-hidden>
+            <path d="m6 6 6 6 6-6" />
+            <path d="m6 13 6 6 6-6" />
+          </svg>
+        </button>
+      )}
     </section>
   );
 }
