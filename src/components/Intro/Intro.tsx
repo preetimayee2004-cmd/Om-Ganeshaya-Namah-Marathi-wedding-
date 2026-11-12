@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { useScrollRoot } from "../Layout/ScrollRoot";
 import { wedding, coupleOrder } from "../../config/wedding";
+import { sound } from "../../lib/sound";
+import { useGuest } from "../../context/GuestContext";
 
 // ===== SMOKE REVEAL SETTINGS (invitation -> couple screen) =====
 const SMOKE_MS = 1800;     // speed: total time of the reveal (bigger = slower)
@@ -103,6 +105,7 @@ const SPLASH_DROPLETS = [
 ];
 
 export default function Intro() {
+  const { guestName, isPersonalised } = useGuest();
   // Stages:
   // 0: Initial closed envelope (waiting for tap)
   // 1: Scene 1 — Envelope Opening (2.8s)
@@ -181,10 +184,6 @@ export default function Intro() {
   const [s6Quotation, setS6Quotation] = useState(() => getInitialStage() === 6);
   const [s6Finished, setS6Finished] = useState(false);
 
-  // Audio & Controls
-  const [hasAudio, setHasAudio] = useState(false);
-  const [soundOn, setSoundOn] = useState(false);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const scroller = useScrollRoot();
   const timers = useRef<number[]>([]);
@@ -228,25 +227,10 @@ export default function Intro() {
     return () => clearTimeout(timeout);
   }, []);
 
-  // Check audio availability
+  // Skip button (top-right) is shown only while the opening animation runs (doors -> invitation)
   useEffect(() => {
-    fetch("/audio/shehnai.mp3", { method: "HEAD" })
-      .then((r) => setHasAudio(r.ok && (r.headers.get("content-type") ?? "").startsWith("audio")))
-      .catch(() => {});
-  }, []);
-
-  // Manage Shehnai audio
-  useEffect(() => {
-    if (!hasAudio) return;
-    if (!audioRef.current) {
-      audioRef.current = new Audio("/audio/shehnai.mp3");
-      audioRef.current.loop = true;
-    }
-    const a = audioRef.current;
-    if (soundOn) void a.play().catch(() => setSoundOn(false));
-    else a.pause();
-    return () => a.pause();
-  }, [soundOn, hasAudio]);
+    sound.setIntroActive(stage < 5 && !smokeActive);
+  }, [stage, smokeActive]);
 
   // Lock scroll while intro animation is playing (unlocked on Scene 6 for natural scrolling)
   useEffect(() => {
@@ -284,6 +268,7 @@ export default function Intro() {
       __goToCouple?: () => void;
     };
     w.__skipIntro = skip;
+    sound.registerIntro(skip);
     w.__goToInvitation = triggerBackToInvitation;
     w.__goToCouple = triggerCoupleTransition;
   }, []);
@@ -296,6 +281,7 @@ export default function Intro() {
   // -------------------------------------------------------------
   const handleDoorTap = () => {
     if (stage !== 0 || !ready) return;
+    sound.start(); // the door tap is the first gesture: background music begins here
 
     if (reduced()) {
       skip();
@@ -1036,7 +1022,7 @@ export default function Intro() {
           }}
         >
           {/* Top Zone: Clean English Invitation Typography positioned in clear sunset sky */}
-          <div className="intro-fit-top invite-zoom relative z-10 px-6 pt-[20%] text-center flex flex-col items-center">
+          <div className={`intro-fit-top invite-zoom relative z-10 px-6 pt-[20%] text-center flex flex-col items-center${isPersonalised ? " has-guest" : ""}`}>
             {/* Invitation Heading */}
             <div
               className="relative z-10 flex flex-col items-center"
@@ -1047,6 +1033,11 @@ export default function Intro() {
               }}
             >
               <h2 className="font-serif text-base font-medium tracking-wide text-[#6d0f1b] leading-snug drop-shadow-[0_1px_3px_rgba(255,255,255,0.95)]">
+                {isPersonalised && (
+                  <>
+                    Dear <span className="guest-name">{guestName}</span>,<br />
+                  </>
+                )}
                 With Joyful Hearts,<br />We Invite You
               </h2>
             </div>
@@ -1240,7 +1231,7 @@ export default function Intro() {
             <button
               onClick={triggerBackToInvitation}
               aria-label="Back to Invitation"
-              className="group absolute left-4 top-4 z-50 flex h-9 w-9 items-center justify-center rounded-full border border-white/75 bg-white/45 shadow-[0_4px_20px_rgba(75,15,22,0.18),inset_0_1px_1px_rgba(255,255,255,0.85)] backdrop-blur-md transition-all duration-300 hover:scale-110 hover:bg-white/65 active:scale-95"
+              className="group absolute left-4 top-[58px] z-50 flex h-9 w-9 items-center justify-center rounded-full border border-white/75 bg-white/45 shadow-[0_4px_20px_rgba(75,15,22,0.18),inset_0_1px_1px_rgba(255,255,255,0.85)] backdrop-blur-md transition-all duration-300 hover:scale-110 hover:bg-white/65 active:scale-95"
             >
               <svg
                 className="h-4 w-4 text-[#6d0f1b] transition-transform duration-300 group-hover:-translate-x-0.5"

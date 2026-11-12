@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { weddingAudio } from "./weddingAudio";
+import { sound } from "../../lib/sound";
 import { triggerPartyPopper } from "./partyPopper";
 
 interface Particle {
@@ -229,7 +230,6 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
 
   const [isRevealed, setIsRevealed] = useState(false);
   const [phase, setPhase] = useState<number>(0); // 0: initial, 1: dissolving (600ms), 2: date/mandala (900ms-1500ms), 3: settled
-  const [isMuted, setIsMuted] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
 
   const [particles, setParticles] = useState<Particle[]>([]);
@@ -240,13 +240,6 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
   const scratchDistanceRef = useRef(0);
   const animFrameRef = useRef<number | null>(null);
 
-  // Toggle audio
-  const handleToggleMute = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    const next = !isMuted;
-    setIsMuted(next);
-    weddingAudio.setMuted(next);
-  };
 
   // Initialize Canvas Surface
   const initCanvas = useCallback(() => {
@@ -281,7 +274,7 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
     if (isRevealed) return;
     setIsRevealed(true);
     setPhase(1); // 0ms: Dissolving remaining texture over 600ms
-    triggerPartyPopper({ muted: isMuted }); // party popper: sound x2 + confetti + vibration
+    triggerPartyPopper({ muted: sound.isMuted() }); // party popper: sound x2 + confetti + vibration
 
     if (onRevealed) onRevealed();
 
@@ -307,7 +300,7 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
     setTimeout(() => {
       setPhase(3);
     }, 3000);
-  }, [isRevealed, isMuted, onRevealed]);
+  }, [isRevealed, onRevealed]);
 
   // Calculate Cleared Percentage (fast 20px sampling to eliminate frame drops)
   const checkScratchPercentage = useCallback((force = false) => {
@@ -554,18 +547,7 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
         <span className="pointer-events-none absolute bottom-[-4px] left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 border border-[#8A5A12] bg-[#E2B24F]" />
       </div>
 
-      {/* TINY CORNER BELL AUDIO BUTTON */}
-      <button
-        type="button"
-        onClick={handleToggleMute}
-        aria-label={isMuted ? "Unmute Sound" : "Mute Sound"}
-        title={isMuted ? "Unmute sound" : "Mute sound"}
-        className="group absolute right-3.5 top-3 z-30 flex h-7 w-7 items-center justify-center rounded-full border border-[#D4AF37]/50 bg-white/85 text-[#6d0f1b] shadow-sm backdrop-blur-sm transition-all duration-200 hover:bg-white hover:scale-105 active:scale-95"
-      >
-        <span className="text-xs leading-none select-none">
-          {isMuted ? "🔇" : "🔔"}
-        </span>
-      </button>
+      {/* sound is controlled by the speaker button at the top-left of the screen */}
 
       {/* CARD CONTENT HEADER */}
       <div className="relative z-10 px-5 pt-4 pb-0 text-center">

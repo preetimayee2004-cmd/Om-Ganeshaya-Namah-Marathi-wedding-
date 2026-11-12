@@ -186,7 +186,11 @@ export default function TravelStay() {
           Contact &amp; Assistance
         </h3>
         <p className="mx-auto mt-2 max-w-[18rem] text-[16px] italic leading-snug" style={{ fontFamily: SERIF, color: INK_SOFT }}>
-          For anything you need{isPersonalised ? `, ${guestName}` : ""}, our families are always happy to help.
+          For anything you need{isPersonalised ? (
+            <>
+              , <span className="guest-name not-italic">{guestName}</span>
+            </>
+          ) : null}, our families are always happy to help.
         </p>
         <svg viewBox="0 0 120 12" className="mx-auto mt-3 h-3 w-28" aria-hidden>
           <path d="M2 6h44M74 6h44" stroke="#c9a35a" strokeWidth=".9" />

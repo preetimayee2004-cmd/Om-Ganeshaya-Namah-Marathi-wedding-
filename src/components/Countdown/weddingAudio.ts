@@ -40,6 +40,70 @@ class WeddingAudioEngine {
     return this.isMuted;
   }
 
+  // ---------- background drone (used when no /audio/bgm.mp3 is supplied) ----------
+  private droneTimer: number | null = null;
+  private droneOut: GainNode | null = null;
+
+  /** one soft tanpura-like pluck: saw + octave sine through a warm low-pass, long natural decay */
+  private pluck(ctx: AudioContext, out: AudioNode, freq: number, at: number) {
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, at);
+    g.gain.exponentialRampToValueAtTime(1, at + 0.03);
+    g.gain.exponentialRampToValueAtTime(0.0001, at + 2.6);
+    const lp = ctx.createBiquadFilter();
+    lp.type = "lowpass";
+    lp.frequency.setValueAtTime(1400, at);
+    lp.frequency.exponentialRampToValueAtTime(500, at + 2.4);
+    lp.Q.value = 0.7;
+    const a = ctx.createOscillator();
+    a.type = "sawtooth";
+    a.frequency.setValueAtTime(freq, at);
+    const b = ctx.createOscillator();
+    b.type = "sine";
+    b.frequency.setValueAtTime(freq * 2.003, at);
+    const bg = ctx.createGain();
+    bg.gain.value = 0.35;
+    a.connect(lp);
+    b.connect(bg).connect(lp);
+    lp.connect(g).connect(out);
+    a.start(at);
+    b.start(at);
+    a.stop(at + 2.7);
+    b.stop(at + 2.7);
+  }
+
+  /** Pa - Sa' - Sa' - Sa, looping every 2.8 s at a low volume, like a tanpura behind a recital */
+  public startDrone() {
+    const ctx = this.initCtx();
+    if (!ctx || this.droneTimer !== null) return;
+    const out = ctx.createGain();
+    out.gain.setValueAtTime(0.0001, ctx.currentTime);
+    out.gain.exponentialRampToValueAtTime(0.045, ctx.currentTime + 1.5);
+    out.connect(ctx.destination);
+    this.droneOut = out;
+    const notes = [196.0, 261.63, 261.63, 130.81]; // G3 (Pa), C4 (Sa'), C4, C3 (Sa)
+    const cycle = () => {
+      const t = ctx.currentTime + 0.05;
+      notes.forEach((f, i) => this.pluck(ctx, out, f, t + i * 0.7));
+    };
+    cycle();
+    this.droneTimer = window.setInterval(cycle, 2800);
+  }
+
+  public stopDrone() {
+    if (this.droneTimer !== null) window.clearInterval(this.droneTimer);
+    this.droneTimer = null;
+    const out = this.droneOut;
+    this.droneOut = null;
+    if (out && this.ctx) {
+      const now = this.ctx.currentTime;
+      out.gain.cancelScheduledValues(now);
+      out.gain.setValueAtTime(out.gain.value, now);
+      out.gain.exponentialRampToValueAtTime(0.0001, now + 0.4);
+      window.setTimeout(() => out.disconnect(), 600);
+    }
+  }
+
   /**
    * Traditional brass temple bell (घंटा).
    * Soft, authentic temple bell with a natural resonant decay.

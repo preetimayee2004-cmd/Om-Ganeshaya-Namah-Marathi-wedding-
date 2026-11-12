@@ -227,6 +227,11 @@ export default function WishingWall() {
           <div>
             <label htmlFor="bl-msg" className="mb-1 block font-body text-xs uppercase tracking-widest" style={{ color: GOLD_LABEL }}>
               Your blessing
+              {isPersonalised && (
+                <>
+                  {" "}· <span className="guest-name normal-case tracking-normal">{guestName}</span>
+                </>
+              )}
             </label>
             <textarea
               ref={msgRef}

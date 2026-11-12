@@ -163,7 +163,7 @@ export const wedding = {
     { name: "Guest House", distance: "500 m from venue", tier: "Budget", phone: "", link: "" },
   ] as { name: string; distance: string; tier: string; phone: string; link: string }[],
   thankYouMessage:
-    "Your presence, love and blessings mean more to us than words can express. We cannot wait to celebrate this beautiful beginning with you.",
+    "Your presence made our celebration even more beautiful. Thank you for showering us with your love, blessings and happiness. We will cherish these memories forever.",
   finalNote: "Until we celebrate together, with all our love.",
   hashtag: "#SreyashWedsSayeli",
   // Placeholder contacts. Use digits with country code, no spaces (e.g. +919876543210).

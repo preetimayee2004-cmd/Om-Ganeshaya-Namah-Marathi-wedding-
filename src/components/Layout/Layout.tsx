@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from "react";
 import { useMediaQuery } from "../../hooks/useMediaQuery";
 import { ScrollRootContext } from "./ScrollRoot";
+import TopControls from "./TopControls";
 
 /**
  * Responsive shell.
@@ -18,7 +19,10 @@ export default function Layout({ children }: { children: ReactNode }) {
         {/* .screen: the 430px phone column; every size inside scales with its width (see index.css).
             overflow-x clip: slide-in reveals start off to the side; never let them add a horizontal scrollbar */}
         <div className="screen paper">
-          <main className="screen-content min-h-screen">{children}</main>
+          <main className="screen-content min-h-screen">
+            <TopControls mode="fixed" />
+            {children}
+          </main>
         </div>
       </ScrollRootContext.Provider>
     );
@@ -72,7 +76,10 @@ export default function Layout({ children }: { children: ReactNode }) {
             <span className="mt-[10px] h-[28px] w-[100px] rounded-full bg-black" />
           </div>
           <ScrollRootContext.Provider value={screen}>
-            <main className="screen-content">{children}</main>
+            <main className="screen-content">
+              <TopControls mode="sticky" />
+              {children}
+            </main>
           </ScrollRootContext.Provider>
         </div>
       </div>

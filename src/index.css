@@ -51,6 +51,8 @@
   .screen:not(.screen--mockup) .invite-zoom { zoom: 1.1; }
   /* couple section: lift the names/parents block so it clears the couple's heads */
   .screen:not(.screen--mockup) .couple-text { padding-top: calc(var(--u) * 96); }
+  /* "Dear <guest>," adds a line to the invitation screen: start it higher so the venue stays above the roofs */
+  .screen:not(.screen--mockup) .intro-fit-top.has-guest { padding-top: 12%; }
 }
 
 /* Landscape phones (~390px tall) cannot hold the portrait full-screen intro, so only there the
@@ -63,6 +65,23 @@
   .screen-content .intro-fit.fixed .invite-zoom { zoom: 1; }
   /* settled couple hero (part of the scrolling page): keep the portrait phone height and scroll */
   .screen-content .intro-fit.relative { height: calc(var(--u) * 844); min-height: 0; }
+}
+
+/* Speaker + Skip row: level with the dynamic island in the mockup, below the notch on phones */
+.top-controls {
+  padding: calc(env(safe-area-inset-top, 0px) + 10px) 16px 0;
+}
+.screen--mockup .top-controls { padding: 7px 18px 0; }
+
+/* the guest's own name, wherever the invitation addresses them */
+.guest-name {
+  font-weight: 700;
+  color: #7a1420;
+  background: linear-gradient(transparent 60%, rgba(226, 178, 79, 0.45) 60%, rgba(226, 178, 79, 0.45) 92%, transparent 92%);
+  padding: 0 0.12em;
+  border-radius: 2px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
 }
 
 /* Touch targets: every button/link gets an invisible hit area of at least 44x44 real px,
@@ -478,3 +497,6 @@ html { background: #2b1d18; }
 
 /* one section-heading style everywhere: single line, same size, never cut */
 .section-title { font-size: 30px; line-height: 1.15; white-space: nowrap; letter-spacing: 0; }
+
+/* Thank-you card: hanging bells swing gently */
+@keyframes ty-swing { from { transform: rotate(-4deg) } to { transform: rotate(4deg) } }
