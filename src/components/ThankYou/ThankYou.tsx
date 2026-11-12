@@ -98,7 +98,7 @@ function LotusPlant({ flip }: { flip?: boolean }) {
 function ArchPortrait() {
   const arch = "M14 268V112C14 80 34 64 62 58C92 52 122 40 150 8C178 40 208 52 238 58C266 64 286 80 286 112V268Z";
   return (
-    <svg viewBox="0 0 300 270" className="mx-auto block w-[78%]" role="img" aria-label="Illustration of the bride and groom">
+    <svg viewBox="0 0 300 270" className="mx-auto block w-[92%]" role="img" aria-label="Illustration of the bride and groom">
       <defs>
         <clipPath id="ty-arch">
           <path d={arch} />
@@ -119,6 +119,22 @@ function ArchPortrait() {
     </svg>
   );
 }
+
+/** soft left-to-right reveal, as if the heading is being written by hand */
+const handwrite = (show: boolean, delay: number): CSSProperties => {
+  const mask = "linear-gradient(90deg, #000 42%, transparent 58%)";
+  return {
+    WebkitMaskImage: mask,
+    maskImage: mask,
+    WebkitMaskSize: "260% 100%",
+    maskSize: "260% 100%",
+    WebkitMaskRepeat: "no-repeat",
+    maskRepeat: "no-repeat",
+    WebkitMaskPosition: show ? "0% 0" : "100% 0",
+    maskPosition: show ? "0% 0" : "100% 0",
+    transition: `-webkit-mask-position 1500ms cubic-bezier(.45,0,.25,1) ${delay}ms, mask-position 1500ms cubic-bezier(.45,0,.25,1) ${delay}ms`,
+  };
+};
 
 export default function ThankYou() {
   const [ref, seen] = useInView<HTMLElement>(0.1);
@@ -163,7 +179,7 @@ export default function ThankYou() {
           <ArchPortrait />
         </div>
 
-        <h2 id="thanks-title" className="relative -mt-1 font-script text-[40px] leading-tight" style={{ color: MAROON, ...fade(350) }}>
+        <h2 id="thanks-title" className="relative -mt-1 font-script text-[42px] leading-tight" style={{ color: MAROON, WebkitTextStroke: "0.4px #7a1420", ...handwrite(seen, 500) }}>
           A Celebration of Love
         </h2>
         <LotusDivider w={80} style={{ marginTop: "calc(var(--u) * 6)" }} />
@@ -172,7 +188,7 @@ export default function ThankYou() {
         </p>
         <LotusDivider w={65} />
 
-        <div className="relative mx-auto mt-4 max-w-[300px] text-[18px] font-medium leading-[1.5]" style={{ fontFamily: SERIF, color: "#4a1a16", ...fade(650) }}>
+        <div className="relative mx-auto mt-4 max-w-[318px] text-[18px] font-medium leading-[1.55]" style={{ fontFamily: SERIF, color: "#4a1a16", ...fade(650) }}>
           {isPersonalised && (
             <p className="mb-1 text-[20px] italic">
               Dear <span className="guest-name not-italic">{guestName}</span>,

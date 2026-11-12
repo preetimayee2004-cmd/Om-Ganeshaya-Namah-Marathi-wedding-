@@ -38,6 +38,32 @@ const EASE_SOFT_EXIT = "cubic-bezier(0.16, 1, 0.3, 1)";
 /** couple-section names: Great Vibes has no bold, so a thin same-colour outline thickens the strokes */
 const NAME_STROKE = { WebkitTextStroke: "0.7px #6d0f1b" } as const;
 
+/** left-to-right watercolor "ink" wipe: a soft-edged mask slides across the text */
+const inkWipe = (show: boolean, delay: number, ms = 1100): CSSProperties => {
+  const mask = "linear-gradient(90deg, #000 40%, transparent 60%)";
+  return {
+    WebkitMaskImage: mask,
+    maskImage: mask,
+    WebkitMaskSize: "260% 100%",
+    maskSize: "260% 100%",
+    WebkitMaskRepeat: "no-repeat",
+    maskRepeat: "no-repeat",
+    WebkitMaskPosition: show ? "0% 0" : "100% 0",
+    maskPosition: show ? "0% 0" : "100% 0",
+    transition: `-webkit-mask-position ${ms}ms cubic-bezier(.45,0,.25,1) ${delay}ms, mask-position ${ms}ms cubic-bezier(.45,0,.25,1) ${delay}ms`,
+  };
+};
+
+/** small gold scroll flanking the ampersand */
+function Flourish({ flip }: { flip?: boolean }) {
+  return (
+    <svg viewBox="0 0 48 14" className={`h-[11px] w-[40px] text-[#a8741a] ${flip ? "-scale-x-100" : ""}`} fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" aria-hidden>
+      <path d="M2 7h26c6 0 9-4 6-6-3-1.5-5 2-3 4 2 1.6 6 1 9-1" />
+      <circle cx="44" cy="5" r="1.3" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
 /** read at mount time, so images changed from the Edit panel are the ones preloaded */
 const introImages = () => {
   const i = wedding.images;
@@ -125,6 +151,8 @@ export default function Intro() {
   };
 
   const [stage, setStage] = useState<number>(getInitialStage);
+  const stageNow = useRef(stage); // latest stage for timers created in earlier renders
+  stageNow.current = stage;
   const [ready, setReady] = useState(false);
   const [particles, setParticles] = useState<Particle[]>([]);
 
@@ -392,7 +420,11 @@ export default function Intro() {
 
     // 0.75s: Slim "See Couple ›" glass button reveals, holds cleanly
     later(() => setS4Hold(true), 750);
-    // Holds permanently on Invitation so guests can read at leisure, then click glass button to open Couple section
+    // After a reading pause the film continues on its own (one tap for the whole opening);
+    // "Open Invitation" still lets the guest move on sooner.
+    later(() => {
+      if (stageNow.current === 4 && !smokeBusy.current) triggerCoupleTransition();
+    }, 6500);
   };
 
   // -------------------------------------------------------------
@@ -1316,18 +1348,16 @@ export default function Intro() {
             </div>
 
             {/* Names (1.50s – 2.10s) */}
-            <div
-              className="mt-3"
-              style={{
-                opacity: s6Names ? 1 : 0,
-                transform: s6Names ? "translateY(0)" : "translateY(calc(var(--u) * 10))",
-                transition: `opacity 600ms ${EASE_PRIMARY}, transform 600ms ${EASE_PRIMARY}`,
-              }}
-            >
+            {/* names are written one after the other, like ink flowing from left to right */}
+            <div className="mt-3">
               <div className="flex flex-col items-center leading-none">
-                <p className="font-script text-[44px] leading-[1.05] text-[#6d0f1b]" style={NAME_STROKE}>{wedding.couple.groom}</p>
-                <p className="font-script text-2xl leading-none text-[#a8741a]">&amp;</p>
-                <p className="font-script text-[44px] leading-[1.05] text-[#6d0f1b]" style={NAME_STROKE}>{wedding.couple.bride}</p>
+                <p className="font-script text-[44px] leading-[1.05] text-[#6d0f1b]" style={{ ...NAME_STROKE, ...inkWipe(s6Names, 0) }}>{first}</p>
+                <div className="flex items-center gap-2" style={inkWipe(s6Names, 650, 700)}>
+                  <Flourish />
+                  <p className="font-script text-2xl leading-none text-[#a8741a]">&amp;</p>
+                  <Flourish flip />
+                </div>
+                <p className="font-script text-[44px] leading-[1.05] text-[#6d0f1b]" style={{ ...NAME_STROKE, ...inkWipe(s6Names, 1000) }}>{second}</p>
               </div>
             </div>
 
