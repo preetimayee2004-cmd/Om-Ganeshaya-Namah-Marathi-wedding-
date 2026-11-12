@@ -1,12 +1,13 @@
-import SaveTheDate from "./SaveTheDate";
+import Reveal from "../Layout/Reveal";
+import DateReveal from "./DateReveal";
 
-/** "Save the Date" calendar page (the countdown box was removed on request). */
 export default function Countdown() {
   return (
-    <section id="countdown" aria-label="Save the Date" className="overflow-x-clip px-5 py-6">
-      <div className="mx-auto max-w-md">
-        <SaveTheDate />
-      </div>
+    <section id="countdown" aria-label="Maharashtrian Wedding Date Reveal" className="py-2 px-6">
+      <Reveal className="mx-auto max-w-md">
+        {/* Cinematic Marathi Wedding Scratch-to-Reveal Card */}
+        <DateReveal />
+      </Reveal>
     </section>
   );
 }

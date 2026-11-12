@@ -17,30 +17,31 @@ function SpeakerIcon({ off }: { off: boolean }) {
 }
 
 /**
- * Speaker (top-left, always visible, on every section) and Skip (top-right, only while the
+ * Speaker (always visible: top-left during the opening, top-right after it) and Skip (top-right, only while the
  * opening animation runs). `sticky` is used inside the laptop mockup's scrolling screen,
  * `fixed` on real phones.
  */
 export default function TopControls({ mode }: { mode: "fixed" | "sticky" }) {
   const { muted, introActive } = useSoundState();
   const off = muted;
-  // same gold pill as the Open Invitation button (.btn-gold)
-    // outline (stroke) pills, the same everywhere
-  const pill = "btn-gold btn-outline pointer-events-auto";
+  // frosted-glass round buttons, the same look as the couple section's back (‹) button
+  const pill =
+    "pointer-events-auto flex h-9 items-center justify-center rounded-full border border-white/75 bg-white/45 text-[#6d0f1b] shadow-[0_4px_20px_rgba(75,15,22,0.18),inset_0_1px_1px_rgba(255,255,255,0.85)] backdrop-blur-md transition-all duration-300 hover:scale-105 hover:bg-white/65 active:scale-95";
 
+  // during the opening: sound on the left, Skip on the right; from the couple section on: sound on the right
   const row = (
-    <div className="top-controls pointer-events-none flex items-center justify-between">
+    <div className={`top-controls pointer-events-none flex items-center ${introActive ? "justify-between" : "justify-end"}`}>
       <button
         type="button"
         onClick={() => sound.toggle()}
         aria-label={off ? "Turn sound on" : "Turn sound off"}
         aria-pressed={!off}
-        className={`${pill} h-[36px] w-[36px] !px-0`}
+        className={`${pill} w-9`}
       >
         <SpeakerIcon off={off} />
       </button>
       {introActive && (
-        <button type="button" onClick={() => sound.skipIntro()} className={`${pill} gap-1.5`}>
+        <button type="button" onClick={() => sound.skipIntro()} className={`${pill} gap-1.5 px-4 font-serif text-[13px] font-bold uppercase tracking-[0.14em]`}>
           Skip
           <svg viewBox="0 0 16 16" className="h-[12px] w-[12px]" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
             <path d="m6 3 5 5-5 5" />

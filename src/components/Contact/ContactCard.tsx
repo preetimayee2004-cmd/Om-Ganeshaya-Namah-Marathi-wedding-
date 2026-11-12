@@ -4,10 +4,9 @@ import { useInView } from "../Layout/Reveal";
 import { Mundavalya, Pheta } from "./HeadGear";
 
 /**
- * Contact & Assistance as one framed ivory card: "The Families" (the bride's and groom's
- * contacts side by side, with Var / Vadhu Paksha) and "Coordinators" (one row each with a short
- * note). Every person has a filled maroon Call button and an outlined WhatsApp button.
- * Contacts whose role mentions the bride or the groom are family; everyone else is a coordinator.
+ * Contact & Assistance as one framed card: every contact is one row (role, name, optional note)
+ * with a filled maroon Call button and an outlined WhatsApp button. The pheta and the mundavalya
+ * sit on the top corners.
  */
 
 const MAROON = "#7a1420";
@@ -17,7 +16,6 @@ const SERIF = '"Cormorant Garamond", Georgia, serif';
 const u = (n: number) => `calc(var(--u) * ${n})`;
 
 type Contact = (typeof wedding.contacts)[number];
-const side = (c: Contact) => (/groom/i.test(c.role) ? "groom" : /bride/i.test(c.role) ? "bride" : null);
 const digits = (phone: string) => phone.replace(/[^\d]/g, "");
 
 function Lotus({ size = 30 }: { size?: number }) {
@@ -30,15 +28,6 @@ function Lotus({ size = 30 }: { size?: number }) {
   );
 }
 
-function Divider() {
-  return (
-    <div className="mx-auto my-5 flex items-center justify-center gap-2" style={{ width: "78%" }} aria-hidden>
-      <span className="h-px flex-1" style={{ background: `linear-gradient(90deg, transparent, ${GOLD})` }} />
-      <Lotus size={26} />
-      <span className="h-px flex-1" style={{ background: `linear-gradient(270deg, transparent, ${GOLD})` }} />
-    </div>
-  );
-}
 
 function Label({ children, color = GOLD, style }: { children: ReactNode; color?: string; style?: CSSProperties }) {
   return (
@@ -93,8 +82,6 @@ function Corner({ flip }: { flip?: boolean }) {
 
 export default function ContactCard() {
   const [ref, seen] = useInView<HTMLDivElement>(0.15);
-  const family = wedding.contacts.filter((c) => side(c));
-  const coordinators = wedding.contacts.filter((c) => !side(c));
   const fade = (d: number): CSSProperties => ({
     opacity: seen ? 1 : 0,
     transform: seen ? "none" : `translateY(${u(10)})`,
@@ -102,7 +89,7 @@ export default function ContactCard() {
   });
 
   return (
-    <div ref={ref} className="relative mx-auto mt-7 max-w-[400px] px-5 pb-10 pt-9" style={{ background: "#fbf1dc", border: `${u(1.5)} solid #dcc08a`, borderRadius: u(6), boxShadow: `0 ${u(8)} ${u(22)} ${u(-12)} rgba(110,70,20,0.35)` }}>
+    <div ref={ref} className="relative mx-auto mt-7 max-w-[400px] px-5 pb-10 pt-16" style={{ background: "#fbf1dc", border: `${u(1.5)} solid #dcc08a`, borderRadius: u(6), boxShadow: `0 ${u(8)} ${u(22)} ${u(-12)} rgba(110,70,20,0.35)` }}>
       {/* inner hairline frame and the lotus that breaks the top border */}
       <div className="pointer-events-none absolute rounded-[3px]" style={{ inset: u(7), border: `${u(1)} solid #e4cd9c` }} aria-hidden />
       <div className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 bg-[#fbf1dc] px-2" aria-hidden>
@@ -114,54 +101,25 @@ export default function ContactCard() {
       <Pheta className="pointer-events-none absolute z-[2] drop-shadow-[0_3px_4px_rgba(80,20,10,0.25)]" style={{ left: u(-16), top: u(-34), width: u(84) }} />
       <Mundavalya className="pointer-events-none absolute z-[2]" style={{ right: u(-6), top: u(-10), width: u(74) }} />
 
-      {family.length > 0 && (
-        <>
-          <Label style={{ textAlign: "center", letterSpacing: "0.3em", ...fade(0) }}>The Families</Label>
-          <div className="relative mt-4 grid grid-cols-2" style={fade(120)}>
-            <span className="absolute bottom-1 left-1/2 top-1 w-px -translate-x-1/2" style={{ background: `linear-gradient(180deg, transparent, ${GOLD}, transparent)` }} aria-hidden />
-            {family.slice(0, 2).map((c) => (
-              <div key={c.role + c.name} className="flex flex-col items-center px-2 text-center">
-                <Label color={MAROON}>{c.role}</Label>
-                <p className="mt-1 text-[23px] font-semibold leading-tight [overflow-wrap:anywhere]" style={{ fontFamily: SERIF, color: INK }}>
-                  {c.name}
+      {/* all contacts as one list of equal rows (bride's and groom's side first, as in the config) */}
+      <ul style={fade(0)}>
+        {wedding.contacts.map((c, i) => (
+          <li key={c.role + c.name} className="flex items-center gap-3 py-3.5" style={{ borderTop: i ? `${u(1)} solid #ecdcb9` : undefined }}>
+            <div className="min-w-0 flex-1 text-left">
+              <Label>{c.role}</Label>
+              <p className="mt-0.5 text-[22px] font-semibold leading-tight [overflow-wrap:anywhere]" style={{ fontFamily: SERIF, color: INK }}>
+                {c.name}
+              </p>
+              {c.note && (
+                <p className="text-[15.5px] italic" style={{ fontFamily: SERIF, color: "#8a6f62" }}>
+                  {c.note}
                 </p>
-                <p className="mt-0.5 text-[16px] italic" style={{ fontFamily: SERIF, color: "#8a6f62" }}>
-                  {side(c) === "groom" ? "Var Paksha" : "Vadhu Paksha"}
-                </p>
-                <div className="mt-3">
-                  <Actions c={c} />
-                </div>
-              </div>
-            ))}
-          </div>
-        </>
-      )}
-
-      {family.length > 0 && coordinators.length > 0 && <Divider />}
-
-      {coordinators.length > 0 && (
-        <div style={fade(240)}>
-          <Label style={{ textAlign: "center", letterSpacing: "0.3em" }}>Coordinators</Label>
-          <ul className="mt-3">
-            {coordinators.map((c, i) => (
-              <li key={c.role + c.name} className="flex items-center gap-3 py-3.5" style={{ borderTop: i ? `${u(1)} solid #ecdcb9` : undefined }}>
-                <div className="min-w-0 flex-1 text-left">
-                  <Label>{c.role}</Label>
-                  <p className="mt-0.5 text-[22px] font-semibold leading-tight [overflow-wrap:anywhere]" style={{ fontFamily: SERIF, color: INK }}>
-                    {c.name}
-                  </p>
-                  {c.note && (
-                    <p className="text-[15.5px] italic" style={{ fontFamily: SERIF, color: "#8a6f62" }}>
-                      {c.note}
-                    </p>
-                  )}
-                </div>
-                <Actions c={c} />
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+              )}
+            </div>
+            <Actions c={c} />
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

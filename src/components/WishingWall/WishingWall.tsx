@@ -4,6 +4,7 @@ import { useGuest } from "../../context/GuestContext";
 import { apiUrl } from "../../lib/api";
 import { fetchApprovedBlessings, isDuplicate, limits, submitBlessing, validate } from "../../lib/blessings";
 import Reveal, { useInView } from "../Layout/Reveal";
+import { wishTextProps } from "../../lib/scriptFont";
 
 const tilts = [-2.5, 1.8, -1.2, 2.4, -1.8];
 const WALL_MAX = 3; // only the latest three wishes are pinned on the wall
@@ -45,7 +46,7 @@ function Note({ name, message, i, fresh }: Wish & { i: number }) {
       ) : (
         <span className="absolute -top-2 left-1/2 h-4 w-14 -translate-x-1/2 rotate-2 bg-[#efd28f]/80" aria-hidden />
       )}
-      <p className="text-[19px] font-semibold italic leading-[1.35]" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", color: INK }}>{message}</p>
+      <p className="whitespace-pre-line" {...(() => { const t = wishTextProps(message, 19); return { dir: t.dir, style: { ...t.style, color: INK } }; })()}>{message}</p>
       <p className="mt-3 text-right font-body text-[11px] uppercase tracking-widest" style={{ color: GOLD_LABEL }}>— {name}</p>
     </article>
   );
@@ -210,7 +211,7 @@ export default function WishingWall() {
             <ul className="max-h-[360px] space-y-3 overflow-y-auto rounded-xl border border-[#e2c27a] bg-[#fffaf0]/90 p-4">
               {wall.map((b, i) => (
                 <li key={`all-${i}`} className="border-b border-[#efd9a5] pb-3 last:border-0 last:pb-0">
-                  <p className="text-[18px] font-semibold italic leading-[1.35]" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", color: INK }}>{b.message}</p>
+                  <p className="whitespace-pre-line" {...(() => { const t = wishTextProps(b.message, 18); return { dir: t.dir, style: { ...t.style, color: INK } }; })()}>{b.message}</p>
                   <p className="mt-1 text-right font-body text-[10px] uppercase tracking-widest" style={{ color: GOLD_LABEL }}>— {b.name}</p>
                 </li>
               ))}
@@ -251,7 +252,8 @@ export default function WishingWall() {
               aria-invalid={!!error}
               aria-describedby={error ? "bl-msg-err" : undefined}
               className={`${inputCls} resize-none`}
-              style={{ color: INK_SOFT }}
+              dir={wishTextProps(message, 17).dir}
+              style={{ ...wishTextProps(message, 17).style, fontStyle: "normal", color: INK_SOFT }}
             />
             <div className="mt-1 flex justify-between text-sm">
               <span id="bl-msg-err" role="alert" style={{ color: INK }}>{error}</span>
@@ -295,7 +297,7 @@ export default function WishingWall() {
           }}
         >
           <HeartIcon className="absolute -top-3 left-1/2 h-7 w-7 -translate-x-1/2" />
-          <p className="text-[19px] font-semibold italic leading-[1.35]" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", color: INK }}>{flyer.text}</p>
+          <p className="whitespace-pre-line" {...(() => { const t = wishTextProps(flyer.text, 19); return { dir: t.dir, style: { ...t.style, color: INK } }; })()}>{flyer.text}</p>
         </div>
       )}
       {/* hearts bursting out of the button */}

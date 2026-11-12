@@ -1261,7 +1261,7 @@ export default function Intro() {
             <button
               onClick={triggerBackToInvitation}
               aria-label="Back to Invitation"
-              className="group absolute left-4 top-[58px] z-50 flex h-9 w-9 items-center justify-center rounded-full border border-white/75 bg-white/45 shadow-[0_4px_20px_rgba(75,15,22,0.18),inset_0_1px_1px_rgba(255,255,255,0.85)] backdrop-blur-md transition-all duration-300 hover:scale-110 hover:bg-white/65 active:scale-95"
+              className="group absolute left-4 top-[10px] z-50 flex h-9 w-9 items-center justify-center rounded-full border border-white/75 bg-white/45 shadow-[0_4px_20px_rgba(75,15,22,0.18),inset_0_1px_1px_rgba(255,255,255,0.85)] backdrop-blur-md transition-all duration-300 hover:scale-110 hover:bg-white/65 active:scale-95"
             >
               <svg
                 className="h-4 w-4 text-[#6d0f1b] transition-transform duration-300 group-hover:-translate-x-0.5"
