@@ -1,4 +1,4 @@
-import { type CSSProperties } from "react";
+import { useState, type CSSProperties } from "react";
 import { wedding } from "../../config/wedding";
 import { useGuest } from "../../context/GuestContext";
 import { useInView } from "../Layout/Reveal";
@@ -24,6 +24,10 @@ const whenLine = (iso: string) => {
   return `${day}, ${time}`;
 };
 
+/** "Friday, 26 February" */
+const dayLine = (iso: string) =>
+  new Intl.DateTimeFormat("en-GB", { weekday: "long", day: "numeric", month: "long", timeZone: tz }).format(new Date(iso));
+
 const TL_CSS = `
 @media (prefers-reduced-motion: no-preference) {
   .tl-row .tl-medal { opacity: 0; transform: scale(.88); transition: opacity 700ms ease-out, transform 900ms cubic-bezier(.2,.8,.25,1); }
@@ -37,6 +41,8 @@ const TL_CSS = `
   .tl-thread.is-seen svg { clip-path: inset(-10% -10% -10% -10%); }
   .tl-thread .tl-bead { opacity: 0; transition: opacity 400ms ease-out 800ms; }
   .tl-thread.is-seen .tl-bead { opacity: 1; }
+  .tl-more { animation: tl-more 450ms ease-out both; }
+  @keyframes tl-more { from { opacity: 0; transform: translateY(calc(var(--u) * -6)); } to { opacity: 1; transform: none; } }
 }
 `;
 
@@ -97,8 +103,9 @@ function Row({ e, i, first, last }: { e: Ev; i: number; first: boolean; last: bo
   const [ref, seen] = useInView<HTMLDivElement>(0.25);
   const left = i % 2 === 0; // medallion on the left for even rows
   const t = (k: number) => ({ "--i": k, "--dx": left ? 14 : -14 } as CSSProperties);
+  const [open, setOpen] = useState(false);
   return (
-    <div ref={ref} className={`tl-row grid items-stretch ${seen ? "is-seen" : ""}`} style={{ gridTemplateColumns: left ? "54% 1fr" : "1fr 54%" }}>
+    <div ref={ref} className={`tl-row grid items-stretch ${seen ? "is-seen" : ""}`} style={{ gridTemplateColumns: left ? "44% 1fr" : "1fr 44%" }}>
       {/* medallion centred in its column; the stubs above and below keep the thread unbroken */}
       <div className={`flex flex-col ${left ? "order-1" : "order-2"}`}>
         <Stub hidden={first} />
@@ -112,18 +119,36 @@ function Row({ e, i, first, last }: { e: Ev; i: number; first: boolean; last: bo
         <p lang="mr" className="mt-0.5 font-marathi text-[13px]" style={{ color: GOLD, ...t(1) }}>
           {e.marathi}
         </p>
-        <p className="mt-1 text-[16px] font-medium leading-snug" style={{ fontFamily: SERIF, color: INK, ...t(2) }}>
-          <time dateTime={e.start}>{whenLine(e.start)}</time>
+        <p className="mt-1 text-[16px] font-semibold leading-snug" style={{ fontFamily: SERIF, color: INK, ...t(2) }}>
+          <time dateTime={e.start}>{dayLine(e.start)}</time>
         </p>
-        <p className="mt-1.5 text-[16px] font-bold leading-snug" style={{ fontFamily: SERIF, color: MAROON, ...t(3) }}>
-          {e.venue}
-        </p>
-        <p className="mt-1.5 line-clamp-4 text-[13.5px] italic leading-snug" style={{ fontFamily: SERIF, color: "#8a6a5a", ...t(4) }}>
-          {e.description}
-        </p>
-        <div className="mt-3" style={t(5)}>
-          <PinButton href={e.mapUrl} name={e.name} />
+        <div className="mt-3" style={t(3)}>
+          <button
+            type="button"
+            className="btn-gold whitespace-nowrap !px-3 !text-[10px] !tracking-[0.05em]"
+            aria-expanded={open}
+            aria-controls={`tl-more-${e.id}`}
+            onClick={() => setOpen((o) => !o)}
+          >
+            {open ? "Hide details" : "Tap to view details"}
+          </button>
         </div>
+        {open && (
+          <div id={`tl-more-${e.id}`} className="tl-more mt-3">
+            <p className="text-[15px] font-medium leading-snug" style={{ fontFamily: SERIF, color: INK }}>
+              {whenLine(e.start)}
+            </p>
+            <p className="mt-1 text-[16px] font-bold leading-snug" style={{ fontFamily: SERIF, color: MAROON }}>
+              {e.venue}
+            </p>
+            <p className="mt-1.5 text-[13.5px] italic leading-snug" style={{ fontFamily: SERIF, color: "#8a6a5a" }}>
+              {e.description}
+            </p>
+            <div className="mt-2.5">
+              <PinButton href={e.mapUrl} name={e.name} />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -132,9 +157,9 @@ function Row({ e, i, first, last }: { e: Ev; i: number; first: boolean; last: bo
 /** the wavy gold thread from one medallion's bottom to the next one's top, with a bead midway */
 function Thread({ fromLeft }: { fromLeft: boolean }) {
   const [ref, seen] = useInView<HTMLDivElement>(0.4);
-  // medallion centres sit at ~27% (left column) and ~73% (right column) of the row width
-  const a = fromLeft ? 27 : 73;
-  const b = fromLeft ? 73 : 27;
+  // medallion centres sit at 22% (left column) and 78% (right column) of the row width
+  const a = fromLeft ? 22 : 78;
+  const b = fromLeft ? 78 : 22;
   return (
     <div ref={ref} aria-hidden className={`tl-thread relative ${seen ? "is-seen" : ""}`} style={{ height: u(70) }}>
       <svg viewBox="0 0 100 70" preserveAspectRatio="none" className="absolute inset-0 h-full w-full overflow-visible">
