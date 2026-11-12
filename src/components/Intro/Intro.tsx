@@ -33,6 +33,8 @@ interface Sparkle { id: number; tx: number; ty: number; size: number; delay: num
 const EASE_PRIMARY = "cubic-bezier(0.22, 1, 0.36, 1)";
 const EASE_SECONDARY = "cubic-bezier(0.4, 0, 0.2, 1)";
 const EASE_SOFT_EXIT = "cubic-bezier(0.16, 1, 0.3, 1)";
+/** couple-section names: Great Vibes has no bold, so a thin same-colour outline thickens the strokes */
+const NAME_STROKE = { WebkitTextStroke: "0.7px #6d0f1b" } as const;
 
 const IMAGES = [
   "/intro/royal-door.jpg",
@@ -1311,7 +1313,7 @@ export default function Intro() {
           </div>
 
           {/* Top Sky Region: Couple Names, Romantic Marathi Quotation, Parents (positioned below floral toran to prevent overlap) */}
-          <div className="relative z-10 px-6 pt-32 text-center">
+          <div className="couple-text relative z-10 px-6 pt-32 text-center">
             {/* Marathi Romantic Quotation (2.20s – 2.80s) */}
             <div
               style={{
@@ -1323,7 +1325,7 @@ export default function Intro() {
               <p lang="mr" className="font-marathi text-2xl font-bold text-[#6d0f1b]">
                 दोन मने, एक गाठ
               </p>
-              <p className="font-serif text-xs italic tracking-wider text-[#7a3a2a]">
+              <p className="mt-0.5 font-serif text-[15px] italic tracking-wide text-[#7a3a2a]">
                 Two hearts, one knot
               </p>
             </div>
@@ -1338,9 +1340,9 @@ export default function Intro() {
               }}
             >
               <div className="flex flex-col items-center leading-none">
-                <p className="font-script text-[36px] leading-[1.05] text-[#6d0f1b]">{wedding.couple.groom}</p>
-                <p className="font-script text-xl leading-none text-[#a8741a]">&amp;</p>
-                <p className="font-script text-[36px] leading-[1.05] text-[#6d0f1b]">{wedding.couple.bride}</p>
+                <p className="font-script text-[44px] leading-[1.05] text-[#6d0f1b]" style={NAME_STROKE}>{wedding.couple.groom}</p>
+                <p className="font-script text-2xl leading-none text-[#a8741a]">&amp;</p>
+                <p className="font-script text-[44px] leading-[1.05] text-[#6d0f1b]" style={NAME_STROKE}>{wedding.couple.bride}</p>
               </div>
             </div>
 
@@ -1373,10 +1375,10 @@ export default function Intro() {
                 transition: `opacity 600ms ${EASE_PRIMARY}, transform 600ms ${EASE_PRIMARY}`,
               }}
             >
-              <p className="font-serif text-sm font-medium tracking-wide text-[#4b0f16]">
+              <p className="font-serif text-base font-semibold tracking-wide text-[#4b0f16]">
                 {wedding.parentsEn.groom}
               </p>
-              <p className="font-serif text-sm font-medium tracking-wide text-[#4b0f16]">
+              <p className="font-serif text-base font-semibold tracking-wide text-[#4b0f16]">
                 {wedding.parentsEn.bride}
               </p>
             </div>

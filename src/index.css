@@ -49,6 +49,8 @@
 /* short 16:9 phones (320x568, 360x640, 375x667): at 1.23 the venue line slides behind the palace roofs */
 @media (max-width: 500px) and (min-aspect-ratio: 1/2) {
   .screen:not(.screen--mockup) .invite-zoom { zoom: 1.1; }
+  /* couple section: lift the names/parents block so it clears the couple's heads */
+  .screen:not(.screen--mockup) .couple-text { padding-top: calc(var(--u) * 96); }
 }
 
 /* Landscape phones (~390px tall) cannot hold the portrait full-screen intro, so only there the
