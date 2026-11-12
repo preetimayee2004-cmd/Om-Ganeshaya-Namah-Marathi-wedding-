@@ -3,6 +3,9 @@ import Reveal, { useInView } from "../Layout/Reveal";
 
 type Family = (typeof wedding.families)[number];
 
+/** true when the text is (mostly) Devanagari, so it gets the Marathi font instead of the Latin script one */
+const isMarathi = (s: string) => /[ऀ-ॿ]/.test(s);
+
 function Rings() {
   return (
     <svg viewBox="0 0 60 30" className="mx-auto h-8 w-16 text-gold" fill="none" stroke="currentColor" strokeWidth="1.2" aria-hidden>
@@ -61,13 +64,26 @@ function FamilyCard({ f }: { f: Family }) {
           ))}
         </ul>
 
-        <p className="mx-auto mt-4 max-w-[16rem] font-script text-2xl leading-snug text-wine">
-          &ldquo;{f.message}&rdquo;
-        </p>
+        {isMarathi(f.message) ? (
+          // Devanagari: Marathi serif (never the Latin script font), sized to wrap in 2-3 lines
+          <p lang="mr" className="mx-auto mt-4 max-w-[17.5rem] font-marathi text-[17px] leading-[1.7] text-wine" style={{ textWrap: "balance" }}>
+            &ldquo;{f.message}&rdquo;
+          </p>
+        ) : (
+          <p className="mx-auto mt-4 max-w-[16rem] font-script text-2xl leading-snug text-wine">
+            &ldquo;{f.message}&rdquo;
+          </p>
+        )}
 
-        <p className="mt-5 font-body text-[11px] uppercase tracking-widest text-espresso/60">
-          {f.members.join(" · ")}
-        </p>
+        {isMarathi(f.members.join("")) ? (
+          <p lang="mr" className="mx-auto mt-5 max-w-[18rem] font-marathi text-[13px] leading-relaxed text-espresso/60" style={{ textWrap: "balance" }}>
+            {f.members.join(" · ")}
+          </p>
+        ) : (
+          <p className="mt-5 font-body text-[11px] uppercase tracking-widest text-espresso/60">
+            {f.members.join(" · ")}
+          </p>
+        )}
       </article>
     </div>
   );

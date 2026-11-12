@@ -126,10 +126,10 @@ export const wedding = {
     {
       side: "Bride's Family",
       marathi: "वधू पक्ष",
-      surname: "Bride Surname Family",
-      parents: ["Mr. Father Name", "Mrs. Mother Name"],
-      message: "A personal message from the bride's family goes here.",
-      members: ["Grandparents' names", "Siblings' names", "Uncles & Aunts"],
+      surname: "Kulkarni Family",
+      parents: ["Shri. Prakash Kulkarni", "Smt. Sunita Kulkarni"],
+      message: "आमच्या लाडक्या सायलीच्या लग्नासाठी आपण सहकुटुंब येऊन तिला आशीर्वाद द्यावेत, हीच नम्र विनंती.",
+      members: ["आजी-आजोबा", "अथर्व", "काका-काकू", "मामा-मामी"],
       photo: "/family/bride.jpg" as string | undefined,
     },
     {
