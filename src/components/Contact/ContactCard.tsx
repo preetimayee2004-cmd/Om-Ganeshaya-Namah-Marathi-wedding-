@@ -1,6 +1,7 @@
 import type { CSSProperties, ReactNode } from "react";
 import { wedding } from "../../config/wedding";
 import { useInView } from "../Layout/Reveal";
+import { Mundavalya, Pheta } from "./HeadGear";
 
 /**
  * Contact & Assistance as one framed ivory card: "The Families" (the bride's and groom's
@@ -109,6 +110,9 @@ export default function ContactCard() {
       </div>
       <Corner />
       <Corner flip />
+      {/* the groom's pheta on the left corner, the mundavalya on the right */}
+      <Pheta className="pointer-events-none absolute z-[2] drop-shadow-[0_3px_4px_rgba(80,20,10,0.25)]" style={{ left: u(-16), top: u(-34), width: u(84) }} />
+      <Mundavalya className="pointer-events-none absolute z-[2]" style={{ right: u(-6), top: u(-10), width: u(74) }} />
 
       {family.length > 0 && (
         <>
