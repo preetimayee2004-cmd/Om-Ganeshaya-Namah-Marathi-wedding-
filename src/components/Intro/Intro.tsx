@@ -199,8 +199,7 @@ export default function Intro() {
   };
 
   const [first, second] = coupleOrder;
-  // time and place only (the date is revealed later by the scratch card)
-  const weddingTime = new Intl.DateTimeFormat("en-IN", { hour: "numeric", minute: "2-digit", hour12: true, timeZone: wedding.timeZone }).format(new Date(wedding.date)).toUpperCase();
+  // invitation screen shows the place only (the date is revealed later by the scratch card)
 
   // Preload all 5 master images
   useEffect(() => {
@@ -1083,10 +1082,7 @@ export default function Intro() {
                 transition: `opacity 600ms 300ms ${EASE_PRIMARY}, transform 600ms 300ms ${EASE_PRIMARY}`,
               }}
             >
-              <p className="font-serif text-[15px] font-semibold tracking-[0.12em] text-[#6d0f1b] drop-shadow-[0_1px_2px_rgba(255,255,255,0.85)]">
-                <span className="font-medium italic tracking-[0.06em]">Muhurat</span> · {weddingTime}
-              </p>
-              <p className="mt-0.5 font-serif text-sm font-medium italic text-[#4b0f16] drop-shadow-[0_1px_2px_rgba(255,255,255,0.85)]">
+              <p className="font-serif text-sm font-medium italic text-[#4b0f16] drop-shadow-[0_1px_2px_rgba(255,255,255,0.85)]">
                 {wedding.venue.name}, {wedding.venue.city}
               </p>
             </div>
