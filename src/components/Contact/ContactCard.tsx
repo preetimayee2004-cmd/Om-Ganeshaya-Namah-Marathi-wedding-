@@ -101,10 +101,10 @@ export default function ContactCard() {
   });
 
   return (
-    <div ref={ref} className="relative mx-auto mt-7 max-w-[400px] px-5 pb-10 pt-9" style={{ background: "#fffaf3", border: `${u(1.5)} solid #d9bf86`, borderRadius: u(6), boxShadow: `0 ${u(8)} ${u(22)} ${u(-12)} rgba(110,70,20,0.35)` }}>
+    <div ref={ref} className="relative mx-auto mt-7 max-w-[400px] px-5 pb-10 pt-9" style={{ background: "#fbf1dc", border: `${u(1.5)} solid #dcc08a`, borderRadius: u(6), boxShadow: `0 ${u(8)} ${u(22)} ${u(-12)} rgba(110,70,20,0.35)` }}>
       {/* inner hairline frame and the lotus that breaks the top border */}
-      <div className="pointer-events-none absolute rounded-[3px]" style={{ inset: u(7), border: `${u(1)} solid #d8b7ac` }} aria-hidden />
-      <div className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 bg-[#fffaf3] px-2" aria-hidden>
+      <div className="pointer-events-none absolute rounded-[3px]" style={{ inset: u(7), border: `${u(1)} solid #e4cd9c` }} aria-hidden />
+      <div className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 bg-[#fbf1dc] px-2" aria-hidden>
         <Lotus size={34} />
       </div>
       <Corner />
