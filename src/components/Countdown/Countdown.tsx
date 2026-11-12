@@ -1,13 +1,15 @@
-import Reveal from "../Layout/Reveal";
-import DateReveal from "./DateReveal";
+import SaveTheDate from "./SaveTheDate";
+import AntarpatCountdown from "./AntarpatCountdown";
 
+/** "Save the Date" calendar page, then the antarpat that opens onto the live countdown. */
 export default function Countdown() {
   return (
-    <section id="countdown" aria-label="Maharashtrian Wedding Date Reveal" className="py-2 px-6">
-      <Reveal className="mx-auto max-w-md">
-        {/* Cinematic Marathi Wedding Scratch-to-Reveal Card */}
-        <DateReveal />
-      </Reveal>
+    <section id="countdown" aria-label="Save the Date and wedding countdown" className="overflow-x-clip px-5 py-6">
+      <div className="mx-auto max-w-md">
+        <SaveTheDate />
+        <div className="mx-auto my-8 h-px w-2/3 bg-gradient-to-r from-transparent via-[#C9963A] to-transparent" />
+        <AntarpatCountdown />
+      </div>
     </section>
   );
 }

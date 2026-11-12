@@ -87,7 +87,7 @@ export default function Invitation() {
             <p lang="mr" className="text-lg tracking-wide text-gold">
               ॥ श्री गणेशाय नमः ॥
             </p>
-            <p className="mt-1 font-body text-[10px] uppercase tracking-[0.35em] text-espresso/60">
+            <p className="mt-1 font-body text-[11px] uppercase tracking-[0.35em] text-espresso/60">
               Shri Ganeshaya Namah
             </p>
           </Reveal>
@@ -128,7 +128,7 @@ export default function Invitation() {
             <div className="grid grid-cols-2 gap-4 text-center">
               {([wedding.parents.bride, wedding.parents.groom] as const).map((p) => (
                 <div key={p.heading}>
-                  <p className="font-body text-[10px] uppercase tracking-[0.25em] text-olive">
+                  <p className="font-body text-[11px] uppercase tracking-[0.25em] text-olive">
                     {p.heading}
                   </p>
                   <p className="mt-1 font-body text-sm text-espresso">{p.names}</p>

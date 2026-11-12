@@ -21,7 +21,7 @@ function Heading({ marathi, english }: { marathi: string; english: string }) {
   return (
     <header className="mb-5">
       <p lang="mr" className="font-marathi text-[26px] font-semibold leading-tight" style={{ color: MAROON }}>{marathi}</p>
-      <p className="font-body text-[10px] uppercase tracking-[0.35em] text-gold">{english}</p>
+      <p className="font-body text-[11px] uppercase tracking-[0.35em] text-gold">{english}</p>
     </header>
   );
 }

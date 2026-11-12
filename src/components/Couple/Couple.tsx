@@ -67,7 +67,7 @@ export default function Couple() {
       className="px-5 pb-16 pt-20 text-center"
     >
       <Reveal>
-        <p className="font-body text-[10px] uppercase tracking-[0.35em] text-olive">
+        <p className="font-body text-[11px] uppercase tracking-[0.35em] text-olive">
           Meet the couple
         </p>
         <h2 id="couple-title" className="mt-2 text-4xl leading-tight">

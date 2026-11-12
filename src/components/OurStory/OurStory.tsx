@@ -23,7 +23,7 @@ function Milestone({ m, i }: { m: (typeof wedding.story)[number]; i: number }) {
           backgroundImage: "repeating-linear-gradient(transparent 0 calc(var(--u) * 25), rgba(104,114,83,0.12) calc(var(--u) * 25) calc(var(--u) * 26))",
         }}
       >
-        <p className="font-body text-[10px] uppercase tracking-[0.3em] text-olive">
+        <p className="font-body text-[11px] uppercase tracking-[0.3em] text-olive">
           {String(i + 1).padStart(2, "0")}
           {m.when ? ` · ${m.when}` : ""}
         </p>
@@ -81,7 +81,7 @@ export default function OurStory() {
   return (
     <section ref={sectionRef} id="story" aria-labelledby="story-title" className="px-5 py-20">
       <Reveal className="text-center">
-        <p className="font-body text-[10px] uppercase tracking-[0.35em] text-olive">From the pages of our journal</p>
+        <p className="font-body text-[11px] uppercase tracking-[0.35em] text-olive">From the pages of our journal</p>
         <h2 id="story-title" className="mt-2 text-5xl">Our Story</h2>
       </Reveal>
 

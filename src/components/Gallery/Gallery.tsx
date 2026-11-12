@@ -1,17 +1,17 @@
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
+import { createPortal } from "react-dom";
 import { wedding } from "../../config/wedding";
-import Reveal from "../Layout/Reveal";
+import Reveal, { useInView } from "../Layout/Reveal";
 import { useScrollRoot } from "../Layout/ScrollRoot";
 
 type Photo = (typeof wedding.gallery)[number];
 
-// ===== ANTARPAT REVEAL TIMING (ms after the section comes into view) =====
-const T_REVEAL = 1500; // couple photo starts to fade in while the curtains are still parting
-const T_STRIP = 3700; // remaining photos slide out into the film strip
-const T_SETTLED = 4800; // animation finished: carousel becomes swipeable
-const SLIDE_MS = 3400; // film strip glides continuously: one photo passes the centre every SLIDE_MS
-const RESUME_MS = 1000; // after the visitor touches / drags, the glide resumes after this long
-const HERO_INDEX = 2; // which photo in `wedding.gallery` is the hero
+/** design px -> screen-proportional length for INLINE styles (Tailwind classes are converted by PostCSS) */
+const u = (n: number) => `calc(var(--u) * ${n})`;
+
+const FILM = "#2a1a12"; // espresso film base
+const VIEWER_MS = 420; // viewer open / close
+const FRAME_W = 290; // design px: ~78% of the framed section, so the next frame peeks in
 
 const tones: Record<string, string> = {
   wine: "linear-gradient(160deg,#722B35,#3d161c)",
@@ -20,519 +20,551 @@ const tones: Record<string, string> = {
   gold: "linear-gradient(160deg,#d9b872,#a8843f)",
 };
 
-function Tile({ p, className = "", fit = "cover" }: { p: Photo; className?: string; fit?: "cover" | "contain" }) {
+// rounded sprocket hole, repeated along the film edges (drawn as an SVG tile)
+const SPROCKET = `url("data:image/svg+xml,${encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="22" viewBox="0 0 16 22"><rect x="4" y="6" width="8" height="10" rx="2" fill="#f3e3c3" fill-opacity=".82"/></svg>',
+)}")`;
+// fine film grain
+const GRAIN = `url("data:image/svg+xml,${encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" stitchTiles="stitch"/><feColorMatrix values="0 0 0 0 .35  0 0 0 0 .25  0 0 0 0 .15  0 0 0 .55 0"/></filter><rect width="100%" height="100%" filter="url(#n)"/></svg>',
+)}")`;
+
+const STYLES = `
+.gfs-strip { opacity: 0; transform: translateX(${u(170)}); }
+.gfs-strip.gfs-in { animation: gfs-glide 1200ms cubic-bezier(.22,.61,.36,1) forwards; }
+@keyframes gfs-glide { from { opacity: 0; transform: translateX(${u(170)}); } to { opacity: 1; transform: none; } }
+.gfs-photo { transition: filter 700ms ease, transform 700ms ease; filter: sepia(.6) saturate(.75) contrast(.95) brightness(.9); transform: scale(.985); }
+.gfs-frame.is-active .gfs-photo { filter: none; transform: none; }
+.gfs-grain, .gfs-vig { transition: opacity 700ms ease; }
+.gfs-frame.is-active .gfs-grain { opacity: .18 !important; }
+.gfs-frame.is-active .gfs-vig { opacity: .45 !important; }
+.gfs-track { scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.gfs-track::-webkit-scrollbar { display: none; }
+.gfs-track.is-dragging { scroll-snap-type: none; cursor: grabbing; }
+.gfs-ctrl { transition: transform 300ms ease, opacity 300ms ease; }
+.gfs-ctrl:hover { transform: scale(1.05); }
+.gfs-ctrl:active { transform: scale(.95); }
+.gfs-dot { transition: width 400ms ease, background-color 400ms ease; }
+.gfs-ov { opacity: 0; transition: opacity ${VIEWER_MS}ms ease; }
+.gfs-ov.is-open { opacity: 1; }
+.gfs-ov .gfs-pic { opacity: 0; transform: scale(.92); transition: opacity ${VIEWER_MS}ms ease, transform ${VIEWER_MS}ms cubic-bezier(.22,.61,.36,1); }
+.gfs-ov.is-open .gfs-pic { opacity: 1; transform: none; }
+.gfs-swap { animation: gfs-fade 350ms ease-out; }
+@keyframes gfs-fade { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .gfs-strip, .gfs-strip.gfs-in { animation: none; opacity: 1; transform: none; }
+  .gfs-photo, .gfs-grain, .gfs-vig, .gfs-dot, .gfs-ov, .gfs-ov .gfs-pic { transition: none; }
+  .gfs-swap { animation: none; }
+}
+`;
+
+function Tile({ p, fit = "cover", className = "" }: { p: Photo; fit?: "cover" | "contain"; className?: string }) {
   if (p.src) {
     return (
       <img
         src={p.src}
         alt={p.alt}
         loading="lazy"
+        decoding="async"
         draggable={false}
-        className={`h-full w-full ${fit === "cover" ? "object-cover" : "object-contain"} ${className}`}
+        className={`block h-full w-full ${fit === "cover" ? "object-cover" : "object-contain"} ${className}`}
       />
     );
   }
+  // elegant placeholder: toned paper with a thin gold inset frame and an aperture mark
   return (
     <div
       role="img"
       aria-label={p.alt}
-      className={`flex h-full w-full items-center justify-center ${className}`}
+      className={`relative flex h-full w-full items-center justify-center ${className}`}
       style={{ background: tones[p.tone] ?? tones.gold }}
-    />
-  );
-}
-
-/** Gold mandap frame: pillars, lintel with Ganesh medallion and stationary garlands (viewBox 400 x 400). */
-function MandapFrame() {
-  const garlandTop = useMemo(
-    () =>
-      Array.from({ length: 36 }, (_, i) => {
-        const x = 30 + i * 9.7;
-        const t = (x - 30) / 340;
-        const y = 45 + Math.sin(t * Math.PI) * 5;
-        return { x, y, rose: i % 5 === 2 };
-      }),
-    [],
-  );
-  const garlandSide = useMemo(
-    () =>
-      Array.from({ length: 41 }, (_, i) => ({ y: 52 + i * 8.4, rose: i % 6 === 3, off: i % 2 ? 2.2 : -2.2 })),
-    [],
-  );
-  const Bloom = ({ x, y, rose }: { x: number; y: number; rose: boolean }) =>
-    rose ? (
-      <g>
-        <circle cx={x} cy={y} r="6" fill="#B3122A" stroke="#6f0a1a" strokeWidth=".6" />
-        <path d={`M${x - 3} ${y} a3 3 0 1 1 3 3 a1.6 1.6 0 1 1 -1.6 -1.6`} fill="none" stroke="#e8586d" strokeWidth=".7" />
-      </g>
-    ) : (
-      <circle cx={x} cy={y} r="4.1" fill="#FFF8E8" stroke="#dccaa0" strokeWidth=".5" />
-    );
-  return (
-    <svg viewBox="0 0 400 400" className="pointer-events-none absolute inset-0 h-full w-full" aria-hidden>
-      <defs>
-        <linearGradient id="gal-gold" x1="0" x2="1">
-          <stop offset="0" stopColor="#8c6320" />
-          <stop offset=".35" stopColor="#f0d27c" />
-          <stop offset=".65" stopColor="#b98a2e" />
-          <stop offset="1" stopColor="#f6e1a0" />
-        </linearGradient>
-        <linearGradient id="gal-gold-h" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#f6e1a0" />
-          <stop offset=".5" stopColor="#c99a37" />
-          <stop offset="1" stopColor="#8c6320" />
-        </linearGradient>
-        <linearGradient id="gal-shine-g" x1="0" x2="1">
-          <stop offset="0" stopColor="#fff" stopOpacity="0" />
-          <stop offset=".5" stopColor="#fff" stopOpacity=".75" />
-          <stop offset="1" stopColor="#fff" stopOpacity="0" />
-        </linearGradient>
-        <clipPath id="gal-rail-clip">
-          <rect x="22" y="27" width="356" height="12" rx="3" />
-          <rect x="6" y="20" width="12" height="376" rx="3" />
-          <rect x="382" y="20" width="12" height="376" rx="3" />
-        </clipPath>
-      </defs>
-
-      {/* pillars + kalash finials */}
-      {[12, 388].map((x) => (
-        <g key={x}>
-          <rect x={x - 6} y="20" width="12" height="376" rx="3" fill="url(#gal-gold)" stroke="#7a5518" strokeWidth=".8" />
-          <ellipse cx={x} cy="16" rx="9" ry="10" fill="url(#gal-gold-h)" stroke="#7a5518" strokeWidth=".8" />
-          <path d={`M${x} 2 l3 7 h-6z`} fill="#e8c76a" stroke="#7a5518" strokeWidth=".6" />
-          <rect x={x - 9} y="388" width="18" height="8" rx="2" fill="url(#gal-gold-h)" stroke="#7a5518" strokeWidth=".6" />
-        </g>
-      ))}
-
-      {/* lintel */}
-      <rect x="22" y="27" width="356" height="12" rx="3" fill="url(#gal-gold-h)" stroke="#7a5518" strokeWidth=".8" />
-      <path d="M22 41 q10 8 20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0" fill="none" stroke="#c99a37" strokeWidth="1.2" opacity=".9" />
-      {/* Ganesh medallion */}
-      <g transform="translate(200 33)">
-        <path d="M-34 6 q0 -22 34 -22 q34 0 34 22 q-34 8 -68 0z" fill="url(#gal-gold-h)" stroke="#7a5518" strokeWidth=".8" />
-        <circle cx="0" cy="-3" r="13" fill="#fbf1d6" stroke="#b98a2e" strokeWidth="1" />
-        <path d="M0 -13 c4 3 6 9 3 14 c-2 3 -5 4 -3 9 M0 -13 c-4 3 -6 9 -3 14 c2 3 5 4 3 9" fill="none" stroke="#a8782a" strokeWidth="1.2" strokeLinecap="round" />
-        <circle cx="-5" cy="-3" r="1" fill="#a8782a" />
-        <circle cx="5" cy="-3" r="1" fill="#a8782a" />
-      </g>
-
-      {/* stationary garlands */}
-      {garlandTop.map((g, i) => (i > 14 && i < 22 ? null : <Bloom key={`t${i}`} x={g.x} y={g.y} rose={g.rose} />))}
-      {[12, 388].flatMap((x) =>
-        garlandSide.map((g, i) => <Bloom key={`${x}-${i}`} x={x + g.off} y={g.y} rose={g.rose} />),
-      )}
-
-      {/* golden shimmer sweeping over the gold */}
-      <g clipPath="url(#gal-rail-clip)">
-        <rect className="gal-shine" x="-60" y="0" width="60" height="400" fill="url(#gal-shine-g)" transform="skewX(-20)" />
-      </g>
-    </svg>
-  );
-}
-
-function Curtain({ side, open }: { side: "left" | "right"; open: boolean }) {
-  return (
-    <div className={`gal-curtain ${side} ${open ? "open" : ""}`} aria-hidden>
-      <div className="gal-silk">
-        <div className="gal-inner-edge" />
-        <div className="gal-hem" />
-      </div>
+    >
+      <span className="absolute" style={{ inset: u(10), border: "1px solid rgba(251,241,223,0.7)" }} aria-hidden />
+      <svg viewBox="0 0 40 40" style={{ width: u(40), height: u(40) }} aria-hidden>
+        <circle cx="20" cy="20" r="17" fill="none" stroke="#fbf1df" strokeOpacity=".8" strokeWidth="1.2" />
+        <path
+          d="M20 3 L26 18 M37 20 L22 26 M20 37 L14 22 M3 20 L18 14 M32 8 L24 21 M32 32 L19 24 M8 32 L16 19 M8 8 L21 16"
+          stroke="#fbf1df"
+          strokeOpacity=".65"
+          strokeWidth="1"
+        />
+      </svg>
     </div>
   );
 }
 
+const Chevron = ({ dir }: { dir: -1 | 1 }) => (
+  <svg viewBox="0 0 24 24" style={{ width: u(18), height: u(18) }} aria-hidden>
+    <path
+      d={dir < 0 ? "M15 5 L8 12 L15 19" : "M9 5 L16 12 L9 19"}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+const pad2 = (n: number) => String(n).padStart(2, "0");
+
 export default function Gallery() {
   const photos = wedding.gallery;
-  const [index, setIndex] = useState<number | null>(null);
-  const [box, setBox] = useState<React.CSSProperties>({});
+  const n = photos.length;
   const scroller = useScrollRoot();
-  const touchX = useRef<number | null>(null);
-  const closeRef = useRef<HTMLButtonElement>(null);
-  const opener = useRef<HTMLElement | null>(null);
 
-  // ---------- Antarpat reveal state ----------
-  const stageRef = useRef<HTMLDivElement>(null);
+  // ---------- film strip ----------
+  const [stripRef, seen] = useInView<HTMLDivElement>(0.2);
   const trackRef = useRef<HTMLDivElement>(null);
-  const [seen, setSeen] = useState(false);
-  const [phase, setPhase] = useState(0); // 0 closed, 1 curtains opening, 2 hero revealed, 3 film strip
-  const [settled, setSettled] = useState(false);
-  const [active, setActive] = useState(Math.min(HERO_INDEX, photos.length - 1));
-  const phaseRef = useRef(0);
-  const activeRef = useRef(active);
-  const drag = useRef({ down: false, moved: false, x: 0, pos: 0 });
-  const pausedUntil = useRef(0);
-  const inView = useRef(false);
-  const posRef = useRef(Math.min(HERO_INDEX, photos.length - 1)); // film position, in photo-pitches
+  const sectionRef = useRef<HTMLElement>(null);
+  const [active, setActive] = useState(0);
+  const drag = useRef({ down: false, moved: false, x: 0, left: 0, id: -1, start: 0 });
+  const activeRef = useRef(0);
+  activeRef.current = active;
 
-  // start automatically when the section scrolls into view
+  const frames = () => Array.from(trackRef.current?.querySelectorAll<HTMLElement>("[data-frame]") ?? []);
+
+  /** horizontal scroll position that centres frame i */
+  const leftFor = (i: number) => {
+    const t = trackRef.current;
+    const f = frames()[i];
+    if (!t || !f) return 0;
+    const tr = t.getBoundingClientRect();
+    const fr = f.getBoundingClientRect();
+    return t.scrollLeft + fr.left + fr.width / 2 - (tr.left + tr.width / 2);
+  };
+
+  const goTo = useCallback(
+    (i: number, smooth = true) => {
+      const t = trackRef.current;
+      if (!t || !n) return;
+      const k = Math.max(0, Math.min(n - 1, i));
+      const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+      t.scrollTo({ left: leftFor(k), behavior: smooth && !reduce ? "smooth" : "auto" });
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [n],
+  );
+
+  // which frame is nearest the centre of the strip
   useEffect(() => {
-    const el = stageRef.current;
-    if (!el || seen) return;
-    const io = new IntersectionObserver(
-      ([e]) => {
-        if (e.isIntersecting) {
-          setSeen(true);
-          io.disconnect();
-        }
-      },
-      { root: scroller ?? null, threshold: 0.45 },
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, [scroller, seen]);
-
-  // timeline
-  useEffect(() => {
-    if (!seen) return;
-    const reduce = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    if (reduce) {
-      setPhase(3);
-      setSettled(true);
-      return;
-    }
-    setPhase(1);
-    const ts = [
-      setTimeout(() => setPhase(2), T_REVEAL),
-      setTimeout(() => setPhase(3), T_STRIP),
-      setTimeout(() => setSettled(true), T_SETTLED),
-    ];
-    return () => ts.forEach(clearTimeout);
-  }, [seen]);
-
-  // place + emphasise every slide on a ring around the centre (transform / opacity only)
-  const apply = useCallback(() => {
-    const c = trackRef.current;
-    if (!c) return;
-    const slides = c.querySelectorAll<HTMLElement>("[data-slide]");
-    const n = slides.length;
-    if (!n) return;
-    const pitch = c.clientWidth * 0.62 * 0.8;
-    const open = phaseRef.current >= 3;
-    const shown = phaseRef.current >= 2;
-    let best = 0;
-    let bestD = Infinity;
-    slides.forEach((el, i) => {
-      const du = ((((i - posRef.current + n / 2) % n) + n) % n) - n / 2; // distance from the centre, in pitches
-      const ad = Math.abs(du);
-      if (ad < bestD) {
-        bestD = ad;
-        best = i;
-      }
-      const inner = el.firstElementChild as HTMLElement;
-      const edge = Math.max(0, 1 - Math.max(0, ad - 2) * 2); // fades out where the ring wraps (off screen)
-      const s2 = (1 - 0.18 * Math.min(ad, 1.6)) * (!open && ad < 0.5 && !shown ? 0.94 : 1);
-      const op = open ? (1 - 0.3 * Math.min(ad, 1.6)) * edge : ad < 0.5 && shown ? 1 : 0;
-      const tx = (open ? 1 : 0.15) * du * pitch; // before the strip opens everything sits behind the hero
-      inner.style.transform = `translateX(${tx.toFixed(2)}px) scale(${s2.toFixed(4)}) rotateY(${(-du * 24).toFixed(1)}deg)`;
-      inner.style.opacity = op.toFixed(3);
-      inner.style.filter = open && ad > 0.5 ? `brightness(${(1 - 0.2 * Math.min(ad, 1.6)).toFixed(3)})` : "none";
-      el.style.zIndex = String(20 - Math.round(ad * 4));
-    });
-    if (best !== activeRef.current) {
-      activeRef.current = best;
-      setActive(best);
-    }
-  }, []);
-
-  useLayoutEffect(() => {
-    phaseRef.current = phase;
-    apply();
-  }, [phase, apply]);
-
-  useLayoutEffect(() => {
-    const c = trackRef.current;
-    if (!c) return;
-    apply();
-    const ro = new ResizeObserver(apply);
-    ro.observe(c);
-    return () => ro.disconnect();
-  }, [apply]);
-
-  // continuous cinematic glide (pauses while out of view, dragged, or the viewer is open)
-  useEffect(() => {
-    if (!settled) return;
-    const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    const n = photos.length;
+    const t = trackRef.current;
+    if (!t) return;
     let raf = 0;
-    let running = false;
-    let last = performance.now();
-    const tick = (t: number) => {
-      const dt = Math.min(64, t - last) / 1000;
-      last = t;
-      if (!reduce && !drag.current.down && t > pausedUntil.current) posRef.current = (posRef.current + dt / (SLIDE_MS / 1000)) % n;
-      apply();
-      raf = requestAnimationFrame(tick);
+    const measure = () => {
+      raf = 0;
+      const tr = t.getBoundingClientRect();
+      const c = tr.left + tr.width / 2;
+      let best = 0;
+      let bestD = Infinity;
+      frames().forEach((f, i) => {
+        const r = f.getBoundingClientRect();
+        const d = Math.abs(r.left + r.width / 2 - c);
+        if (d < bestD) {
+          bestD = d;
+          best = i;
+        }
+      });
+      setActive(best);
     };
-    const start = () => {
-      if (running || index !== null) return;
-      running = true;
-      last = performance.now();
-      raf = requestAnimationFrame(tick);
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(measure);
     };
-    const stop = () => {
-      running = false;
+    t.addEventListener("scroll", onScroll, { passive: true });
+    const ro = new ResizeObserver(onScroll);
+    ro.observe(t);
+    measure();
+    return () => {
+      t.removeEventListener("scroll", onScroll);
+      ro.disconnect();
       cancelAnimationFrame(raf);
     };
-    const el = stageRef.current;
-    const io = el
-      ? new IntersectionObserver(
-          ([e]) => {
-            inView.current = e.isIntersecting;
-            if (e.isIntersecting) start();
-            else stop();
-          },
-          { root: scroller ?? null, threshold: 0.2 },
-        )
-      : null;
-    if (el) io?.observe(el);
-    return () => {
-      stop();
-      io?.disconnect();
-    };
-  }, [settled, index, scroller, photos.length, apply]);
+  }, [n]);
 
-  // drag / swipe (touch and mouse): the glide resumes RESUME_MS after the finger lifts
-  const onPointerDown = (e: React.PointerEvent) => {
-    if (!settled) return;
-    drag.current = { down: true, moved: false, x: e.clientX, pos: posRef.current };
-    pausedUntil.current = Infinity;
+  // mouse drag (touch / trackpad use the native horizontal scroll + snap)
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.pointerType !== "mouse" || e.button !== 0) return;
+    drag.current = { down: true, moved: false, x: e.clientX, left: e.currentTarget.scrollLeft, id: e.pointerId, start: activeRef.current };
   };
-  const onPointerMove = (e: React.PointerEvent) => {
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     const d = drag.current;
     if (!d.down) return;
     const dx = e.clientX - d.x;
     if (!d.moved && Math.abs(dx) > 6) {
       d.moved = true;
-      (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+      e.currentTarget.setPointerCapture?.(d.id);
+      e.currentTarget.classList.add("is-dragging");
     }
-    if (d.moved) {
-      const c = trackRef.current!;
-      const n = photos.length;
-      const pitch = c.clientWidth * 0.62 * 0.8;
-      posRef.current = (((d.pos - dx / pitch) % n) + n) % n;
-      apply();
-    }
+    if (d.moved) e.currentTarget.scrollLeft = d.left - dx;
   };
-  const endDrag = () => {
+  const endDrag = (e: React.PointerEvent<HTMLDivElement>) => {
     const d = drag.current;
     if (!d.down) return;
     d.down = false;
-    pausedUntil.current = performance.now() + RESUME_MS;
-    if (d.moved) setTimeout(() => (drag.current.moved = false), 0);
-  };
-  const onWheel = (e: React.WheelEvent) => {
-    if (!settled || Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
-    const c = trackRef.current!;
-    const n = photos.length;
-    posRef.current = (((posRef.current + e.deltaX / (c.clientWidth * 0.62 * 0.8)) % n) + n) % n;
-    pausedUntil.current = performance.now() + RESUME_MS;
-    apply();
+    if (!d.moved) return;
+    const el = e.currentTarget;
+    const dx = e.clientX - d.x;
+    // nearest frame to the centre now; a short flick still advances one frame in the drag direction
+    const tr = el.getBoundingClientRect();
+    const c = tr.left + tr.width / 2;
+    let near = 0;
+    let nearD = Infinity;
+    frames().forEach((f, i) => {
+      const r = f.getBoundingClientRect();
+      const dd = Math.abs(r.left + r.width / 2 - c);
+      if (dd < nearD) {
+        nearD = dd;
+        near = i;
+      }
+    });
+    const target = near === d.start && Math.abs(dx) > 40 ? near + (dx < 0 ? 1 : -1) : near;
+    el.classList.remove("is-dragging");
+    el.scrollLeft = d.left - dx;
+    goTo(target);
+    setTimeout(() => (drag.current.moved = false), 0);
   };
 
-  // ---------- lightbox (unchanged behaviour) ----------
-  const open = (i: number, el: HTMLElement) => {
-    opener.current = el;
-    // Inside the phone mockup, fixed positioning is relative to the scrolled content,
-    // so pin the lightbox to the visible part of the scroller instead.
+  // ---------- full-screen viewer ----------
+  const [index, setIndex] = useState<number | null>(null);
+  const [shown, setShown] = useState(false); // drives the open / close transition
+  const [box, setBox] = useState<CSSProperties>({});
+  const [host, setHost] = useState<HTMLElement | null>(null);
+  const touchX = useRef<number | null>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const opener = useRef<HTMLElement | null>(null);
+  const closing = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Inside the laptop phone mockup the page scrolls inside `scroller` (a transformed, positioned
+  // element), so position:fixed would be relative to the scrolled content. The viewer is portalled
+  // into .screen-content (keeps --u for sizing and escapes the framed card's stacking context) and,
+  // in the mockup, pinned absolutely to the visible part of the scroller.
+  const measureBox = useCallback(() => {
     setBox(
       scroller
         ? { position: "absolute", top: scroller.scrollTop, left: 0, width: "100%", height: scroller.clientHeight }
         : { position: "fixed", inset: 0 },
     );
-    setIndex(i);
-  };
-  const close = useCallback(() => {
-    setIndex(null);
-    opener.current?.focus();
-  }, []);
-  const step = useCallback(
-    (d: number) => setIndex((i) => (i === null ? i : (i + d + photos.length) % photos.length)),
-    [photos.length],
-  );
+  }, [scroller]);
 
+  const open = (i: number, el: HTMLElement) => {
+    if (drag.current.moved) return;
+    if (closing.current) clearTimeout(closing.current);
+    closing.current = null;
+    opener.current = el;
+    setHost((sectionRef.current?.closest(".screen-content") as HTMLElement | null) ?? document.body);
+    measureBox();
+    setIndex(i);
+    setShown(false);
+  };
+
+  const close = useCallback(() => {
+    if (closing.current) return;
+    setShown(false);
+    const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    closing.current = setTimeout(
+      () => {
+        closing.current = null;
+        setIndex(null);
+        opener.current?.focus({ preventScroll: true });
+      },
+      reduce ? 0 : VIEWER_MS,
+    );
+  }, []);
+
+  const step = useCallback((d: number) => setIndex((i) => (i === null ? i : (i + d + n) % n)), [n]);
+
+  // fade / scale in on the frame after mount
+  useLayoutEffect(() => {
+    if (index === null || shown) return;
+    const r = requestAnimationFrame(() => requestAnimationFrame(() => setShown(true)));
+    return () => cancelAnimationFrame(r);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [index === null]);
+
+  const isOpen = index !== null;
   useEffect(() => {
-    if (index === null) return;
+    if (!isOpen) return;
     const el = scroller ?? document.body;
     const prev = el.style.overflow;
     el.style.overflow = "hidden";
-    closeRef.current?.focus();
+    closeRef.current?.focus({ preventScroll: true });
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") close();
-      if (e.key === "ArrowRight") step(1);
-      if (e.key === "ArrowLeft") step(-1);
+      else if (e.key === "ArrowRight") step(1);
+      else if (e.key === "ArrowLeft") step(-1);
+      else if (e.key === "Tab" && dialogRef.current) {
+        // keep focus inside the viewer
+        const f = Array.from(dialogRef.current.querySelectorAll<HTMLElement>("button"));
+        if (!f.length) return;
+        const first = f[0];
+        const last = f[f.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
     };
     window.addEventListener("keydown", onKey);
+    window.addEventListener("resize", measureBox);
     return () => {
       el.style.overflow = prev;
       window.removeEventListener("keydown", onKey);
+      window.removeEventListener("resize", measureBox);
     };
-  }, [index === null, scroller, close, step]);
+  }, [isOpen, scroller, close, step, measureBox]);
+
+  // keep the strip in step with the viewer so focus returns to a visible frame
+  useEffect(() => {
+    if (index !== null && index !== active) goTo(index, false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [index]);
+
+  useEffect(() => () => void (closing.current && clearTimeout(closing.current)), []);
 
   const current = index !== null ? photos[index] : null;
-  const petals = [
-    { left: "22%", dx: "calc(var(--u) * 30)", delay: "1.2s", dur: "9s" },
-    { left: "40%", dx: "calc(var(--u) * -26)", delay: "3.4s", dur: "10s" },
-    { left: "58%", dx: "calc(var(--u) * 34)", delay: "2.2s", dur: "8.5s" },
-    { left: "74%", dx: "calc(var(--u) * -30)", delay: "5s", dur: "9.5s" },
-    { left: "32%", dx: "calc(var(--u) * 22)", delay: "6.6s", dur: "10.5s" },
-  ];
+  const ctrl =
+    "gfs-ctrl flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[#6d0f1b] disabled:opacity-40";
+  const ctrlStyle: CSSProperties = {
+    background: "linear-gradient(180deg, #FCEFCB 0%, #F3DB9C 55%, #F8E8BC 100%)",
+    border: "1.5px solid #D4AE5E",
+    boxShadow: `inset 0 0 0 ${u(2)} rgba(255,248,225,0.7), 0 ${u(3)} ${u(10)} rgba(110,70,10,0.22)`,
+  };
 
   return (
-    <section id="gallery" aria-labelledby="gallery-title" className="px-4 py-6">
-      <Reveal className="text-center">
-        <p className="font-body text-[10px] uppercase tracking-[0.35em] text-olive">Moments</p>
+    <section ref={sectionRef} id="gallery" aria-labelledby="gallery-title" className="py-6">
+      <style>{STYLES}</style>
+
+      <Reveal className="px-4 text-center">
+        <p className="font-body text-[11px] uppercase tracking-[0.35em] text-olive">Moments</p>
         <h2 id="gallery-title" className="section-title mt-2">Our Gallery</h2>
       </Reveal>
 
-      {/* ===== Antarpat reveal stage ===== */}
-      <div
-        ref={stageRef}
-        className="relative mx-auto mt-6 w-full max-w-[460px] select-none"
-        style={{ aspectRatio: "1 / 1.12" }}
-      >
-        {/* photographs: hero first, then a continuously gliding film strip */}
-        <div
-          ref={trackRef}
-          className={`absolute left-0 right-0 ${settled ? "" : "gal-anim"}`}
-          style={{
-            top: "11%",
-            height: "80%",
-            overflow: "hidden",
-            perspective: 700,
-            touchAction: "pan-y",
-            cursor: settled ? "grab" : "default",
-            zIndex: 2,
-          }}
-          onPointerDown={onPointerDown}
-          onPointerMove={onPointerMove}
-          onPointerUp={endDrag}
-          onPointerCancel={endDrag}
-          onWheel={onWheel}
-          aria-label="Wedding photographs"
-        >
-          {photos.map((p, i) => (
+      {/* ===== 35mm film strip ===== */}
+      <div ref={stripRef} className="relative mt-6 w-full overflow-hidden">
+        <div className={`gfs-strip ${seen ? "gfs-in" : ""}`}>
+          <div
+            ref={trackRef}
+            className="gfs-track relative overflow-x-auto overflow-y-hidden"
+            style={{
+              background: FILM,
+              boxShadow: `inset 0 ${u(1)} 0 rgba(212,174,94,0.35), inset 0 ${u(-1)} 0 rgba(212,174,94,0.35), 0 ${u(10)} ${u(24)} ${u(-12)} rgba(42,26,18,0.7)`,
+              cursor: n > 1 ? "grab" : "default",
+              touchAction: "pan-x pan-y",
+            }}
+            role="region"
+            aria-roledescription="carousel"
+            aria-label="Wedding photographs, film strip"
+            onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={endDrag}
+            onPointerCancel={endDrag}
+          >
             <div
-              key={p.src ?? p.alt}
-              data-slide
-              className="absolute"
-              style={{ left: "19%", width: "62%", top: "50%", marginTop: "-38.75%" }}
+              className="relative flex items-stretch"
+              style={{
+                width: "max-content",
+                minWidth: "100%",
+                paddingInline: `calc((100% - ${u(FRAME_W)}) / 2)`,
+                paddingBlock: u(36),
+                gap: u(12),
+              }}
             >
-              <div
-                className="gal-slide w-full overflow-hidden rounded-[6px]"
-                style={{
-                  aspectRatio: "4 / 5",
-                  opacity: 0,
-                  border: "calc(var(--u) * 3) solid #fbf3df",
-                  outline: "1px solid rgba(201,153,47,0.8)",
-                  boxShadow: "0 calc(var(--u) * 10) calc(var(--u) * 22) rgba(60,25,10,0.35)",
-                  background: "#fbf3df",
-                  willChange: "transform, opacity",
-                }}
-              >
-                <button
-                  className="block h-full w-full"
-                  tabIndex={settled ? 0 : -1}
-                  aria-label={`Open photo: ${p.alt}`}
-                  onClick={(e) => {
-                    if (!settled || drag.current.moved) return;
-                    open(i, e.currentTarget);
+              {/* sprocket holes, top and bottom, travelling with the film */}
+              {(["top", "bottom"] as const).map((edge) => (
+                <span
+                  key={edge}
+                  aria-hidden
+                  className="pointer-events-none absolute inset-x-0"
+                  style={{
+                    [edge]: 0,
+                    height: u(22),
+                    backgroundImage: SPROCKET,
+                    backgroundSize: `${u(16)} ${u(22)}`,
+                    backgroundRepeat: "repeat-x",
                   }}
+                />
+              ))}
+
+              {photos.map((p, i) => (
+                <figure
+                  key={i}
+                  data-frame
+                  className={`gfs-frame relative m-0 shrink-0 ${i === active ? "is-active" : ""}`}
+                  style={{ width: u(FRAME_W), scrollSnapAlign: "center" }}
                 >
-                  <Tile p={p} />
-                </button>
-              </div>
+                  {/* frame numbers printed in the film edge, contact-sheet style */}
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute left-0 font-body text-[8px] tracking-[0.2em]"
+                    style={{ top: u(-12), color: "#D4AE5E", opacity: 0.75 }}
+                  >
+                    ▸ {pad2(i + 1)}
+                  </span>
+
+                  <button
+                    type="button"
+                    className="relative block w-full overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AE5E]"
+                    style={{
+                      aspectRatio: "4 / 5",
+                      borderRadius: u(3),
+                      boxShadow: `0 0 0 1px rgba(212,174,94,0.55), 0 0 0 ${u(4)} rgba(251,241,223,0.06)`,
+                      background: "#1a0f0a",
+                    }}
+                    aria-label={`Open photo ${i + 1} of ${n}: ${p.alt}`}
+                    onClick={(e) => open(i, e.currentTarget)}
+                  >
+                    <Tile p={p} className="gfs-photo" />
+                    <span
+                      aria-hidden
+                      className="gfs-grain pointer-events-none absolute inset-0"
+                      style={{ backgroundImage: GRAIN, backgroundSize: `${u(160)} ${u(160)}`, mixBlendMode: "multiply", opacity: 0.55 }}
+                    />
+                    <span
+                      aria-hidden
+                      className="gfs-vig pointer-events-none absolute inset-0"
+                      style={{
+                        background: "radial-gradient(ellipse at center, rgba(0,0,0,0) 55%, rgba(30,15,8,0.75) 100%)",
+                        opacity: 1,
+                      }}
+                    />
+                  </button>
+
+                  <figcaption
+                    className="mt-3 flex items-baseline justify-between gap-2 font-serif text-[17px] italic leading-tight"
+                    style={{ color: "#f1dfb8" }}
+                  >
+                    <span className="min-w-0 truncate">{p.caption}</span>
+                    <span className="shrink-0 font-body text-[9px] not-italic tracking-[0.25em]" style={{ color: "#C9963A" }}>
+                      {pad2(i + 1)}A
+                    </span>
+                  </figcaption>
+
+                  {/* edge number below, like the latent image numbers on a contact sheet */}
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute right-0 font-body text-[8px] tracking-[0.2em]"
+                    style={{ bottom: u(-12), color: "#D4AE5E", opacity: 0.6 }}
+                  >
+                    {pad2(i + 1)} ◂
+                  </span>
+                </figure>
+              ))}
             </div>
-          ))}
-        </div>
-
-        {/* silk Antarpat curtains meet in the centre, then part and gather at the sides */}
-        <div className="pointer-events-none absolute inset-0" style={{ zIndex: 3 }}>
-          <Curtain side="left" open={phase >= 1} />
-          <Curtain side="right" open={phase >= 1} />
-        </div>
-
-        {/* gold mandap frame + garlands (stationary) */}
-        <div className="pointer-events-none absolute inset-0" style={{ zIndex: 4 }}>
-          <MandapFrame />
-        </div>
-
-        {/* a few petals */}
-        {phase >= 2 && (
-          <div className="pointer-events-none absolute inset-0 overflow-hidden" style={{ zIndex: 5 }} aria-hidden>
-            {petals.map((p, i) => (
-              <span
-                key={i}
-                className="gal-petal"
-                style={{ left: p.left, animationDelay: p.delay, animationDuration: p.dur, ["--dx" as string]: p.dx }}
-              />
-            ))}
           </div>
-        )}
-
-        {/* caption of the photo in the centre */}
-        <p
-          className="pointer-events-none absolute inset-x-0 text-center font-script text-[26px] leading-none text-[#6B1624]"
-          style={{ top: "90.5%", zIndex: 5, opacity: phase >= 3 ? 1 : 0, transition: "opacity 800ms ease" }}
-        >
-          {photos[active]?.caption}
-        </p>
+        </div>
       </div>
 
-      {current && index !== null && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-label="Photo viewer"
-          className="z-[95] flex flex-col bg-espresso/95"
-          style={box}
-          onTouchStart={(e) => (touchX.current = e.touches[0].clientX)}
-          onTouchEnd={(e) => {
-            if (touchX.current === null) return;
-            const dx = e.changedTouches[0].clientX - touchX.current;
-            if (Math.abs(dx) > 50) step(dx < 0 ? 1 : -1);
-            touchX.current = null;
-          }}
-        >
-          <div className="flex items-center justify-between px-4 text-ivory pt-12">
-            <span className="font-body text-xs tracking-widest">
-              {index + 1} / {photos.length}
-            </span>
-            <button
-              ref={closeRef}
-              onClick={close}
-              aria-label="Close viewer"
-              className="flex h-11 w-11 items-center justify-center text-2xl"
-            >
-              ×
-            </button>
+      {/* ===== indicator + controls ===== */}
+      {n > 1 && (
+        <div className="mt-4 flex items-center justify-center gap-4 px-4">
+          <button type="button" className={ctrl} style={ctrlStyle} onClick={() => goTo(active - 1)} disabled={active === 0} aria-label="Previous photo">
+            <Chevron dir={-1} />
+          </button>
+          <div className="flex min-w-0 flex-col items-center gap-2">
+            {n <= 9 && (
+              <div className="flex items-center gap-[6px]" aria-hidden>
+                {photos.map((_, i) => (
+                  <span
+                    key={i}
+                    className="gfs-dot block rounded-full"
+                    style={{
+                      height: u(6),
+                      width: i === active ? u(18) : u(6),
+                      background: i === active ? "#b8862f" : "rgba(184,134,47,0.35)",
+                    }}
+                  />
+                ))}
+              </div>
+            )}
+            <p className="font-body text-[11px] uppercase tracking-[0.3em] text-[#6d0f1b]" aria-live="polite">
+              Frame {pad2(active + 1)} / {pad2(n)}
+            </p>
           </div>
-
-          <div className="relative flex min-h-0 flex-1 items-center justify-center px-4">
-            <div
-              key={index}
-              className="max-h-full w-full animate-[fadeIn_300ms_ease-out] overflow-hidden rounded-md"
-              style={{ aspectRatio: current.ratio, maxHeight: "100%" }}
-            >
-              <Tile p={current} fit="contain" />
-            </div>
-          </div>
-
-          <p className="px-4 py-3 text-center font-script text-3xl text-ivory">{current.caption}</p>
-
-          <div className="flex justify-between px-4 pb-6">
-            {([-1, 1] as const).map((d) => (
-              <button
-                key={d}
-                onClick={() => step(d)}
-                aria-label={d < 0 ? "Previous photo" : "Next photo"}
-                className="flex h-12 w-12 items-center justify-center rounded-full border border-gold/60 text-xl text-ivory"
-              >
-                {d < 0 ? "‹" : "›"}
-              </button>
-            ))}
-          </div>
+          <button type="button" className={ctrl} style={ctrlStyle} onClick={() => goTo(active + 1)} disabled={active === n - 1} aria-label="Next photo">
+            <Chevron dir={1} />
+          </button>
         </div>
       )}
+
+      {current &&
+        index !== null &&
+        host &&
+        createPortal(
+          <div
+            ref={dialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Photo viewer"
+            className={`gfs-ov z-[120] flex flex-col ${shown ? "is-open" : ""}`}
+            style={{ ...box, background: "rgba(26,15,10,0.96)" }}
+            onTouchStart={(e) => (touchX.current = e.touches[0].clientX)}
+            onTouchEnd={(e) => {
+              if (touchX.current === null) return;
+              const dx = e.changedTouches[0].clientX - touchX.current;
+              if (Math.abs(dx) > 50) step(dx < 0 ? 1 : -1);
+              touchX.current = null;
+            }}
+          >
+            <div className="flex items-center justify-between px-4 pt-12 text-[#fbf1df]">
+              <span className="font-body text-xs tracking-[0.3em]">
+                {pad2(index + 1)} / {pad2(n)}
+              </span>
+              <button
+                ref={closeRef}
+                type="button"
+                onClick={close}
+                aria-label="Close viewer"
+                className="flex h-11 w-11 items-center justify-center rounded-full text-2xl"
+                style={{ border: "1px solid rgba(212,174,94,0.6)" }}
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="relative flex min-h-0 flex-1 items-center justify-center px-4 py-3">
+              <div className="gfs-pic flex h-full w-full items-center justify-center">
+                <div
+                  key={index}
+                  className="gfs-swap max-h-full w-full overflow-hidden"
+                  style={{
+                    aspectRatio: current.ratio,
+                    maxHeight: "100%",
+                    borderRadius: u(4),
+                    boxShadow: `0 0 0 1px rgba(212,174,94,0.55), 0 ${u(16)} ${u(40)} rgba(0,0,0,0.5)`,
+                  }}
+                >
+                  <Tile p={current} fit="contain" />
+                </div>
+              </div>
+            </div>
+
+            <p key={`c${index}`} className="gfs-swap px-4 pb-2 text-center font-serif text-[24px] italic text-[#fbf1df]">
+              {current.caption}
+            </p>
+
+            {n > 1 && (
+              <div className="flex justify-between px-4 pb-6">
+                {([-1, 1] as const).map((d) => (
+                  <button
+                    key={d}
+                    type="button"
+                    onClick={() => step(d)}
+                    aria-label={d < 0 ? "Previous photo" : "Next photo"}
+                    className="flex h-12 w-12 items-center justify-center rounded-full text-[#fbf1df]"
+                    style={{ border: "1px solid rgba(212,174,94,0.6)" }}
+                  >
+                    <Chevron dir={d} />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>,
+          host,
+        )}
     </section>
   );
 }
