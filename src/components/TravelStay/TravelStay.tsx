@@ -1,7 +1,6 @@
 import { wedding } from "../../config/wedding";
 import { useGuest } from "../../context/GuestContext";
-import { useId } from "react";
-import Reveal, { useInView } from "../Layout/Reveal";
+import Reveal from "../Layout/Reveal";
 
 const INK = "#6d0f1b";
 const INK_SOFT = "#4b0f16";
@@ -127,155 +126,6 @@ const VEN_CSS = `
 }
 `;
 
-const PIN = { x: 262, y: 104 };
-
-/** air arcs high, rail runs nearly straight, road winds through town */
-const ROUTES = [
-  { key: "air", y: 34, d: `M52 34C110 28 205 16 ${PIN.x} ${PIN.y - 2}` },
-  { key: "train", y: 98, d: `M52 98C120 92 180 116 ${PIN.x - 2} ${PIN.y}` },
-  { key: "road", y: 162, d: `M52 162C100 176 140 136 182 150S236 150 ${PIN.x} ${PIN.y + 2}` },
-] as const;
-
-function NodeGlyph({ k }: { k: (typeof ROUTES)[number]["key"] }) {
-  if (k === "air")
-    return (
-      <g transform="rotate(-30)" fill={RED}>
-        <path d="M-9 0c0-1 1-1.6 2.4-1.6H6c2 0 3.6.7 4 1.6-.4.9-2 1.6-4 1.6H-6.6C-8 1.6-9 1-9 0Z" />
-        <path d="M-1-1.4L-4-8h2.6L4-1.4ZM-1 1.4L-4 8h2.6L4 1.4ZM-8-1.2l-2-3.6h2L-5-1.2Z" fill="#8e0f22" />
-      </g>
-    );
-  if (k === "train")
-    return (
-      <g fill={RED}>
-        <rect x="-7" y="-8" width="14" height="13" rx="3" />
-        <rect x="-4.6" y="-5.6" width="9.2" height="4.4" rx="1" fill="#fbf1dc" />
-        <circle cx="-3.6" cy="2" r="1.1" fill="#d4a53c" />
-        <circle cx="3.6" cy="2" r="1.1" fill="#d4a53c" />
-        <path d="M-5 5l-2.6 3.6M5 5l2.6 3.6" stroke={RED} strokeWidth="1.4" strokeLinecap="round" />
-      </g>
-    );
-  return (
-    <g fill={RED}>
-      <path d="M-6 -1l2.6-5h6.8L6-1Z" />
-      <path d="M-3.4-1.6l1.4-3h4l1.4 3Z" fill="#fbf1dc" />
-      <rect x="-9" y="-1.4" width="18" height="6.4" rx="2.2" />
-      <circle cx="-4.8" cy="5.4" r="2.4" fill="#5a0a16" />
-      <circle cx="4.8" cy="5.4" r="2.4" fill="#5a0a16" />
-    </g>
-  );
-}
-
-/** hand-drawn map: dashed routes draw themselves from each travel mode to the venue pin,
- *  then the pin drops once with a soft ripple and stays still */
-function RouteMap({ labels, venueName, city }: { labels: string[]; venueName: string; city: string }) {
-  const [ref, seen] = useInView<HTMLDivElement>(0.2);
-  const uid = useId().replace(/[^a-zA-Z0-9_-]/g, "");
-  return (
-    <div
-      ref={ref}
-      className={`ven-map relative mx-auto mt-5 overflow-hidden ${seen ? "ven-go" : ""}`}
-      style={{ ...cardFrame, padding: "calc(var(--u) * 6)" }}
-    >
-      <svg
-        viewBox="0 0 340 200"
-        className="block w-full"
-        role="img"
-        aria-label={`Map sketch: routes ${labels.join(", ").toLowerCase()} to ${venueName}, ${city}`}
-      >
-        <defs>
-          {ROUTES.map((r) => (
-            <mask key={r.key} id={`${uid}-m-${r.key}`} maskUnits="userSpaceOnUse" x="0" y="0" width="340" height="200">
-              <path
-                className="ven-route-mask"
-                d={r.d}
-                pathLength={1}
-                fill="none"
-                stroke="#fff"
-                strokeWidth="8"
-                strokeLinecap="round"
-                style={{ animationDelay: `${300 + ROUTES.indexOf(r) * 150}ms` }}
-              />
-            </mask>
-          ))}
-          <radialGradient id={`${uid}-wash`} cx="78%" cy="55%" r="55%">
-            <stop offset="0" stopColor="#f3d98b" stopOpacity=".45" />
-            <stop offset="1" stopColor="#f3d98b" stopOpacity="0" />
-          </radialGradient>
-        </defs>
-
-        {/* paper: soft wash, a river and faint contour scribbles */}
-        <rect width="340" height="200" fill={`url(#${uid}-wash)`} />
-        <path d="M0 128c40-10 64 8 104-2s58-34 96-30 70 30 140 14" fill="none" stroke="#9fb5c0" strokeOpacity=".45" strokeWidth="5" strokeLinecap="round" />
-        <g fill="none" stroke="#d8bd85" strokeOpacity=".55" strokeWidth=".8">
-          <path d="M150 30c14-8 34-6 40 6s-8 22-24 20-26-16-16-26Z" />
-          <path d="M140 26c20-14 50-10 58 8s-12 32-34 30-40-22-24-38Z" />
-          <path d="M96 186c10-10 32-12 44-2" />
-          <path d="M210 182c18-8 40-8 56 2" />
-        </g>
-        {/* compass */}
-        <g transform="translate(314 26)" opacity=".8">
-          <circle r="11" fill="none" stroke="#d8bd85" strokeWidth=".8" />
-          <path d="M0-9l2.6 9H-2.6Z" fill={RED} />
-          <path d="M0 9l2.6-9H-2.6Z" fill="#d4a53c" />
-          <text y="-13" textAnchor="middle" fontSize="7" fontFamily="Lato, sans-serif" fontWeight="700" fill={GOLD}>N</text>
-        </g>
-
-        {/* routes: dashed ink revealed by a growing mask */}
-        {ROUTES.map((r) => (
-          <g key={r.key} mask={`url(#${uid}-m-${r.key})`}>
-            <path d={r.d} fill="none" stroke="#f6e7c4" strokeWidth="4.5" strokeLinecap="round" />
-            <path d={r.d} fill="none" stroke={RED} strokeWidth="1.8" strokeDasharray="5 5" strokeLinecap="round" />
-          </g>
-        ))}
-
-        {/* travel-mode stations */}
-        {ROUTES.map((r, i) => (
-          <g key={r.key} className="ven-node" style={{ animationDelay: `${i * 120}ms` }}>
-            <circle cx="34" cy={r.y} r="17" fill="#fffaf0" stroke="#d4a53c" strokeWidth="1.5" />
-            <circle cx="34" cy={r.y} r="14" fill="none" stroke="#e9d4a6" strokeWidth=".8" />
-            <g transform={`translate(34 ${r.y})`}>
-              <NodeGlyph k={r.key} />
-            </g>
-            <text
-              x="56"
-              y={r.y - 9}
-              fontSize="10.5"
-              fontFamily="Lato, sans-serif"
-              fontWeight="700"
-              letterSpacing=".8"
-              fill={RED}
-            >
-              {(labels[i] ?? "").toUpperCase()}
-            </text>
-          </g>
-        ))}
-
-        {/* venue: ground shadow, two soft ripples, then the pin drops in and stays */}
-        <ellipse className="ven-shadow" cx={PIN.x} cy={PIN.y + 2} rx="7" ry="2.4" fill="#5a0a16" opacity=".25" />
-        <ellipse className="ven-ripple" cx={PIN.x} cy={PIN.y + 2} rx="9" ry="3.6" fill="none" stroke="#C9963A" strokeWidth="1.4" style={{ animationDelay: "2150ms" }} />
-        <ellipse className="ven-ripple" cx={PIN.x} cy={PIN.y + 2} rx="9" ry="3.6" fill="none" stroke="#C9963A" strokeWidth="1.2" style={{ animationDelay: "2550ms" }} />
-        <g className="ven-pin">
-          <path
-            d={`M${PIN.x} ${PIN.y}c-4-7-13-14-13-23a13 13 0 0 1 26 0c0 9-9 16-13 23Z`}
-            fill={RED}
-            stroke="#5a0a16"
-            strokeWidth=".8"
-          />
-          <circle cx={PIN.x} cy={PIN.y - 23} r="5.6" fill="#fbf1dc" />
-          <path d={`M${PIN.x} ${PIN.y - 27.5}c1.6 1.8 1.6 4 0 6-1.6-2-1.6-4.2 0-6Z`} fill="#C9963A" />
-        </g>
-        <g className="ven-label" textAnchor="middle">
-          <text x={PIN.x - 6} y={PIN.y + 24} fontSize="13.5" fontFamily="'Cormorant Garamond', Georgia, serif" fontWeight="700" fill={INK}>
-            {venueName}
-          </text>
-          <text x={PIN.x - 6} y={PIN.y + 37} fontSize="9" fontFamily="Lato, sans-serif" fontWeight="700" letterSpacing="2" fill={GOLD}>
-            {city.toUpperCase()}
-          </text>
-        </g>
-      </svg>
-    </div>
-  );
-}
 
 function IconCalendar() {
   return (
@@ -383,11 +233,6 @@ export default function TravelStay() {
       {/* getting there */}
       <Reveal className="mx-auto mt-10 max-w-[420px]" delay={100}>
         <RuleHeading>Getting There</RuleHeading>
-        <RouteMap
-          labels={MODES.map((m, i) => travel[i]?.mode ?? m.label)}
-          venueName={venue.name}
-          city={venue.city}
-        />
         <div className="mt-5">
           {MODES.map(({ key, label, Icon }, i) => (
             <div key={key}>

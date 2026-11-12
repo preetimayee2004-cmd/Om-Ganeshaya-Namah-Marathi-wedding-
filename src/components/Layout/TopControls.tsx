@@ -2,7 +2,7 @@ import { sound, useSoundState } from "../../lib/sound";
 
 function SpeakerIcon({ off }: { off: boolean }) {
   return (
-    <svg viewBox="0 0 24 24" className="h-[16px] w-[16px] !text-[#6d0f1b]" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <svg viewBox="0 0 24 24" className="h-[16px] w-[16px]" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
       <path d="M11 5 6 9H3v6h3l5 4V5Z" fill="currentColor" />
       {off ? (
         <path d="m16 9 5 6m0-6-5 6" />

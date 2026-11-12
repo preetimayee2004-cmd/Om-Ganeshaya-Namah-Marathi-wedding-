@@ -1139,12 +1139,12 @@ export default function Intro() {
               aria-label="Open Invitation"
               className="group cursor-pointer inline-flex h-[36px] items-center justify-center gap-1.5 rounded-full px-5 transition-all duration-300 hover:scale-105 active:scale-95"
               style={{
-                background: "linear-gradient(180deg, #FCEFCB 0%, #F3DB9C 55%, #F8E8BC 100%)",
+                background: "linear-gradient(180deg, #8f1427 0%, #6d0f1b 100%)",
                 border: "calc(var(--u) * 1.5) solid #D4AE5E",
-                boxShadow: "inset 0 0 0 calc(var(--u) * 2) rgba(255,248,225,0.7), inset 0 0 0 calc(var(--u) * 3) rgba(212,174,94,0.45), 0 calc(var(--u) * 3) calc(var(--u) * 10) rgba(110,70,10,0.22)",
+                boxShadow: "inset 0 0 0 calc(var(--u) * 2) #6d0f1b, inset 0 0 0 calc(var(--u) * 3) rgba(217,178,90,0.55), 0 calc(var(--u) * 3) calc(var(--u) * 10) rgba(60,5,15,0.3)",
               }}
             >
-              <span className="font-serif text-[12.5px] font-bold tracking-[0.14em] uppercase text-[#6d0f1b]">
+              <span className="font-serif text-[12.5px] font-bold tracking-[0.14em] uppercase text-[#f9e7b0]">
                 Open Invitation
               </span>
               <span className="text-[#C9963A] text-[11px] leading-none transition-transform duration-300 group-hover:translate-y-0.5 animate-bounce">

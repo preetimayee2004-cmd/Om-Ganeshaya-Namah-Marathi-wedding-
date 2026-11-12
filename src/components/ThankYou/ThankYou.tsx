@@ -152,7 +152,7 @@ export default function ThankYou() {
   return (
     <section ref={ref} id="thank-you" aria-labelledby="thanks-title" className="pt-4">
       {/* paper, margin and gold frame come from the shared .framed-page card around all sections */}
-      <div className="relative mx-auto max-w-[400px] overflow-hidden px-6 pb-[64px] pt-5 text-center">
+      <div className="relative mx-auto max-w-[400px] overflow-hidden px-6 pb-[36px] pt-5 text-center">
 
         <Bell chain={46} className="left-[54px]" />
         <Bell chain={120} className="left-[30px]" delay={0.8} />
@@ -211,16 +211,6 @@ export default function ThankYou() {
           ॥ शुभमंगल सावधान ॥
         </p>
 
-        {/* woven border along the bottom */}
-        <div
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-[20px]"
-          style={{
-            background:
-              "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20'><rect width='20' height='20' fill='%23b4603a'/><path d='M10 3l7 7-7 7-7-7z' fill='%23e8b36a'/><path d='M10 7l3 3-3 3-3-3z' fill='%238f2f22'/><circle cx='0' cy='10' r='1.6' fill='%23f3d9a4'/><circle cx='20' cy='10' r='1.6' fill='%23f3d9a4'/></svg>\") 0 0 / calc(var(--u) * 20) calc(var(--u) * 20) repeat-x",
-            borderTop: "2px solid #8f2f22",
-          }}
-          aria-hidden
-        />
       </div>
     </section>
   );
