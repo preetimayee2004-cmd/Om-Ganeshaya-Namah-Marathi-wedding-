@@ -51,6 +51,9 @@ export default function App() {
         {/* Intro & Fixed Couple Section Hero (Settled on Scene 6, no buttons) */}
         <Intro />
 
+        {/* Everything from Save the Date to Thank You sits in one long framed paper card,
+            the same margin and gold frame line as the Thank You card, so the page reads as one */}
+        <div className="framed-page">
         {/* 2. Countdown */}
         <Countdown />
 
@@ -74,6 +77,7 @@ export default function App() {
 
         {/* 11. Thank You */}
         <ThankYou />
+        </div>
 
         {/* 12. Final Love Notice */}
         <Footer />

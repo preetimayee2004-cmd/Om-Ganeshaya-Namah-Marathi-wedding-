@@ -134,16 +134,9 @@ export default function ThankYou() {
   });
 
   return (
-    <section ref={ref} id="thank-you" aria-labelledby="thanks-title" className="px-3 py-6">
-      <div
-        className="relative mx-auto max-w-[400px] overflow-hidden px-6 pb-[64px] pt-5 text-center"
-        style={{
-          background: "radial-gradient(ellipse at 50% 30%, #fbf1df 0%, #f6e6c8 60%, #efdab4 100%)",
-          boxShadow: "0 calc(var(--u) * 10) calc(var(--u) * 28) calc(var(--u) * -14) rgba(90,50,10,0.45)",
-        }}
-      >
-        {/* thin gold frame lines */}
-        <div className="pointer-events-none absolute inset-x-[10px] bottom-[22px] top-[10px] border border-[#c9a056]/70" aria-hidden />
+    <section ref={ref} id="thank-you" aria-labelledby="thanks-title" className="pt-4">
+      {/* paper, margin and gold frame come from the shared .framed-page card around all sections */}
+      <div className="relative mx-auto max-w-[400px] overflow-hidden px-6 pb-[64px] pt-5 text-center">
 
         <FlowerVine />
         <FlowerVine flip />
