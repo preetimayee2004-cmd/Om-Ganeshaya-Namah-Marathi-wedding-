@@ -14,6 +14,18 @@ RSVPs and blessings are saved to a Google Sheet you own. Takes about 5 minutes.
 5. Submit a test RSVP and a test blessing on the site. Two tabs ("RSVPs", "Blessings")
    are created automatically on the first submission.
 
+## Edit panel (change text, photos and illustrations without code)
+
+6. In the Apps Script editor: **Project Settings (gear) → Script properties → Add property**
+   `ADMIN_KEY` = a password only the editors know. Save.
+7. **Deploy → Manage deployments → Edit (pencil) → Version: New version → Deploy.**
+   Approve the new permission prompt: the script now needs Google Drive to store uploaded photos.
+8. Open the site with `?edit` at the end of the address (e.g. `https://your-site/?edit`), enter the
+   password, change anything, press **Preview** to check it, then **Publish**.
+
+Published content is kept in a "Content" tab of the Sheet (do not edit it by hand). Uploaded
+photos go to a Drive folder "Wedding site photos" and are shared as view-only links.
+
 ## Moderating blessings
 
 New blessings arrive with the **Approved** box unticked and are NOT shown publicly.

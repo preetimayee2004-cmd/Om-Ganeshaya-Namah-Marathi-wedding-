@@ -38,13 +38,11 @@ const EASE_SOFT_EXIT = "cubic-bezier(0.16, 1, 0.3, 1)";
 /** couple-section names: Great Vibes has no bold, so a thin same-colour outline thickens the strokes */
 const NAME_STROKE = { WebkitTextStroke: "0.7px #6d0f1b" } as const;
 
-const IMAGES = [
-  "/intro/royal-door.jpg",
-  "/intro/ganesh-closed.jpg",
-  "/intro/ganesh-blessing.jpg",
-  "/intro/invitation-wada.jpg",
-  "/intro/couple-mandap.jpg",
-];
+/** read at mount time, so images changed from the Edit panel are the ones preloaded */
+const introImages = () => {
+  const i = wedding.images;
+  return [i.door, i.ganeshClosed, i.ganeshBlessing, i.invitationScene, i.coupleScene];
+};
 
 const MAROON = "#6d0f1b";
 
@@ -214,7 +212,7 @@ export default function Intro() {
       }
     };
     Promise.all(
-      IMAGES.map(
+      introImages().map(
         (src) =>
           new Promise<void>((res) => {
             const img = new Image();
@@ -623,7 +621,7 @@ export default function Intro() {
               >
                 {/* Left Door Image: pinned to left edge, width 200% */}
                 <img
-                  src="/intro/royal-door.jpg"
+                  src={wedding.images.door}
                   alt="Royal Maharashtrian Palace Temple Door Left"
                   className="absolute left-0 top-0 h-full w-[200%] max-w-none object-cover"
                   draggable={false}
@@ -651,7 +649,7 @@ export default function Intro() {
               >
                 {/* Right Door Image: pinned to right edge, width 200% */}
                 <img
-                  src="/intro/royal-door.jpg"
+                  src={wedding.images.door}
                   alt="Royal Maharashtrian Palace Temple Door Right"
                   className="absolute right-0 top-0 h-full w-[200%] max-w-none object-cover"
                   draggable={false}
@@ -809,7 +807,7 @@ export default function Intro() {
             {/* Base Layer: Meditative Ganpati with Closed Eyes & Namaskar (ganesh-closed) */}
             <div className="absolute inset-0">
               <img
-                src="/intro/ganesh-closed.jpg"
+                src={wedding.images.ganeshClosed}
                 alt="Lord Ganesha in peaceful meditation"
                 className="h-full w-full object-cover"
                 draggable={false}
@@ -825,7 +823,7 @@ export default function Intro() {
               }}
             >
               <img
-                src="/intro/ganesh-blessing.jpg"
+                src={wedding.images.ganeshBlessing}
                 alt="Lord Ganesha with divine blessing"
                 className="h-full w-full object-cover"
                 draggable={false}
@@ -939,7 +937,7 @@ export default function Intro() {
           }}
         >
           <img
-            src="/intro/invitation-wada.jpg"
+            src={wedding.images.invitationScene}
             alt="Traditional Maharashtrian Wada Courtyard"
             className="h-full w-full object-cover"
             draggable={false}
@@ -1260,7 +1258,7 @@ export default function Intro() {
             }}
           >
             <img
-              src="/intro/couple-mandap.jpg"
+              src={wedding.images.coupleScene}
               alt="The Maharashtrian Bride and Groom in Traditional Attire"
               className="h-full w-full object-cover"
               draggable={false}
@@ -1278,7 +1276,7 @@ export default function Intro() {
             }}
           >
             <img
-              src="/intro/couple-mandap.jpg"
+              src={wedding.images.coupleScene}
               alt="Bride in Paithani Nauvari"
               className="h-full w-full object-cover"
               draggable={false}
@@ -1296,7 +1294,7 @@ export default function Intro() {
             }}
           >
             <img
-              src="/intro/couple-mandap.jpg"
+              src={wedding.images.coupleScene}
               alt="Groom in Kurta Dhoti and Pheta"
               className="h-full w-full object-cover"
               draggable={false}

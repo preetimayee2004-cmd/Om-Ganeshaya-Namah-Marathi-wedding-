@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { weddingAudio } from "./weddingAudio";
 import { sound } from "../../lib/sound";
+import { wedding } from "../../config/wedding";
 import { triggerPartyPopper } from "./partyPopper";
 
 interface Particle {
@@ -461,7 +462,7 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
       <div
         className="pointer-events-none absolute inset-0 bg-[#F8DFBF]"
         style={{
-          backgroundImage: `url("/bg/mandap-sky.jpg"), radial-gradient(ellipse at 50% 0%, #FFF8EE 0%, #FDEBD1 25%, #F8DFBF 60%, #EFE0C1 100%)`,
+          backgroundImage: `url("${wedding.images.sky}"), radial-gradient(ellipse at 50% 0%, #FFF8EE 0%, #FDEBD1 25%, #F8DFBF 60%, #EFE0C1 100%)`,
           backgroundSize: "100% auto, 100% 100%",
           backgroundRepeat: "repeat-y, no-repeat",
           backgroundPosition: "center top, center center",
@@ -478,7 +479,7 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
       {/* TOP PEACOCK FLORAL BORDER STRIP */}
       <div className="relative w-full overflow-hidden border-b border-[#B8862F]/60" style={{ background: "linear-gradient(180deg,#F6DD93 0%,#E2B24F 55%,#EFCB73 100%)" }}>
         <img
-          src="/border/peacock-border.png"
+          src={wedding.images.peacockBorder}
           alt="Traditional Royal Maharashtrian Peacock Floral Border"
           className="w-full object-cover object-center h-16"
           draggable={false}
@@ -531,7 +532,7 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
           <div
             className="pointer-events-none relative flex h-full min-h-[136px] flex-col items-center justify-center rounded-xl px-3 py-4 text-center bg-[#FAF0DF]"
             style={{
-              backgroundImage: `url("/bg/mandap-sky.jpg"), radial-gradient(ellipse at 50% 30%, #FFF8EE 0%, #FDEBD1 40%, #F8DFBF 100%)`,
+              backgroundImage: `url("${wedding.images.sky}"), radial-gradient(ellipse at 50% 30%, #FFF8EE 0%, #FDEBD1 40%, #F8DFBF 100%)`,
               backgroundSize: "cover",
               backgroundPosition: "center center",
             }}
@@ -694,7 +695,7 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
           <Lotus className="h-4 w-4" />
         </span>
         <img
-          src="/border/peacock-border.png"
+          src={wedding.images.peacockBorder}
           alt="Traditional Royal Maharashtrian Peacock Floral Border"
           className="w-full object-cover object-center h-14"
           style={{ transform: "scale(-1, -1)" }}

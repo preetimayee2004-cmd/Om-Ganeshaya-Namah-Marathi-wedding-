@@ -121,7 +121,7 @@ export default function TravelStay() {
       {/* venue illustration, melting into the shared sky */}
       <Reveal className="mx-auto -mt-3 max-w-[380px]" from="zoom" delay={100}>
         <img
-          src="/venue/mandap.jpg"
+          src={wedding.images.venue}
           alt={`Floral mandap at ${venue.name}`}
           loading="lazy"
           className="block w-full"

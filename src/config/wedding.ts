@@ -1,6 +1,21 @@
 // Single source of truth for the invitation template.
-// Change names, dates and photos here; no component should hard-code them.
+// These are the DEFAULTS. Anything saved from the Edit panel (open the site with ?edit) is
+// merged over them at startup (see src/lib/content.ts), so no code change is needed to edit.
 export const wedding = {
+  // Illustrations and backgrounds. Any value can be a /public path or a full https:// image URL.
+  images: {
+    door: "/intro/royal-door.jpg", // opening: the two door halves
+    ganeshClosed: "/intro/ganesh-closed.jpg", // Ganpati, eyes closed
+    ganeshBlessing: "/intro/ganesh-blessing.jpg", // Ganpati, blessing
+    invitationScene: "/intro/invitation-wada.jpg", // invitation screen (courtyard)
+    coupleScene: "/intro/couple-mandap.jpg", // couple section after Open Invitation
+    thankYouCouple: "/intro/couple-arch.jpg", // couple inside the Thank You arch
+    rsvpCouple: "/rsvp/couple.png", // couple rising from the RSVP envelope (transparent PNG)
+    venue: "/venue/mandap.jpg", // venue illustration
+    sky: "/bg/mandap-sky.jpg", // sky background behind every section
+    peacockBorder: "/border/peacock-border.png", // strip above/below the scratch card
+    laptopBackground: "/bg/stage.jpg", // blurred backdrop around the phone on laptops
+  },
   couple: {
     bride: "Sayeli",
     groom: "Shreyash",
@@ -45,6 +60,7 @@ export const wedding = {
     {
       id: "haldi",
       art: "haldi",
+      image: "/events/haldi.jpg",
       name: "Haldi",
       marathi: "हळद",
       start: "2027-02-26T10:00:00+05:30",
@@ -58,6 +74,7 @@ export const wedding = {
     {
       id: "mehendi",
       art: "mehendi",
+      image: "/events/mehendi.jpg",
       name: "Mehendi",
       marathi: "मेहेंदी",
       start: "2027-02-26T15:00:00+05:30",
@@ -71,6 +88,7 @@ export const wedding = {
     {
       id: "simant",
       art: "kalash",
+      image: "/events/kalash.jpg",
       name: "Seemant Pujan",
       marathi: "सीमंत पूजन",
       start: "2027-02-26T18:00:00+05:30",
@@ -84,6 +102,7 @@ export const wedding = {
     {
       id: "antarpat",
       art: "antarpat",
+      image: "/events/antarpat.jpg",
       name: "Antarpat & Mangalashtak",
       marathi: "अंतरपाट आणि मंगलाष्टक",
       start: "2027-02-26T20:00:00+05:30",
@@ -97,6 +116,7 @@ export const wedding = {
     {
       id: "lagn",
       art: "lagn",
+      image: "/events/lagn.jpg",
       name: "Lagn Sohala",
       marathi: "लग्न सोहळा",
       start: "2027-02-27T10:00:00+05:30",
@@ -110,6 +130,7 @@ export const wedding = {
     {
       id: "reception",
       art: "reception",
+      image: "/events/reception.jpg",
       name: "Reception",
       marathi: "रिसेप्शन",
       start: "2027-02-27T19:00:00+05:30",
@@ -194,10 +215,13 @@ export const wedding = {
   timeZone: "Asia/Kolkata",
   guestParam: "guest", // ?guest=Priya+Sharma
   guestFallback: "Guest",
-} as const;
+};
 
 /** [first, second] names in the order they appear on the invitation. */
-export const coupleOrder: readonly [string, string] =
-  wedding.couple.showFirst === "groom"
-    ? [wedding.couple.groom, wedding.couple.bride]
-    : [wedding.couple.bride, wedding.couple.groom];
+export const coupleOrder: [string, string] = ["", ""];
+export function refreshCoupleOrder() {
+  const { bride, groom, showFirst } = wedding.couple;
+  coupleOrder[0] = showFirst === "groom" ? groom : bride;
+  coupleOrder[1] = showFirst === "groom" ? bride : groom;
+}
+refreshCoupleOrder();

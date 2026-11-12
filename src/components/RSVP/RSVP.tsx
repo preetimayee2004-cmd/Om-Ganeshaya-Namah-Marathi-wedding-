@@ -374,7 +374,7 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
                     {/* the couple stands on the card, rising out of the envelope with it */}
                     <div className="absolute" style={{ left: "11%", width: "78%", top: "-97cqw" }}>
                       <img
-                        src="/rsvp/couple.png"
+                        src={wedding.images.rsvpCouple}
                         alt="The bride and groom waving"
                         draggable={false}
                         className="block w-full"

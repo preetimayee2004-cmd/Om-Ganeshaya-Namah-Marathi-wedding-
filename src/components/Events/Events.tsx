@@ -69,7 +69,7 @@ export default function Events() {
                       style={{ border: `1px solid ${CARD_BORDER}`, boxShadow: "0 1px calc(var(--u) * 3) rgba(90,60,30,0.3)" }}
                     >
                       <img
-                        src={`/events/${e.art}.jpg`}
+                        src={e.image}
                         alt=""
                         loading="lazy"
                         className="h-full w-full scale-[1.06] object-cover"

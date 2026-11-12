@@ -112,7 +112,7 @@ function ArchPortrait() {
         </mask>
       </defs>
       <g mask="url(#ty-mask)">
-        <image href="/intro/couple-arch.jpg" x="14" y="8" width="272" height="262" preserveAspectRatio="xMidYMid slice" clipPath="url(#ty-arch)" />
+        <image href={wedding.images.thankYouCouple} x="14" y="8" width="272" height="262" preserveAspectRatio="xMidYMid slice" clipPath="url(#ty-arch)" />
       </g>
       <path d={arch} fill="none" stroke={GOLD} strokeWidth="1.6" mask="url(#ty-mask)" />
       <path d="M6 268V108C6 72 30 54 60 49C90 43 120 30 150 -2C180 30 210 43 240 49C270 54 294 72 294 108V268" fill="none" stroke={GOLD} strokeWidth=".8" opacity=".7" mask="url(#ty-mask)" />

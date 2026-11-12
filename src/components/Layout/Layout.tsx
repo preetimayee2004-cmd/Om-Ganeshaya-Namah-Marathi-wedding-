@@ -2,6 +2,7 @@ import { useState, type ReactNode } from "react";
 import { useMediaQuery } from "../../hooks/useMediaQuery";
 import { ScrollRootContext } from "./ScrollRoot";
 import TopControls from "./TopControls";
+import { wedding } from "../../config/wedding";
 
 /**
  * Responsive shell.
@@ -38,7 +39,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         aria-hidden
         className="pointer-events-none absolute inset-0"
         style={{
-          backgroundImage: 'url("/bg/stage.jpg")',
+          backgroundImage: `url("${wedding.images.laptopBackground}")`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           filter: "blur(4px)",

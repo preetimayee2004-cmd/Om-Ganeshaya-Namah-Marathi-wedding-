@@ -5,6 +5,17 @@ export const apiUrl = import.meta.env.VITE_API_URL || "";
  * "simple" request, so the browser skips the CORS preflight that Apps Script can't answer.
  * Throws if the request fails or the script reports ok:false.
  */
+/** like postToApi, but returns the script's JSON reply (used by the Edit panel) */
+export async function callApi<T = Record<string, unknown>>(body: Record<string, unknown>): Promise<T & { ok: boolean; error?: string }> {
+  const res = await fetch(apiUrl, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error(`API ${res.status}`);
+  return res.json();
+}
+
 export async function postToApi(body: Record<string, unknown>): Promise<void> {
   const res = await fetch(apiUrl, {
     method: "POST",
