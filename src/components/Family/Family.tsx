@@ -181,32 +181,32 @@ function StoneArch({ photo, alt, id }: { photo?: string; alt: string; id: string
   const opening = "M84 430V222C84 168 140 140 200 124C260 140 316 168 316 222V430Z";
   const turret = (cx: number) => (
     <g key={cx}>
-      <path d={`M${cx} 10v12`} stroke="#9a7238" strokeWidth="1.4" />
-      <circle cx={cx} cy="9" r="2" fill="#d9b673" stroke="#9a7238" strokeWidth=".7" />
-      <path d={`M${cx - 19} 48C${cx - 19} 24 ${cx + 19} 24 ${cx + 19} 48Z`} fill={`url(#${id}-dome)`} stroke="#9a7238" strokeWidth=".9" />
-      <path d={`M${cx - 10} 30C${cx - 6} 27 ${cx + 6} 27 ${cx + 10} 30`} fill="none" stroke="#b58e4e" strokeWidth=".6" />
-      <rect x={cx - 25} y="47" width="50" height="6" rx="1.5" fill="#e6c88e" stroke="#9a7238" strokeWidth=".8" />
-      <rect x={cx - 19} y="53" width="38" height="36" fill={`url(#${id}-stone)`} stroke="#9a7238" strokeWidth=".8" />
-      <path d={`M${cx - 7} 86V68c0-6 14-6 14 0v18Z`} fill="#6f5232" opacity=".8" />
-      <path d={`M${cx - 15} 86V72M${cx + 15} 86V72`} stroke="#b58e4e" strokeWidth=".7" />
-      <rect x={cx - 24} y="89" width="48" height="11" rx="1.5" fill="#e3c487" stroke="#9a7238" strokeWidth=".8" />
+      <path d={`M${cx} 10v12`} stroke="#4c2914" strokeWidth="1.4" />
+      <circle cx={cx} cy="9" r="2" fill="#a8723f" stroke="#4c2914" strokeWidth=".7" />
+      <path d={`M${cx - 19} 48C${cx - 19} 24 ${cx + 19} 24 ${cx + 19} 48Z`} fill={`url(#${id}-dome)`} stroke="#4c2914" strokeWidth=".9" />
+      <path d={`M${cx - 10} 30C${cx - 6} 27 ${cx + 6} 27 ${cx + 10} 30`} fill="none" stroke="#835133" strokeWidth=".6" />
+      <rect x={cx - 25} y="47" width="50" height="6" rx="1.5" fill="#a8723f" stroke="#4c2914" strokeWidth=".8" />
+      <rect x={cx - 19} y="53" width="38" height="36" fill={`url(#${id}-stone)`} stroke="#4c2914" strokeWidth=".8" />
+      <path d={`M${cx - 7} 86V68c0-6 14-6 14 0v18Z`} fill="#3a1f0f" opacity=".8" />
+      <path d={`M${cx - 15} 86V72M${cx + 15} 86V72`} stroke="#835133" strokeWidth=".7" />
+      <rect x={cx - 24} y="89" width="48" height="11" rx="1.5" fill="#a8723f" stroke="#4c2914" strokeWidth=".8" />
     </g>
   );
   return (
     <svg viewBox="18 0 364 430" className="block w-full" role={photo ? "img" : undefined} aria-label={photo ? alt : undefined} aria-hidden={photo ? undefined : true}>
       <defs>
         <linearGradient id={`${id}-stone`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#f1d9a6" />
-          <stop offset=".6" stopColor="#e2c085" />
-          <stop offset="1" stopColor="#d6ad6c" />
+          <stop offset="0" stopColor="#cf9d64" />
+          <stop offset=".6" stopColor="#b67c46" />
+          <stop offset="1" stopColor="#965d31" />
         </linearGradient>
         <linearGradient id={`${id}-dome`} x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0" stopColor="#d9b673" />
-          <stop offset=".45" stopColor="#f6e2b5" />
-          <stop offset="1" stopColor="#c9a05e" />
+          <stop offset="0" stopColor="#a8723f" />
+          <stop offset=".45" stopColor="#d8a86f" />
+          <stop offset="1" stopColor="#835133" />
         </linearGradient>
         <pattern id={`${id}-blocks`} width="34" height="16" patternUnits="userSpaceOnUse">
-          <path d="M0 15.5h34M17 0v15.5" stroke="#a9803f" strokeWidth=".55" opacity=".45" fill="none" />
+          <path d="M0 15.5h34M17 0v15.5" stroke="#63371e" strokeWidth=".55" opacity=".45" fill="none" />
         </pattern>
         <clipPath id={`${id}-open`}>
           <path d={opening} />
@@ -236,40 +236,40 @@ function StoneArch({ photo, alt, id }: { photo?: string; alt: string; id: string
         {/* pillars */}
         {[34, 322].map((x) => (
           <g key={x}>
-            <rect x={x} y="214" width="44" height="216" fill="#ecd29d" stroke="#a9803f" strokeWidth=".8" />
-            <path d={`M${x + 11} 226v204M${x + 22} 226v204M${x + 33} 226v204`} stroke="#b9914f" strokeWidth=".7" opacity=".8" />
-            <rect x={x - 5} y="204" width="54" height="10" rx="2" fill="#e8c98e" stroke="#9a7238" strokeWidth=".8" />
-            <rect x={x - 2} y="214" width="48" height="6" fill="#dcbb7d" stroke="#9a7238" strokeWidth=".5" />
+            <rect x={x} y="214" width="44" height="216" fill="#c6884e" stroke="#63371e" strokeWidth=".8" />
+            <path d={`M${x + 11} 226v204M${x + 22} 226v204M${x + 33} 226v204`} stroke="#835133" strokeWidth=".7" opacity=".8" />
+            <rect x={x - 5} y="204" width="54" height="10" rx="2" fill="#b67c46" stroke="#4c2914" strokeWidth=".8" />
+            <rect x={x - 2} y="214" width="48" height="6" fill="#965d31" stroke="#4c2914" strokeWidth=".5" />
           </g>
         ))}
 
         {/* moulded arch frame with a bead trim */}
-        <path d="M74 430V220C74 160 136 126 200 110C264 126 326 160 326 220V430" fill="none" stroke="#9a7238" strokeWidth="1.6" />
-        <path d="M79 430V221C79 164 138 132 200 117C262 132 321 164 321 221V430" fill="none" stroke="#f7e6bd" strokeWidth="2" opacity=".8" />
-        <path d={opening} fill="none" stroke="#c49a55" strokeWidth="4.5" strokeDasharray="0 8.5" strokeLinecap="round" />
-        <path d={opening} fill="none" stroke="#8a6430" strokeWidth=".9" />
+        <path d="M74 430V220C74 160 136 126 200 110C264 126 326 160 326 220V430" fill="none" stroke="#4c2914" strokeWidth="1.6" />
+        <path d="M79 430V221C79 164 138 132 200 117C262 132 321 164 321 221V430" fill="none" stroke="#e0b47c" strokeWidth="2" opacity=".8" />
+        <path d={opening} fill="none" stroke="#cf9d64" strokeWidth="4.5" strokeDasharray="0 8.5" strokeLinecap="round" />
+        <path d={opening} fill="none" stroke="#4c2914" strokeWidth=".9" />
         {/* spandrel rosettes */}
         {[58, 342].map((x) => (
           <g key={x} transform={`translate(${x} 160)`}>
-            <circle r="11" fill="#ecd29d" stroke="#9a7238" strokeWidth=".8" />
+            <circle r="11" fill="#c6884e" stroke="#4c2914" strokeWidth=".8" />
             {Array.from({ length: 8 }, (_, k) => (
-              <ellipse key={k} cx="0" cy="-5.5" rx="2.3" ry="4.6" transform={`rotate(${k * 45})`} fill="#f6e3b8" stroke="#a9803f" strokeWidth=".5" />
+              <ellipse key={k} cx="0" cy="-5.5" rx="2.3" ry="4.6" transform={`rotate(${k * 45})`} fill="#d8a86f" stroke="#63371e" strokeWidth=".5" />
             ))}
-            <circle r="2.6" fill="#c49a55" />
+            <circle r="2.6" fill="#cf9d64" />
           </g>
         ))}
 
         {/* cornice and parapet */}
-        <rect x="24" y="100" width="352" height="13" rx="2" fill="#e6c88e" stroke="#9a7238" strokeWidth=".9" />
-        <path d="M24 108h352" stroke="#a9803f" strokeWidth=".5" />
+        <rect x="24" y="100" width="352" height="13" rx="2" fill="#a8723f" stroke="#4c2914" strokeWidth=".9" />
+        <path d="M24 108h352" stroke="#63371e" strokeWidth=".5" />
         {Array.from({ length: 14 }, (_, k) => (
-          <rect key={k} x={84 + k * 17} y="90" width="9" height="10" rx="1" fill="#e9cf98" stroke="#9a7238" strokeWidth=".6" />
+          <rect key={k} x={84 + k * 17} y="90" width="9" height="10" rx="1" fill="#b67c46" stroke="#4c2914" strokeWidth=".6" />
         ))}
 
         {/* crest over the apex */}
-        <path d="M200 66c14 10 22 22 22 36H178c0-14 8-26 22-36Z" fill={`url(#${id}-dome)`} stroke="#9a7238" strokeWidth=".9" />
-        <path d="M200 74v26M190 82l10 18 10-18M184 92l16 8 16-8" fill="none" stroke="#a9803f" strokeWidth=".7" />
-        <circle cx="200" cy="64" r="2.4" fill="#d9b673" stroke="#9a7238" strokeWidth=".6" />
+        <path d="M200 66c14 10 22 22 22 36H178c0-14 8-26 22-36Z" fill={`url(#${id}-dome)`} stroke="#4c2914" strokeWidth=".9" />
+        <path d="M200 74v26M190 82l10 18 10-18M184 92l16 8 16-8" fill="none" stroke="#63371e" strokeWidth=".7" />
+        <circle cx="200" cy="64" r="2.4" fill="#a8723f" stroke="#4c2914" strokeWidth=".6" />
 
         {/* chhatri turrets on the corners */}
         {turret(52)}
