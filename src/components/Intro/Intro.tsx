@@ -343,11 +343,11 @@ export default function Intro() {
       setParticles(p);
     }, 150);
 
-    // 0.25s: The double doors swing open smoothly in 3D perspective
+    // 0.25s: The double doors swing smoothly inward (away from the guest) in 3D perspective
     later(() => setS1DoorOpen(true), 250);
 
-    // 0.85s: Doors are open wide -> directly flow into Ganpati Bappa Divine Awakening!
-    later(() => runScene2(), 850);
+    // 1.5s: Doors have swung inward -> directly flow into Ganpati Bappa Divine Awakening!
+    later(() => runScene2(), 1500);
   };
 
   // -------------------------------------------------------------
@@ -649,9 +649,9 @@ export default function Intro() {
                 className="absolute left-0 top-0 bottom-0 w-1/2 overflow-hidden"
                 style={{
                   transformOrigin: "left center",
-                  transform: s1DoorOpen ? "rotateY(-100deg) translateX(-4%)" : "rotateY(0deg) translateX(0)",
+                  transform: s1DoorOpen ? "rotateY(82deg)" : "rotateY(0deg) translateX(0)",
                   opacity: s1DoorOpen ? 0 : 1,
-                  transition: `transform 1200ms ${EASE_PRIMARY}, opacity 700ms 450ms ${EASE_PRIMARY}`,
+                  transition: `transform 1900ms cubic-bezier(0.45, 0.05, 0.25, 1), opacity 800ms 1100ms ease-in-out`,
                   filter: "drop-shadow(calc(var(--u) * 12) 0 calc(var(--u) * 28) rgba(30,15,5,0.65))",
                 }}
               >
@@ -677,9 +677,9 @@ export default function Intro() {
                 className="absolute right-0 top-0 bottom-0 w-1/2 overflow-hidden"
                 style={{
                   transformOrigin: "right center",
-                  transform: s1DoorOpen ? "rotateY(100deg) translateX(4%)" : "rotateY(0deg) translateX(0)",
+                  transform: s1DoorOpen ? "rotateY(-82deg)" : "rotateY(0deg) translateX(0)",
                   opacity: s1DoorOpen ? 0 : 1,
-                  transition: `transform 1200ms ${EASE_PRIMARY}, opacity 700ms 450ms ${EASE_PRIMARY}`,
+                  transition: `transform 1900ms cubic-bezier(0.45, 0.05, 0.25, 1), opacity 800ms 1100ms ease-in-out`,
                   filter: "drop-shadow(calc(var(--u) * -12) 0 calc(var(--u) * 28) rgba(30,15,5,0.65))",
                 }}
               >
