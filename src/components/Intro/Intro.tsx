@@ -594,8 +594,8 @@ export default function Intro() {
       aria-label="Maharashtrian Wedding Cinematic Invitation"
       className={
         stage >= 6
-          ? "intro-fit relative h-screen min-h-[100dvh] w-full select-none overflow-hidden bg-[#F8DFBF]"
-          : "intro-fit fixed inset-0 z-[95] select-none overflow-hidden bg-[#F8DFBF]"
+          ? "intro-fit relative h-screen min-h-[100dvh] w-full select-none overflow-hidden bg-[#E2BA84]"
+          : "intro-fit fixed inset-0 z-[95] select-none overflow-hidden bg-[#E2BA84]"
       }
       onWheel={handleWheel}
       onTouchStart={handleTouchStart}
@@ -622,7 +622,7 @@ export default function Intro() {
       </svg>
 
       {/* Mobile Viewport Stage */}
-      <div ref={stageRef} className="relative mx-auto h-full w-full overflow-hidden bg-[#F8DFBF]">
+      <div ref={stageRef} className="relative mx-auto h-full w-full overflow-hidden bg-[#E2BA84]">
         {/* ========================================================= */}
         {/* SCENE 1: ROYAL TEMPLE DOUBLE DOORS (OPENS TO REVEAL GANPATI) */}
         {/* ========================================================= */}
@@ -1257,7 +1257,7 @@ export default function Intro() {
           <div
             aria-hidden
             className="pointer-events-none absolute inset-x-0 bottom-0 z-30 h-[18%]"
-            style={{ background: "linear-gradient(to bottom, rgba(248,223,191,0) 0%, rgba(248,223,191,0.7) 55%, #F8DFBF 100%)" }}
+            style={{ background: "linear-gradient(to bottom, rgba(226,186,132,0) 0%, rgba(226,186,132,0.7) 55%, #E2BA84 100%)" }}
           />
           {/* Base Couple Mandap Illustration */}
           <div
