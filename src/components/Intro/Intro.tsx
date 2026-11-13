@@ -1313,7 +1313,7 @@ export default function Intro() {
           </div>
 
           {/* Top Sky Region: Couple Names, Romantic Marathi Quotation, Parents (positioned below floral toran to prevent overlap) */}
-          <div className={`tilt-3d couple-text relative z-10 px-6 pt-32 text-center${isPersonalised ? " has-guest" : ""}`}>
+          <div className={`tilt-3d couple-text relative z-10 px-6 pt-20 text-center${isPersonalised ? " has-guest" : ""}`}>
             {/* Marathi Romantic Quotation (2.20s – 2.80s) */}
             <div
               style={{
