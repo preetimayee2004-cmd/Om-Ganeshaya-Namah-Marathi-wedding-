@@ -145,12 +145,16 @@ html, body { overscroll-behavior-y: none; }
   /* sky background matching the couple section mandap sky */
   .sky-bg, .paper {
     background-color: #F8DFBF;
+    /* antique-gold wash (multiplied) over the sunset sky, so the sections match the door,
+       Ganpati and desktop backdrop instead of reading light peach */
     background-image:
+      linear-gradient(180deg, rgba(214, 178, 112, 0.55) 0%, rgba(200, 160, 96, 0.5) 100%),
       var(--sky-image, url("/bg/sunset-sky.jpg")),
       radial-gradient(ellipse at 50% 0%, #FFF8EE 0%, #FDEBD1 25%, #F8DFBF 60%, #EFE0C1 100%);
-    background-size: 100% auto, 100% 100%;
-    background-repeat: repeat-y, no-repeat;
-    background-position: center top, center center;
+    background-size: 100% 100%, 100% auto, 100% 100%;
+    background-repeat: no-repeat, repeat-y, no-repeat;
+    background-position: center, center top, center center;
+    background-blend-mode: multiply, normal, normal;
   }
   /* dark forest green with the faint gold vine pattern (from the supplied swatch) */
   .weave {
