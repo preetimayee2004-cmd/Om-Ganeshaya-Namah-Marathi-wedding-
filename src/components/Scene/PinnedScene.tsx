@@ -30,7 +30,7 @@ export default function PinnedScene({ children }: { children: ReactNode }) {
         {/* First Hero Screen: The Maharashtrian Couple under Mandap (matching Scene 6 settled state) */}
         <div style={{ position: "relative", height: bw ? vh - 2 * bw : vh, overflow: "hidden" }}>
           <img
-            src="/intro/couple-mandap.jpg"
+            src="/intro/couple-sunset.jpg"
             alt="The bride and groom in traditional Maharashtrian attire under the floral mandap"
             className="h-full w-full object-cover"
             draggable={false}

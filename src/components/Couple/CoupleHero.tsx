@@ -10,7 +10,7 @@ export default function CoupleHero() {
     <section id="couple" className="relative h-screen min-h-[100dvh] w-full overflow-hidden select-none bg-[#F8DFBF]">
       <div className="absolute inset-0">
         <img
-          src="/intro/couple-mandap.jpg"
+          src="/intro/couple-sunset.jpg"
           alt="The Maharashtrian Bride and Groom in Traditional Attire"
           className="h-full w-full object-cover"
           draggable={false}

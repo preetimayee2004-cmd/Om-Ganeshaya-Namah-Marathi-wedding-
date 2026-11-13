@@ -76,6 +76,11 @@
 
 /* "Dear <guest>," adds a line above the couple's names: start the block that much higher */
 .couple-text.has-guest { padding-top: calc(var(--u) * 104); }
+/* the couple picture's heads sit high: keep the names block a little compact so it ends above them */
+.couple-text > * { zoom: 0.78; }
+.couple-text > :first-child { margin-top: calc(var(--u) * 22); }
+/* soft cream glow behind the names so they read over the sunset hills of the couple picture */
+.couple-text { background-image: radial-gradient(ellipse 66% 50% at 50% 62%, rgba(255, 246, 228, 0.82) 0%, rgba(255, 246, 228, 0.55) 45%, rgba(255, 246, 228, 0) 75%); }
 
 /* the guest's own name, wherever the invitation addresses them */
 /* maroon, bold, on a gold marker stroke with a soft shine sweeping across it */
@@ -139,7 +144,7 @@
   .sky-bg, .paper {
     background-color: #F8DFBF;
     background-image:
-      var(--sky-image, url("/bg/mandap-sky.jpg")),
+      var(--sky-image, url("/bg/sunset-sky.jpg")),
       radial-gradient(ellipse at 50% 0%, #FFF8EE 0%, #FDEBD1 25%, #F8DFBF 60%, #EFE0C1 100%);
     background-size: 100% auto, 100% 100%;
     background-repeat: repeat-y, no-repeat;
