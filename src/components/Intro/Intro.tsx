@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
+import PointerHand from "../Layout/PointerHand";
 import { useScrollRoot } from "../Layout/ScrollRoot";
 import { wedding, coupleOrder } from "../../config/wedding";
 import { sound } from "../../lib/sound";
@@ -757,25 +758,7 @@ export default function Intro() {
                   className="relative"
                   style={{ animation: "mm-hand-tap 1.5s ease-in-out infinite" }}
                 >
-                  <svg
-                    width="38"
-                    height="38"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    style={{
-                      filter: "drop-shadow(0 calc(var(--u) * 4) calc(var(--u) * 10) rgba(50,20,5,0.6)) drop-shadow(0 0 calc(var(--u) * 12) rgba(255,235,160,0.95))",
-                    }}
-                  >
-                    <path
-                      d="M12 2a1.5 1.5 0 0 0-1.5 1.5v7.2l-1.3-1.3a1.5 1.5 0 0 0-2.1 0 1.5 1.5 0 0 0 0 2.1l3.5 3.5c1 1 2.2 1.7 3.5 1.7h2.4a4.5 4.5 0 0 0 4.5-4.5V9.5a1.5 1.5 0 0 0-3 0v1a1.5 1.5 0 0 0-3 0V9a1.5 1.5 0 0 0-3 0v-5.5A1.5 1.5 0 0 0 12 2z"
-                      fill="#FFFDF7"
-                      stroke="#6d0f1b"
-                      strokeWidth="1.4"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
+                  <PointerHand size={38} />
                 </div>
               </div>
             )}
@@ -1261,7 +1244,7 @@ export default function Intro() {
             <button
               onClick={triggerBackToInvitation}
               aria-label="Back to Invitation"
-              className="group absolute left-4 top-[10px] z-50 flex h-9 w-9 items-center justify-center rounded-full border border-white/75 bg-white/45 shadow-[0_4px_20px_rgba(75,15,22,0.18),inset_0_1px_1px_rgba(255,255,255,0.85)] backdrop-blur-md transition-all duration-300 hover:scale-110 hover:bg-white/65 active:scale-95"
+              className="group absolute left-4 top-[10px] z-50 flex h-9 w-9 items-center justify-center rounded-full border border-[#e6c47a]/80 bg-[#f6dc9c]/45 shadow-[0_4px_20px_rgba(110,60,10,0.22),inset_0_1px_1px_rgba(255,240,200,0.9)] backdrop-blur-md transition-all duration-300 hover:scale-110 hover:bg-[#f6dc9c]/65 active:scale-95"
             >
               <svg
                 className="h-4 w-4 text-[#6d0f1b] transition-transform duration-300 group-hover:-translate-x-0.5"
