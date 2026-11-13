@@ -22,8 +22,8 @@ const digits = (phone: string) => phone.replace(/[^\d]/g, "");
 function Lotus({ size = 30 }: { size?: number }) {
   return (
     <svg viewBox="0 0 32 18" style={{ width: u(size), height: u(size * 0.56) }} fill="none" stroke={GOLD} strokeWidth="1.1" aria-hidden>
-      <path d="M16 1.5c3 3 4 8 0 13-4-5-3-10 0-13Z" fill="#fbf1dc" />
-      <path d="M16 14.5c-2-5-6-8-11-8 1 5 5 8 11 8Zm0 0c2-5 6-8 11-8-1 5-5 8-11 8Z" fill="#fbf1dc" />
+      <path d="M16 1.5c3 3 4 8 0 13-4-5-3-10 0-13Z" fill="#faddb5" />
+      <path d="M16 14.5c-2-5-6-8-11-8 1 5 5 8 11 8Zm0 0c2-5 6-8 11-8-1 5-5 8-11 8Z" fill="#faddb5" />
       <path d="M3 15.5c4 2 22 2 26 0" />
     </svg>
   );
@@ -90,10 +90,10 @@ export default function ContactCard() {
   });
 
   return (
-    <div ref={ref} className="relative mx-auto mt-7 max-w-[400px] px-5 pb-10 pt-16" style={{ background: "#fbf1dc", border: `${u(1.5)} solid #dcc08a`, borderRadius: u(6), boxShadow: `0 ${u(8)} ${u(22)} ${u(-12)} rgba(110,70,20,0.35)` }}>
+    <div ref={ref} className="relative mx-auto mt-7 max-w-[400px] px-5 pb-10 pt-16" style={{ background: "#faddb5", border: `${u(1.5)} solid #dcc08a`, borderRadius: u(6), boxShadow: `0 ${u(8)} ${u(22)} ${u(-12)} rgba(110,70,20,0.35)` }}>
       {/* inner hairline frame and the lotus that breaks the top border */}
       <div className="pointer-events-none absolute rounded-[3px]" style={{ inset: u(7), border: `${u(1)} solid #e4cd9c` }} aria-hidden />
-      <div className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 bg-[#fbf1dc] px-2" aria-hidden>
+      <div className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 bg-[#faddb5] px-2" aria-hidden>
         <Lotus size={34} />
       </div>
       <Corner />

@@ -642,9 +642,9 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
     >
       {/* cream paper with the site's soft sky wash */}
       <div
-        className="pointer-events-none absolute inset-0 bg-[#fbf3e3]"
+        className="pointer-events-none absolute inset-0 bg-[#faddb5]"
         style={{
-          backgroundImage: `linear-gradient(rgba(251,243,227,0.82), rgba(251,243,227,0.82)), url("${wedding.images.sky}")`,
+          backgroundImage: `linear-gradient(rgba(250,221,181,0.86), rgba(250,221,181,0.86)), url("${wedding.images.sky}")`,
           backgroundSize: "100% 100%, 100% auto",
         }}
       />
@@ -686,7 +686,7 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
             {/* underneath: the date on cream paper */}
             <div
               className="pointer-events-none relative flex flex-col items-center justify-center px-3 text-center"
-              style={{ minHeight: "calc(var(--u) * 172)", background: "radial-gradient(ellipse at 50% 40%, #fffaf0 0%, #fbf0dc 60%, #f4e3c4 100%)" }}
+              style={{ minHeight: "calc(var(--u) * 172)", background: "radial-gradient(ellipse at 50% 40%, #fbe3c0 0%, #faddb5 60%, #f4d0a2 100%)" }}
             >
               <div
                 className="flex flex-col items-center"

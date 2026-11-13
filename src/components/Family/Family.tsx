@@ -307,7 +307,7 @@ function FamilyCard({ f, index }: { f: Family; index: number }) {
         className="relative mx-auto max-w-[400px] overflow-hidden text-center"
         style={{
           borderRadius: u(26),
-          background: "radial-gradient(ellipse at 50% 35%, #fffaf0 0%, #fbf0d8 55%, #f4e2bd 100%)",
+          background: "radial-gradient(ellipse at 50% 35%, #fbe3c0 0%, #faddb5 55%, #f4d0a2 100%)",
           border: `${u(1.5)} solid #dcc08a`,
           boxShadow: `0 ${u(10)} ${u(26)} ${u(-12)} rgba(110,70,20,0.38)`,
         }}

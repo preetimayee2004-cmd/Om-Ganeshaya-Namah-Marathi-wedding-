@@ -362,9 +362,9 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
                       className="absolute inset-0"
                       style={{
                         borderRadius: RADIUS,
-                        background: "linear-gradient(170deg, #fffaf0 0%, #f9efd9 60%, #f1e2c0 100%)",
+                        background: "linear-gradient(170deg, #fbe3c0 0%, #faddb5 60%, #f4d0a2 100%)",
                         border: "calc(var(--u) * 2) solid #d4a53c",
-                        boxShadow: "inset 0 0 0 calc(var(--u) * 4) #fbf3df, inset 0 0 0 calc(var(--u) * 5) rgba(212,165,60,0.7), 0 calc(var(--u) * 6) calc(var(--u) * 16) rgba(40,10,5,0.35)",
+                        boxShadow: "inset 0 0 0 calc(var(--u) * 4) #fbe3c0, inset 0 0 0 calc(var(--u) * 5) rgba(212,165,60,0.7), 0 calc(var(--u) * 6) calc(var(--u) * 16) rgba(40,10,5,0.35)",
                       }}
                     />
                     {/* the couple stands on the card, rising out of the envelope with it */}

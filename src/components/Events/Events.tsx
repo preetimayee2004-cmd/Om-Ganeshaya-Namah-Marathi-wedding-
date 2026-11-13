@@ -213,7 +213,7 @@ function EventDetails({ e }: { e: Ev }) {
     <div
       id={`tl-more-${e.id}`}
       className="tl-more relative overflow-hidden rounded-[12px] px-4 pb-4 pt-3 text-left"
-      style={{ background: "#fffaf0", border: `${u(1)} solid #ecdcbf`, borderTop: `${u(3)} dashed ${MAROON}`, boxShadow: `0 ${u(6)} ${u(16)} ${u(-8)} rgba(120,80,20,0.3)` }}
+      style={{ background: "#faddb5", border: `${u(1)} solid #ecdcbf`, borderTop: `${u(3)} dashed ${MAROON}`, boxShadow: `0 ${u(6)} ${u(16)} ${u(-8)} rgba(120,80,20,0.3)` }}
     >
       {/* header: the event's picture, its Marathi name faint in the corner */}
       <div className="relative flex items-center justify-between">

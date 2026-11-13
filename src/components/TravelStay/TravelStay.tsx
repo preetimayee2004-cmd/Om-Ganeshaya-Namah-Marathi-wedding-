@@ -45,7 +45,7 @@ function Train() {
     <svg viewBox="0 0 64 44" className="h-11 w-16" aria-hidden>
       <rect x="8" y="16" width="34" height="16" rx="3" fill={RED} />
       <rect x="40" y="10" width="16" height="22" rx="2" fill={RED} />
-      <rect x="44" y="14" width="8" height="7" rx="1" fill="#fbf1dc" />
+      <rect x="44" y="14" width="8" height="7" rx="1" fill="#faddb5" />
       <rect x="38" y="7" width="20" height="4" rx="1.5" fill="#d4a53c" />
       <rect x="12" y="10" width="5" height="7" rx="1" fill={RED} />
       <rect x="10.5" y="8" width="8" height="3" rx="1" fill="#d4a53c" />
@@ -66,7 +66,7 @@ function Car() {
     <svg viewBox="0 0 64 44" className="h-11 w-16" aria-hidden>
       <rect x="27" y="9" width="10" height="4" rx="1" fill="#d4a53c" />
       <path d="M14 22l5-9h26l5 9Z" fill={RED} />
-      <path d="M19.5 21l3.5-6h8v6ZM34 15h8l3.5 6H34Z" fill="#fbf1dc" />
+      <path d="M19.5 21l3.5-6h8v6ZM34 15h8l3.5 6H34Z" fill="#faddb5" />
       <rect x="6" y="21" width="52" height="11" rx="4" fill={RED} />
       <path d="M8 26h48" stroke="#f3d98b" strokeWidth="1" />
       {[18, 46].map((x) => (
@@ -87,9 +87,9 @@ const MODES = [
 ] as const;
 
 const cardFrame: React.CSSProperties = {
-  background: "#fbf1dc",
+  background: "#faddb5",
   border: "calc(var(--u) * 1.5) solid #dcc08a",
-  boxShadow: "inset 0 0 0 calc(var(--u) * 4) #fbf1dc, inset 0 0 0 calc(var(--u) * 5) #e4cd9c",
+  boxShadow: "inset 0 0 0 calc(var(--u) * 4) #faddb5, inset 0 0 0 calc(var(--u) * 5) #e4cd9c",
   borderRadius: "calc(var(--u) * 14)",
 };
 

@@ -35,7 +35,7 @@ function Note({ name, message, i, fresh }: Wish & { i: number }) {
   return (
     <article
       ref={ref}
-      className="relative w-[78%] shrink-0 snap-center rounded-sm bg-[#fff8e6] px-5 pb-5 pt-7 shadow-[0_8px_22px_-10px_rgba(56,41,35,0.5)] transition-all duration-700 ease-out"
+      className="relative w-[78%] shrink-0 snap-center rounded-sm bg-[#faddb5] px-5 pb-5 pt-7 shadow-[0_8px_22px_-10px_rgba(56,41,35,0.5)] transition-all duration-700 ease-out"
       style={{
         transform: seen ? `rotate(${tilt}deg)` : `translateY(calc(var(--u) * -30)) rotate(${tilt * 4}deg)`,
         opacity: seen ? 1 : 0,
@@ -257,7 +257,7 @@ export default function WishingWall() {
           style={{ gridTemplateRows: showAll ? "1fr" : "0fr", marginBottom: showAll ? 16 : 0 }}
         >
           <div className="overflow-hidden">
-            <ul className="max-h-[360px] space-y-3 overflow-y-auto rounded-xl border border-[#e2c27a] bg-[#fffaf0]/90 p-4">
+            <ul className="max-h-[360px] space-y-3 overflow-y-auto rounded-xl border border-[#e2c27a] bg-[#faddb5]/90 p-4">
               {wall.map((b, i) => (
                 <li key={`all-${i}`} className="border-b border-[#efd9a5] pb-3 last:border-0 last:pb-0">
                   <p className="whitespace-pre-line" {...(() => { const t = wishTextProps(b.message, 18); return { dir: t.dir, style: { ...t.style, color: INK } }; })()}>{b.message}</p>
@@ -274,9 +274,9 @@ export default function WishingWall() {
           noValidate
           className="relative space-y-2.5 rounded-xl p-3.5"
           style={{
-            background: "linear-gradient(180deg, #fdf5e1 0%, #f8e8c2 100%)",
+            background: "linear-gradient(180deg, #fbe3c0 0%, #f7d5aa 100%)",
             border: "calc(var(--u) * 1.5) solid #e2c27a",
-            boxShadow: "inset 0 0 0 calc(var(--u) * 4) #fdf5e1, inset 0 0 0 calc(var(--u) * 5) rgba(217,178,90,0.55), 0 calc(var(--u) * 6) calc(var(--u) * 18) calc(var(--u) * -8) rgba(120,80,20,0.35)",
+            boxShadow: "inset 0 0 0 calc(var(--u) * 4) #fbe3c0, inset 0 0 0 calc(var(--u) * 5) rgba(217,178,90,0.55), 0 calc(var(--u) * 6) calc(var(--u) * 18) calc(var(--u) * -8) rgba(120,80,20,0.35)",
           }}
         >
           <div>
@@ -332,7 +332,7 @@ export default function WishingWall() {
       {flyer && (
         <div
           aria-hidden
-          className="pointer-events-none absolute z-30 rounded-sm bg-[#fff8e6] px-5 pb-4 pt-5 shadow-[0_10px_26px_-8px_rgba(56,41,35,0.55)]"
+          className="pointer-events-none absolute z-30 rounded-sm bg-[#faddb5] px-5 pb-4 pt-5 shadow-[0_10px_26px_-8px_rgba(56,41,35,0.55)]"
           style={{
             left: flyer.x,
             top: flyer.y,
