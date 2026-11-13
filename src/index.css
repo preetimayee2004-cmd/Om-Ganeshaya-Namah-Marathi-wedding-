@@ -576,3 +576,8 @@ html { background: #2b1d18; }
 /* couple section artwork warmed toward the golden-peach sunset sky behind every section:
    greens turn to olive-gold, whites to ivory, the sky to peach */
 .couple-tone { filter: sepia(0.32) saturate(0.95) hue-rotate(-6deg) brightness(1.04) contrast(0.96); }
+
+/* opening artwork (Ganpati, invitation) warmed to the same golden-peach palette as the couple section */
+.intro-tone { filter: sepia(0.28) saturate(0.92) hue-rotate(-5deg) brightness(1.04) contrast(0.96); }
+/* the door is already gold: only soften it toward antique gold and lift it a touch */
+.door-tone { filter: sepia(0.18) saturate(0.88) brightness(1.06) contrast(0.95); }

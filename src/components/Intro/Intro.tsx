@@ -659,7 +659,7 @@ export default function Intro() {
                 <img
                   src={wedding.images.door}
                   alt="Royal Maharashtrian Palace Temple Door Left"
-                  className="absolute left-0 top-0 h-full w-[200%] max-w-none object-cover"
+                  className="door-tone absolute left-0 top-0 h-full w-[200%] max-w-none object-cover"
                   draggable={false}
                 />
                 {/* Dynamic 3D lighting shadow as leaf swings */}
@@ -687,7 +687,7 @@ export default function Intro() {
                 <img
                   src={wedding.images.door}
                   alt="Royal Maharashtrian Palace Temple Door Right"
-                  className="absolute right-0 top-0 h-full w-[200%] max-w-none object-cover"
+                  className="door-tone absolute right-0 top-0 h-full w-[200%] max-w-none object-cover"
                   draggable={false}
                 />
                 {/* Dynamic 3D lighting shadow as leaf swings */}
@@ -827,7 +827,7 @@ export default function Intro() {
               <img
                 src={wedding.images.ganeshClosed}
                 alt="Lord Ganesha in peaceful meditation"
-                className="h-full w-full object-cover"
+                className="intro-tone h-full w-full object-cover"
                 draggable={false}
               />
             </div>
@@ -843,7 +843,7 @@ export default function Intro() {
               <img
                 src={wedding.images.ganeshBlessing}
                 alt="Lord Ganesha with divine blessing"
-                className="h-full w-full object-cover"
+                className="intro-tone h-full w-full object-cover"
                 draggable={false}
               />
             </div>
@@ -957,7 +957,7 @@ export default function Intro() {
           <img
             src={wedding.images.invitationScene}
             alt="Traditional Maharashtrian Wada Courtyard"
-            className="h-full w-full object-cover"
+            className="intro-tone h-full w-full object-cover"
             draggable={false}
           />
         </div>
