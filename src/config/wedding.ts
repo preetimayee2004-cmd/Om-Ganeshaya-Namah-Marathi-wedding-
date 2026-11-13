@@ -14,7 +14,7 @@ export const wedding = {
     venue: "/venue/mandap.jpg", // venue illustration
     sky: "/bg/sunset-sky.jpg", // sky background behind every section
     peacockBorder: "/border/peacock-border.png", // strip above/below the scratch card
-    laptopBackground: "/bg/stage.jpg", // blurred backdrop around the phone on laptops
+    laptopBackground: "/bg/stage-diya.jpg", // blurred backdrop around the phone on laptops
   },
   couple: {
     bride: "Sayeli",
