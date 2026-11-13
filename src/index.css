@@ -584,12 +584,6 @@ html { background: #2b1d18; }
   color: #6d0f1b;
 }
 
-/* couple section artwork graded to the Save the Date card: ivory cream (#fbf3e3), matte antique
-   gold (#b08a3e / #d9bf86), soft rose and sage. Less orange, lighter, gently faded */
-.couple-tone { filter: sepia(0.3) saturate(0.7) brightness(1.08) contrast(0.88) hue-rotate(-6deg); }
-/* ivory haze over the sky (where the names sit), the same cream as the Save the Date card */
-.couple-haze {
-  background:
-    linear-gradient(to bottom, rgba(251, 243, 227, 0.42) 0%, rgba(251, 243, 227, 0.28) 30%, rgba(251, 243, 227, 0.08) 52%, rgba(251, 243, 227, 0) 64%),
-    linear-gradient(rgba(242, 194, 203, 0.06), rgba(242, 194, 203, 0.06));
-}
+/* couple section artwork keeps its own warm sunset colours (they match the golden / peach
+   section backgrounds); no grade on top */
+.couple-tone { filter: none; }
