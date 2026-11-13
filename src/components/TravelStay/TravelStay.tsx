@@ -171,7 +171,9 @@ export default function TravelStay() {
           loading="lazy"
           className="block w-full"
           style={{
-            aspectRatio: "760 / 1018",
+            aspectRatio: "760 / 800", // crop the empty sky above the mandap
+            objectFit: "cover",
+            objectPosition: "center bottom",
             WebkitMaskImage:
               "linear-gradient(to bottom, transparent 0%, #000 6%, #000 88%, transparent 100%), linear-gradient(to right, transparent 0%, #000 10%, #000 90%, transparent 100%)",
             maskImage:

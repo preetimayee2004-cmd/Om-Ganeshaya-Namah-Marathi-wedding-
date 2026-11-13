@@ -72,7 +72,7 @@
 .top-controls {
   padding: calc(env(safe-area-inset-top, 0px) + 10px) 16px 0;
 }
-.screen--mockup .top-controls { padding: 7px 18px 0; }
+.screen--mockup .top-controls { padding: 18px 28px 0; }
 
 /* "Dear <guest>," adds a line above the couple's names: start the block that much higher */
 .couple-text.has-guest { padding-top: calc(var(--u) * 104); }
