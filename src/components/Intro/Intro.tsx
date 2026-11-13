@@ -957,7 +957,7 @@ export default function Intro() {
           <img
             src={wedding.images.invitationScene}
             alt="Traditional Maharashtrian Wada Courtyard"
-            className="intro-tone h-full w-full object-cover"
+            className="invite-tone h-full w-full object-cover"
             draggable={false}
           />
         </div>
