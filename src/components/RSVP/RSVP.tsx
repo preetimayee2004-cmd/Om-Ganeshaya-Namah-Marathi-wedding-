@@ -147,7 +147,7 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
     }
     try {
       await submitRsvp({
-        name: isPersonalised && guestName.trim().length >= 2 ? guestName : "Guest",
+        name: isPersonalised && guestName.trim().length >= 2 ? guestName : wedding.guestFallback,
         attending: "yes",
         guests: 1,
         phone: "",

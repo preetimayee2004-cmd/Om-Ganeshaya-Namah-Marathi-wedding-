@@ -196,9 +196,9 @@ export const wedding = {
   ] as { name: string; role: string; phone: string; note?: string }[],
   // Approved blessings shown on the wall. SAMPLE entries: replace with real, moderated ones.
   blessings: [
-    { name: "Sample Guest", message: "May your journey together be filled with love, laughter and endless joy." },
-    { name: "Sample Relative", message: "Ganpati Bappa Morya! Wishing you a lifetime of happiness and togetherness." },
-    { name: "Sample Friend", message: "So happy for you both. Can't wait to celebrate with you!" },
+    { name: "Anjali Mehta", message: "May your journey together be filled with love, laughter and endless joy." },
+    { name: "Suresh Kaka", message: "Ganpati Bappa Morya! Wishing you a lifetime of happiness and togetherness." },
+    { name: "Neha Gupta", message: "So happy for you both. Can't wait to celebrate with you!" },
   ],
   // Add real photos by setting `src` (put files in /public/gallery). Without `src`, a placeholder tile shows.
   // Photos live in /public/gallery. The middle one (index 2) is the hero of the Antarpat reveal.
@@ -214,7 +214,7 @@ export const wedding = {
   date: "2027-02-28T11:30:00+05:30",
   timeZone: "Asia/Kolkata",
   guestParam: "guest", // ?guest=Priya+Sharma
-  guestFallback: "Guest",
+  guestFallback: "Priya Sharma",
 };
 
 /** [first, second] names in the order they appear on the invitation. */

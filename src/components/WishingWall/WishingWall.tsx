@@ -128,7 +128,7 @@ export default function WishingWall() {
     }
   }, [flyer]);
 
-  const name = isPersonalised && guestName.trim().length >= limits.nameMin ? guestName : "Guest";
+  const name = isPersonalised && guestName.trim().length >= limits.nameMin ? guestName : wedding.guestFallback;
 
   const launch = (text: string) => {
     const sec = sectionRef.current?.getBoundingClientRect();
