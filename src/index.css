@@ -545,14 +545,23 @@ html { background: #2b1d18; }
   position: relative;
   isolation: isolate;
   margin: 8px 12px 24px;
-  background: linear-gradient(180deg, rgba(251, 241, 223, 0.9) 0%, rgba(248, 236, 212, 0.9) 50%, rgba(246, 230, 200, 0.92) 100%);
-  box-shadow: 0 10px 28px -14px rgba(90, 50, 10, 0.45);
+  /* colours sampled from the (graded) couple artwork: golden sky #fbe5af, peach sky #faddb5,
+     sun glow #f9f6d9, sunlit hills #dfb892; repeated in bands so every section gets the same warm light */
+  background:
+    radial-gradient(ellipse 90% 520px at 50% 0, rgba(249, 246, 217, 0.75), rgba(249, 246, 217, 0) 70%) no-repeat,
+    repeating-linear-gradient(180deg,
+      rgba(251, 229, 175, 0.93) 0px,
+      rgba(250, 221, 181, 0.93) 700px,
+      rgba(246, 214, 170, 0.93) 1100px,
+      rgba(250, 221, 181, 0.93) 1500px,
+      rgba(251, 229, 175, 0.93) 2200px);
+  box-shadow: 0 10px 28px -14px rgba(95, 67, 54, 0.5);
 }
 .framed-page::before {
   content: "";
   position: absolute;
   inset: 10px;
-  border: 1px solid rgba(201, 160, 86, 0.7);
+  border: 1px solid rgba(150, 102, 58, 0.55);
   pointer-events: none;
   z-index: -1;
 }
