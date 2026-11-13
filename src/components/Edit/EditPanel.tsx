@@ -78,7 +78,7 @@ const SECTIONS: Section[] = [
         newItem: () => ({
           id: `event-${Date.now()}`,
           art: "lagn",
-          image: "/events/lagn.jpg",
+          image: "/events/backup/ganpati.jpg", // backup Marathi illustration for any new event
           name: "New Event",
           marathi: "",
           start: wedding.date,

@@ -37,3 +37,13 @@ RSVP couple ke liye transparent background wali PNG chahiye.
 ## Background music
 
 `public/audio/bgm.mp3` naam se koi gaana rakhiye; site wahi bajayegi. File na ho to koi background music nahi bajta (sirf ghanti, scratch jaisi chhoti awaazein).
+
+## Backup Marathi illustrations for events
+
+Two spare illustrations are kept in `public/events/backup/` for any extra ceremony:
+
+- `/events/backup/ganpati.jpg` — Ganpati on a chaurang (Ganpati pujan, Devdevak, Sakharpuda)
+- `/events/backup/curtain.jpg` — red-and-gold curtain with a samai (Antarpat / Mangalashtak)
+
+A new event added in the Edit panel (`?edit` → Events → Add) starts with the Ganpati one; change
+"Event ki photo" to `/events/backup/curtain.jpg` to use the other.
