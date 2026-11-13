@@ -58,96 +58,179 @@ function paisleyPath(ctx: CanvasRenderingContext2D, s: number) {
   ctx.bezierCurveTo(s * 0.25, 0, s * 0.25, -s * 0.35, 0, -s * 0.4);
 }
 
-/** Ceremonial scratch foil: deep-maroon silk, embossed paisley, antique-gold double border, lotus motif. */
-function drawSilkFoil(ctx: CanvasRenderingContext2D, w: number, h: number) {
-  const gold = ctx.createLinearGradient(0, 0, w, 0);
-  [[0, "#f0cf7a"], [0.3, "#c9963a"], [0.55, "#f6dd93"], [0.8, "#b8862f"], [1, "#e9c667"]].forEach(([o, c]) => gold.addColorStop(o as number, c as string));
+/** rounded-rectangle path */
+function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
 
-  // golden base
-  const base = ctx.createLinearGradient(0, 0, w, h);
-  base.addColorStop(0, "#d8a83e");
-  base.addColorStop(0.35, "#e9c46a");
-  base.addColorStop(0.65, "#d5a23a");
-  base.addColorStop(1, "#c08b2a");
+/** draw a path twice, offset, as if pressed into soft metal (shadow below-right, light above-left) */
+function engrave(ctx: CanvasRenderingContext2D, draw: () => void, width = 1) {
+  ([[0.8, 0.8, "rgba(92,60,14,0.42)"], [-0.6, -0.6, "rgba(255,244,214,0.55)"]] as const).forEach(([dx, dy, c]) => {
+    ctx.save();
+    ctx.translate(dx, dy);
+    draw();
+    ctx.strokeStyle = c;
+    ctx.lineWidth = width;
+    ctx.stroke();
+    ctx.restore();
+  });
+}
+
+/**
+ * Scratch foil: matte antique-gold leaf with a faint linen grain, an engraved double rounded border,
+ * kairi (paisley) motifs in the corners and a small engraved lotus medallion in the centre.
+ * Deliberately flat: no bokeh, no sheen, no glow.
+ */
+function drawSilkFoil(ctx: CanvasRenderingContext2D, w: number, h: number) {
+  // matte antique gold, a very gentle top-to-bottom tone shift
+  const base = ctx.createLinearGradient(0, 0, 0, h);
+  base.addColorStop(0, "#d7b56e");
+  base.addColorStop(0.5, "#cdaa60");
+  base.addColorStop(1, "#c29d55");
   ctx.fillStyle = base;
   ctx.fillRect(0, 0, w, h);
 
-  // fine silk threads
+  // fine linen grain
   ctx.save();
-  ctx.lineWidth = 0.6;
-  for (let x = -h, i = 0; x < w + h; x += 3, i++) {
-    ctx.strokeStyle = i % 2 ? "rgba(255,240,200,0.06)" : "rgba(120,80,10,0.07)";
+  ctx.lineWidth = 0.5;
+  for (let y = 0, i = 0; y < h; y += 2.2, i++) {
+    ctx.strokeStyle = i % 3 ? "rgba(120,84,24,0.05)" : "rgba(255,240,205,0.07)";
     ctx.beginPath();
-    ctx.moveTo(x, 0);
-    ctx.lineTo(x + h * 0.6, h);
+    ctx.moveTo(0, y);
+    ctx.lineTo(w, y);
     ctx.stroke();
   }
   ctx.restore();
 
-  // soft diagonal sheen
-  ([[0.18, 0.1], [0.55, 0.07], [0.86, 0.09]] as const).forEach(([pos, a]) => {
-    const g = ctx.createLinearGradient(w * pos - 60, 0, w * pos + 60, h);
-    g.addColorStop(0, "rgba(255,215,190,0)");
-    g.addColorStop(0.5, `rgba(255,215,190,${a})`);
-    g.addColorStop(1, "rgba(255,215,190,0)");
-    ctx.fillStyle = g;
-    ctx.fillRect(0, 0, w, h);
-  });
-
-  // soft golden bokeh
-  for (let i = 0; i < 26; i++) {
-    const bx = ((i * 97) % 100) / 100 * w, by = ((i * 53) % 100) / 100 * h, br = 6 + ((i * 37) % 14);
-    const bg = ctx.createRadialGradient(bx, by, 0, bx, by, br);
-    bg.addColorStop(0, "rgba(255,248,220,0.42)");
-    bg.addColorStop(1, "rgba(255,248,220,0)");
-    ctx.fillStyle = bg;
-    ctx.beginPath();
-    ctx.arc(bx, by, br, 0, TAU);
-    ctx.fill();
-  }
-
-  // embossed paisley lattice (shadow + highlight + body stroke)
-  const stepX = 44, stepY = 40;
-  for (let row = 0; row * stepY < h + stepY; row++) {
-    for (let col = -1; col * stepX < w + stepX; col++) {
-      const cx = col * stepX + (row % 2 ? stepX / 2 : 0) + 14;
-      const cy = row * stepY + 16;
-      const rot = row % 2 ? -0.5 : 0.5;
-      ([[1, 1, "rgba(110,70,10,0.28)"], [-0.8, -0.8, "rgba(255,245,210,0.35)"], [0, 0, "rgba(150,100,25,0.35)"]] as const).forEach(([dx, dy, stroke]) => {
-        ctx.save();
-        ctx.translate(cx + dx, cy + dy);
-        ctx.rotate(rot);
-        paisleyPath(ctx, 10);
-        ctx.strokeStyle = stroke;
-        ctx.lineWidth = 1;
-        ctx.stroke();
-        ctx.restore();
-      });
-    }
-  }
-
-  // depth: soft vignette
-  const vg = ctx.createRadialGradient(w / 2, h / 2, h * 0.25, w / 2, h / 2, w * 0.62);
+  // soft edge darkening, like gold leaf on board
+  const vg = ctx.createRadialGradient(w / 2, h / 2, h * 0.3, w / 2, h / 2, w * 0.65);
   vg.addColorStop(0, "rgba(0,0,0,0)");
-  vg.addColorStop(1, "rgba(110,70,10,0.28)");
+  vg.addColorStop(1, "rgba(100,66,16,0.18)");
   ctx.fillStyle = vg;
   ctx.fillRect(0, 0, w, h);
 
-  // antique-gold double border with small corner roundels
-  ctx.save();
-  ctx.strokeStyle = gold;
-  ctx.lineWidth = 1.8;
-  ctx.strokeRect(6, 6, w - 12, h - 12);
-  ctx.lineWidth = 0.7;
-  ctx.strokeRect(11, 11, w - 22, h - 22);
-  ctx.fillStyle = gold;
-  [[6, 6], [w - 6, 6], [6, h - 6], [w - 6, h - 6]].forEach(([x, y]) => {
-    ctx.beginPath();
-    ctx.arc(x, y, 3, 0, TAU);
-    ctx.fill();
+  // engraved double rounded border
+  const r = Math.min(14, h * 0.12);
+  engrave(ctx, () => roundRect(ctx, 9, 9, w - 18, h - 18, r), 1.1);
+  engrave(ctx, () => roundRect(ctx, 14, 14, w - 28, h - 28, r - 4), 0.6);
+
+  // kairi motifs in the corners, turned inward
+  const k = Math.min(9, h * 0.08);
+  ([[26, 26, 0.8], [w - 26, 26, 2.35], [w - 26, h - 26, -2.35], [26, h - 26, -0.8]] as const).forEach(([x, y, rot]) => {
+    engrave(ctx, () => {
+      ctx.translate(x, y);
+      ctx.rotate(rot);
+      paisleyPath(ctx, k);
+    }, 0.9);
   });
+
+  // small dotted bead line along the top and bottom inner edges
+  ctx.save();
+  for (let x = 40; x < w - 40; x += 7) {
+    [h * 0.5 - (h - 28) / 2 + 5, h * 0.5 + (h - 28) / 2 - 5].forEach((y) => {
+      ctx.fillStyle = "rgba(255,244,214,0.45)";
+      ctx.beginPath();
+      ctx.arc(x - 0.4, y - 0.4, 0.8, 0, TAU);
+      ctx.fill();
+      ctx.fillStyle = "rgba(92,60,14,0.35)";
+      ctx.beginPath();
+      ctx.arc(x + 0.5, y + 0.5, 0.8, 0, TAU);
+      ctx.fill();
+    });
+  }
   ctx.restore();
 
+  // engraved lotus medallion in the centre
+  const cx = w / 2;
+  const cy = h / 2;
+  const s = Math.min(16, h * 0.13);
+  engrave(ctx, () => {
+    ctx.beginPath();
+    ctx.arc(cx, cy, s * 1.9, 0, TAU);
+  }, 0.7);
+  engrave(ctx, () => {
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - s);
+    ctx.bezierCurveTo(cx + s * 0.55, cy - s * 0.45, cx + s * 0.45, cy + s * 0.25, cx, cy + s * 0.55);
+    ctx.bezierCurveTo(cx - s * 0.45, cy + s * 0.25, cx - s * 0.55, cy - s * 0.45, cx, cy - s);
+    ctx.moveTo(cx, cy + s * 0.55);
+    ctx.bezierCurveTo(cx - s * 0.5, cy + s * 0.3, cx - s * 1.05, cy - s * 0.05, cx - s * 1.2, cy - s * 0.35);
+    ctx.bezierCurveTo(cx - s * 0.9, cy + s * 0.35, cx - s * 0.5, cy + s * 0.6, cx, cy + s * 0.55);
+    ctx.bezierCurveTo(cx + s * 0.5, cy + s * 0.6, cx + s * 0.9, cy + s * 0.35, cx + s * 1.2, cy - s * 0.35);
+    ctx.bezierCurveTo(cx + s * 1.05, cy - s * 0.05, cx + s * 0.5, cy + s * 0.3, cx, cy + s * 0.55);
+    ctx.moveTo(cx - s * 1.1, cy + s * 0.85);
+    ctx.quadraticCurveTo(cx, cy + s * 1.15, cx + s * 1.1, cy + s * 0.85);
+  }, 0.9);
+}
+
+/** symmetrical hand-painted floral motif for the top: a lotus with a thin vine, a few blooms and leaves */
+function FloralCrest() {
+  const side = (flip: boolean) => (
+    <g transform={flip ? "translate(320 0) scale(-1 1)" : undefined}>
+      <path d="M134 34C112 26 92 30 72 22 56 16 44 18 30 26" fill="none" stroke="#9a7a3a" strokeWidth=".9" strokeLinecap="round" />
+      {/* leaves */}
+      {([[116, 28, -20], [96, 28, 25], [78, 23, -30], [58, 18, 20], [42, 20, -25]] as const).map(([x, y, r], i) => (
+        <path key={i} d={`M${x} ${y}c3-5 9-6 12-4-3 5-8 6-12 4Z`} transform={`rotate(${r} ${x} ${y})`} fill={i % 2 ? "#7f9a5a" : "#6d8a4c"} opacity=".85" />
+      ))}
+      {/* small marigold blooms */}
+      {([[104, 31, 3.6], [66, 20, 3.1], [34, 24, 2.6]] as const).map(([x, y, rr], i) => (
+        <g key={i}>
+          <circle cx={x} cy={y} r={rr} fill="#e3a23a" />
+          <circle cx={x} cy={y} r={rr * 0.55} fill="#c97a1e" />
+        </g>
+      ))}
+      {/* a rose-pink bud */}
+      <path d="M86 26c2-3 5-3 6 0-1 3-4 4-6 0Z" fill="#c4566e" />
+    </g>
+  );
+  return (
+    <svg viewBox="0 0 320 48" className="mx-auto block" style={{ width: "calc(var(--u) * 300)", height: "calc(var(--u) * 45)" }} aria-hidden>
+      {side(false)}
+      {side(true)}
+      {/* central lotus */}
+      <g transform="translate(160 30)">
+        <path d="M0-20c6 6 7 15 0 22-7-7-6-16 0-22Z" fill="#e9a7b4" stroke="#a8455c" strokeWidth=".7" />
+        <path d="M0 2c-4-8-11-12-19-12 2 8 9 12 19 12Zm0 0c4-8 11-12 19-12-2 8-9 12-19 12Z" fill="#f2c2cb" stroke="#a8455c" strokeWidth=".7" />
+        <path d="M0 2c-2-5-6-8-11-9M0 2c2-5 6-8 11-9" fill="none" stroke="#a8455c" strokeWidth=".5" />
+        <path d="M-16 6c8 3 24 3 32 0" fill="none" stroke="#9a7a3a" strokeWidth=".8" />
+        <circle cy="-24" r="1.4" fill="#b8862f" />
+      </g>
+    </svg>
+  );
+}
+
+/** thin vine with a small lotus centrepiece, for the bottom */
+function VineRule() {
+  return (
+    <svg viewBox="0 0 320 24" className="mx-auto block" style={{ width: "calc(var(--u) * 280)", height: "calc(var(--u) * 21)" }} aria-hidden>
+      <path d="M18 13C60 9 100 17 140 12M302 13C260 9 220 17 180 12" fill="none" stroke="#a8843f" strokeWidth=".8" strokeLinecap="round" />
+      {([[52, 11, -25], [86, 14, 25], [118, 12, -20], [268, 11, 25], [234, 14, -25], [202, 12, 20]] as const).map(([x, y, r], i) => (
+        <path key={i} d={`M${x} ${y}c2.5-4 7-5 10-3-2.5 4-7 5-10 3Z`} transform={`rotate(${r} ${x} ${y})`} fill="#7f9a5a" opacity=".8" />
+      ))}
+      <g transform="translate(160 14)">
+        <path d="M0-10c3.5 3.5 4 8.5 0 12-4-3.5-3.5-8.5 0-12Z" fill="#f2c2cb" stroke="#a8455c" strokeWidth=".6" />
+        <path d="M0 2c-2.5-4.5-6.5-7-11-7 1.2 4.5 5.2 7 11 7Zm0 0c2.5-4.5 6.5-7 11-7-1.2 4.5-5.2 7-11 7Z" fill="#f7d6dc" stroke="#a8455c" strokeWidth=".6" />
+        <path d="M-9 5c5 2 13 2 18 0" fill="none" stroke="#a8843f" strokeWidth=".7" />
+      </g>
+    </svg>
+  );
+}
+
+/** delicate antique-gold divider under the heading */
+function GoldDivider() {
+  return (
+    <svg viewBox="0 0 200 12" className="mx-auto block" style={{ width: "calc(var(--u) * 150)", height: "calc(var(--u) * 9)" }} fill="none" stroke="#b08a3e" strokeLinecap="round" aria-hidden>
+      <path d="M10 6h70M120 6h70" strokeWidth=".7" />
+      <path d="M80 6c6-4 10-4 14 0M120 6c-6-4-10-4-14 0" strokeWidth=".7" />
+      <path d="M100 1.5l3.5 4.5-3.5 4.5-3.5-4.5z" fill="#b08a3e" fillOpacity=".25" strokeWidth=".7" />
+    </svg>
+  );
 }
 
 /** small traditional lotus used as an icon */
@@ -550,177 +633,139 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
     };
   }, []);
 
+  const SERIF = '"Cormorant Garamond", Georgia, serif';
   return (
     <div
       ref={containerRef}
-      className="relative mx-auto w-full max-w-[430px] cursor-default select-none overflow-hidden rounded-3xl border-2 border-[#D4AF37]/60 shadow-[0_12px_45px_rgba(109,15,27,0.18),inset_0_1px_2px_rgba(255,255,255,0.95)]"
-      style={{
-        boxShadow: "0 calc(var(--u) * 16) calc(var(--u) * 48) calc(var(--u) * -8) rgba(109,15,27,0.22), 0 0 0 1px rgba(212,175,55,0.35)",
-      }}
+      className="relative mx-auto w-full max-w-[430px] cursor-default select-none overflow-hidden rounded-[1.4rem] border border-[#d9bf86]"
+      style={{ boxShadow: "0 calc(var(--u) * 10) calc(var(--u) * 26) calc(var(--u) * -14) rgba(109,15,27,0.22)" }}
     >
-      {/* Background Soft Peach Watercolor Sky matching the website theme */}
+      {/* cream paper with the site's soft sky wash */}
       <div
-        className="pointer-events-none absolute inset-0 bg-[#F8DFBF]"
+        className="pointer-events-none absolute inset-0 bg-[#fbf3e3]"
         style={{
-          backgroundImage: `url("${wedding.images.sky}"), radial-gradient(ellipse at 50% 0%, #FFF8EE 0%, #FDEBD1 25%, #F8DFBF 60%, #EFE0C1 100%)`,
-          backgroundSize: "100% auto, 100% 100%",
-          backgroundRepeat: "repeat-y, no-repeat",
-          backgroundPosition: "center top, center center",
+          backgroundImage: `linear-gradient(rgba(251,243,227,0.82), rgba(251,243,227,0.82)), url("${wedding.images.sky}")`,
+          backgroundSize: "100% 100%, 100% auto",
         }}
       />
+      {/* one inner antique-gold hairline */}
+      <div className="pointer-events-none absolute inset-[6px] z-20 rounded-[1.1rem] border border-[#c9a45a]/50" />
 
-      {/* Outer frame refinement: inner gold hairline + corner flourishes */}
-      <div className="pointer-events-none absolute inset-[5px] z-20 rounded-[1.25rem] border border-[#D4AF37]/45" />
-      <Flourish className="left-[7px] top-[7px] z-20" />
-      <Flourish className="right-[7px] top-[7px] z-20 -scale-x-100" />
-      <Flourish className="bottom-[7px] left-[7px] z-20 -scale-y-100" />
-      <Flourish className="bottom-[7px] right-[7px] z-20 -scale-100" />
+      <div className="relative z-10 px-6 pb-5 pt-4 text-center">
+        {/* hand-painted floral crest */}
+        <FloralCrest />
 
-      {/* TOP PEACOCK FLORAL BORDER STRIP */}
-      <div className="relative w-full overflow-hidden border-b border-[#B8862F]/60" style={{ background: "linear-gradient(180deg,#F6DD93 0%,#E2B24F 55%,#EFCB73 100%)" }}>
-        <img
-          src={wedding.images.peacockBorder}
-          alt="Traditional Royal Maharashtrian Peacock Floral Border"
-          className="w-full object-cover object-center h-16"
-          draggable={false}
-        />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[2px] bg-gradient-to-r from-transparent via-[#8A5A12] to-transparent" />
-        <span className="pointer-events-none absolute bottom-[-4px] left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 border border-[#8A5A12] bg-[#E2B24F]" />
-      </div>
-
-      {/* sound is controlled by the speaker button at the top-left of the screen */}
-
-      {/* CARD CONTENT HEADER */}
-      <div className="relative z-10 px-5 pt-4 pb-0 text-center">
+        {/* heading */}
         <h2
-          className="font-bold uppercase text-[#6d0f1b]"
-          style={{ fontFamily: '"Cormorant Garamond", Georgia, serif', fontSize: "calc(var(--u) * 30)", letterSpacing: "0.3em", paddingLeft: "0.3em", lineHeight: 1.1, fontWeight: 700 }}
+          className="mt-2 uppercase text-[#6d0f1b]"
+          style={{ fontFamily: SERIF, fontWeight: 600, fontSize: "calc(var(--u) * 27)", letterSpacing: "0.14em", paddingLeft: "0.14em", lineHeight: 1.1 }}
         >
-          Save The Date
+          Save the Date
         </h2>
-        {/* traditional gold divider */}
-        <svg viewBox="0 0 180 14" className="mx-auto mt-1.5 h-3.5 w-44 text-[#B8862F]" fill="none" stroke="currentColor" strokeLinecap="round" aria-hidden>
-          <path d="M6 7h62M112 7h62" strokeWidth="0.9" />
-          <path d="M44 7h24M112 7h24" strokeWidth="0.9" />
-          <path d="M90 1.5l5.5 5.5L90 12.5 84.5 7z" fill="currentColor" strokeWidth="0.6" />
-          <circle cx="76" cy="7" r="1.3" fill="currentColor" stroke="none" />
-          <circle cx="104" cy="7" r="1.3" fill="currentColor" stroke="none" />
-        </svg>
-        <p className="mt-1.5 text-[#4a1a16]" style={{ fontFamily: '"Cormorant Garamond", Georgia, serif', fontStyle: "italic", fontWeight: 600, fontSize: "calc(var(--u) * 17)", lineHeight: 1.3 }}>
-          Dear <span className="guest-name not-italic">{guestName}</span>, keep this day for us
-        </p>
-      </div>
+        <div className="mt-2">
+          <GoldDivider />
+        </div>
 
-      {/* ========================================================= */}
-      {/* SCRATCH CARD CONTAINER (Deep Vermilion with Gold Frame)   */}
-      {/* ========================================================= */}
-      <div className="relative mx-auto mt-1 w-[92%] max-w-[370px]">
-        {/* Royal Ornate Frame with Bracket Corners */}
+        {/* greeting */}
+        <p className="mt-4 font-script leading-none text-[#7a1420]" style={{ fontSize: "calc(var(--u) * 28)" }}>
+          Dear <span className="guest-name">{guestName}</span>
+        </p>
+        <p className="mt-1.5 text-[#6b4a3a]" style={{ fontFamily: SERIF, fontStyle: "italic", fontSize: "calc(var(--u) * 15.5)", letterSpacing: "0.03em" }}>
+          keep this day for us
+        </p>
+
+        {/* ===== scratch panel: engraved antique-gold frame around the foil ===== */}
         <div
-          className="relative overflow-hidden rounded-2xl border-2 border-[#C9963A] bg-gradient-to-b from-[#7d1626] via-[#5e0d1a] to-[#430911] p-1.5 shadow-[0_14px_30px_-8px_rgba(60,8,16,0.55),0_2px_6px_rgba(60,8,16,0.35),inset_0_1px_3px_rgba(255,236,180,0.45),inset_0_-2px_6px_rgba(0,0,0,0.35)]"
+          className="relative mx-auto mt-5 w-full max-w-[350px] rounded-[18px] p-[5px]"
           style={{
-            minHeight: "calc(var(--u) * 150)",
+            background: "#c8a25a",
+            boxShadow: "inset 0 0 0 1px rgba(255,240,205,0.55), inset 0 0 0 4px #c8a25a, inset 0 0 0 5px rgba(110,72,18,0.45), 0 calc(var(--u) * 6) calc(var(--u) * 14) calc(var(--u) * -8) rgba(80,40,10,0.35)",
           }}
         >
-          {/* Inner gold hairline + refined corners (kept above the foil so they stay after the reveal) */}
-          <div className="pointer-events-none absolute inset-[5px] z-20 rounded-xl border border-[#E2B24F]/60" />
-          <Flourish className="left-[7px] top-[7px] z-20 h-5 w-5 text-[#E2B24F]" />
-          <Flourish className="right-[7px] top-[7px] z-20 h-5 w-5 -scale-x-100 text-[#E2B24F]" />
-          <Flourish className="bottom-[7px] left-[7px] z-20 h-5 w-5 -scale-y-100 text-[#E2B24F]" />
-          <Flourish className="bottom-[7px] right-[7px] z-20 h-5 w-5 -scale-100 text-[#E2B24F]" />
-
-          {/* ======================================================= */}
-          {/* UNDERNEATH LAYER: ONLY THE SACRED WEDDING DATE          */}
-          {/* ======================================================= */}
-          <div
-            className="pointer-events-none relative flex h-full min-h-[136px] flex-col items-center justify-center rounded-xl px-3 py-4 text-center bg-[#FAF0DF]"
-            style={{
-              backgroundImage: `url("${wedding.images.sky}"), radial-gradient(ellipse at 50% 30%, #FFF8EE 0%, #FDEBD1 40%, #F8DFBF 100%)`,
-              backgroundSize: "cover",
-              backgroundPosition: "center center",
-            }}
-          >
-            {/* Revealed Date Content: ONLY the wedding date (scale 0.96 to 1.0, 900ms) */}
+          <div className="relative overflow-hidden rounded-[13px]" style={{ minHeight: "calc(var(--u) * 172)" }}>
+            {/* underneath: the date on cream paper */}
             <div
-              className="relative z-10 flex flex-col items-center justify-center transition-all"
-              style={{
-                // shown under the foil as soon as anything scratches it (the hint hand or the guest)
-                opacity: phase >= 2 || peek ? 1 : 0,
-                transform: phase >= 2 ? "scale(1.0)" : "scale(0.96)",
-                transition: "opacity 900ms cubic-bezier(0.22, 1, 0.36, 1), transform 900ms cubic-bezier(0.22, 1, 0.36, 1)",
-              }}
+              className="pointer-events-none relative flex flex-col items-center justify-center px-3 text-center"
+              style={{ minHeight: "calc(var(--u) * 172)", background: "radial-gradient(ellipse at 50% 40%, #fffaf0 0%, #fbf0dc 60%, #f4e3c4 100%)" }}
             >
-              {/* Auspicious Shubh Vivah Date */}
-              <div className="flex items-center justify-center gap-3">
-                <span className="font-serif text-4xl font-bold tracking-wider text-[#6d0f1b]">
-                  28
-                </span>
-                <span className="text-[#a8741a] text-xl font-serif">♦</span>
-                <span className="font-serif text-4xl font-bold tracking-wider text-[#6d0f1b]">
-                  02
-                </span>
-                <span className="text-[#a8741a] text-xl font-serif">♦</span>
-                <span className="font-serif text-4xl font-bold tracking-wider text-[#6d0f1b]">
-                  2027
-                </span>
+              <div
+                className="flex flex-col items-center"
+                style={{
+                  // shown under the foil as soon as anything scratches it (the hint hand or the guest)
+                  opacity: phase >= 2 || peek ? 1 : 0,
+                  transform: phase >= 2 ? "scale(1.0)" : "scale(0.96)",
+                  transition: "opacity 900ms cubic-bezier(0.22, 1, 0.36, 1), transform 900ms cubic-bezier(0.22, 1, 0.36, 1)",
+                }}
+              >
+                <p className="uppercase text-[#a8843f]" style={{ fontFamily: SERIF, fontWeight: 600, fontSize: "calc(var(--u) * 12)", letterSpacing: "0.3em", paddingLeft: "0.3em" }}>
+                  Sunday
+                </p>
+                <div className="mt-1 flex items-center justify-center gap-3 text-[#6d0f1b]" style={{ fontFamily: SERIF, fontWeight: 600, fontSize: "calc(var(--u) * 42)", lineHeight: 1 }}>
+                  <span>28</span>
+                  <span className="text-[#b08a3e]" style={{ fontSize: "0.4em" }}>◆</span>
+                  <span>02</span>
+                  <span className="text-[#b08a3e]" style={{ fontSize: "0.4em" }}>◆</span>
+                  <span>2027</span>
+                </div>
+                <p className="mt-2 italic text-[#7a1420]" style={{ fontFamily: SERIF, fontSize: "calc(var(--u) * 17)", letterSpacing: "0.04em" }}>
+                  the twenty-eighth of February
+                </p>
               </div>
-
-              <p className="mt-1 font-serif text-xs font-semibold tracking-[0.25em] text-[#8E1726] uppercase">
-                28 February 2027
-              </p>
             </div>
-          </div>
 
-          {/* ======================================================= */}
-          {/* INTERACTIVE SCRATCH CANVAS (Dissolves over 600ms)       */}
-          {/* ======================================================= */}
-          <canvas
-            ref={canvasRef}
-            onMouseDown={handleMouseDown}
-            onMouseMove={handleMouseMove}
-            onMouseUp={handleMouseUp}
-            onMouseLeave={handleMouseUp}
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
-            aria-label="Scratch surface to reveal wedding date"
-            className="absolute inset-0 z-[15] h-full w-full cursor-pointer touch-none select-none"
-            style={{
-              opacity: isRevealed ? 0 : 1,
-              pointerEvents: isRevealed ? "none" : "auto",
-              transition: "opacity 600ms cubic-bezier(0.22, 1, 0.36, 1)",
-            }}
-          />
-
-          {/* Sparkling Scratch Particles (Subtle gold dust, max 4 flakes) */}
-          {particles.map((p) => (
-            <span
-              key={p.id}
-              className="pointer-events-none absolute rounded-full"
+            {/* the scratch foil */}
+            <canvas
+              ref={canvasRef}
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+              onMouseUp={handleMouseUp}
+              onMouseLeave={handleMouseUp}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+              aria-label="Scratch surface to reveal wedding date"
+              className="absolute inset-0 z-[15] h-full w-full cursor-pointer touch-none select-none"
               style={{
-                left: `${p.x}px`,
-                top: `${p.y}px`,
-                width: `${p.size}px`,
-                height: `${p.size}px`,
-                backgroundColor: p.color,
-                opacity: p.alpha,
-                boxShadow: `0 0 calc(var(--u) * 4) ${p.color}`,
-                transform: "translate(-50%, -50%)",
+                opacity: isRevealed ? 0 : 1,
+                pointerEvents: isRevealed ? "none" : "auto",
+                transition: "opacity 600ms cubic-bezier(0.22, 1, 0.36, 1)",
               }}
             />
-          ))}
 
-          {/* Hint hand: it scratches a little of the foil by itself, so a peek of the date shows,
-              and keeps rubbing the same spot until the guest starts scratching */}
-          {!hasInteracted && !isRevealed && (
-            <div ref={demoHandRef} className="pointer-events-none absolute left-0 top-0 z-20" style={{ opacity: 0, transition: "opacity 400ms ease" }} aria-hidden>
-              <PointerHand size={30} />
-            </div>
-          )}
+            {/* fine gold dust while scratching */}
+            {particles.map((p) => (
+              <span
+                key={p.id}
+                className="pointer-events-none absolute rounded-full"
+                style={{ left: `${p.x}px`, top: `${p.y}px`, width: `${p.size}px`, height: `${p.size}px`, backgroundColor: p.color, opacity: p.alpha, transform: "translate(-50%, -50%)" }}
+              />
+            ))}
+
+            {/* hint hand: scratches a little by itself until the guest starts */}
+            {!hasInteracted && !isRevealed && (
+              <div ref={demoHandRef} className="pointer-events-none absolute left-0 top-0 z-20" style={{ opacity: 0, transition: "opacity 400ms ease" }} aria-hidden>
+                <PointerHand size={22} />
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* instruction */}
+        <div className="mt-4 flex items-center justify-center gap-2 text-[#b08a3e]">
+          <Lotus className="h-3 w-3" />
+          <p className="italic text-[#6d0f1b]" style={{ fontFamily: SERIF, fontWeight: 500, fontSize: "calc(var(--u) * 16.5)", letterSpacing: "0.05em" }}>
+            {isRevealed ? "We can't wait to celebrate with you" : "Scratch to reveal"}
+          </p>
+          <Lotus className="h-3 w-3" />
+        </div>
+
+        {/* thin vine with a lotus */}
+        <div className="mt-3">
+          <VineRule />
         </div>
       </div>
 
-      {/* 3-5 SOFTLY DRIFTING MARIGOLD PETALS (Celebration) */}
+      {/* a few marigold petals after the reveal */}
       {petals.map((petal) => (
         <div
           key={petal.id}
@@ -735,64 +780,9 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
             transition: phase >= 3 ? "opacity 800ms ease-out" : undefined,
           }}
         >
-          {/* Stylized Marigold Petal Shape */}
-          <div
-            className="h-full w-full rounded-[60%_40%_60%_40%]"
-            style={{
-              backgroundColor: petal.color,
-              boxShadow: "0 calc(var(--u) * 2) calc(var(--u) * 4) rgba(0,0,0,0.15)",
-              backgroundImage: "radial-gradient(ellipse at 30% 30%, #FFE082, transparent 70%)",
-            }}
-          />
+          <div className="h-full w-full rounded-[60%_40%_60%_40%]" style={{ backgroundColor: petal.color }} />
         </div>
       ))}
-
-      {/* FOOTER: Scratch to reveal */}
-      <div className="relative z-10 flex flex-col items-center px-4 pt-3 pb-3 text-center">
-        {!isRevealed ? (
-          <div className="flex items-center gap-2.5 text-[#B8862F]">
-            <Lotus className="h-4 w-4" />
-            <p
-              className="text-[#6d0f1b]"
-              style={{ fontFamily: '"Cormorant Garamond", Georgia, serif', fontStyle: "italic", fontWeight: 600, fontSize: "calc(var(--u) * 20)", letterSpacing: "0.06em", lineHeight: 1.2 }}
-            >
-              Scratch to reveal
-            </p>
-            <Lotus className="h-4 w-4" />
-          </div>
-        ) : (
-          <div className="flex items-center gap-1.5 py-0.5">
-            <span className="text-[#D4AF37]">✦</span>
-            <p className="font-serif text-sm font-bold tracking-wider text-[#6d0f1b]">
-              Save the Date · 28 February 2027
-            </p>
-            <span className="text-[#D4AF37]">✦</span>
-          </div>
-        )}
-      </div>
-
-      {/* BOTTOM BORDER: same artwork turned over and mirrored, with a scalloped gold edge and a lotus */}
-      <div className="relative w-full overflow-hidden" style={{ background: "linear-gradient(180deg,#F6DD93 0%,#E2B24F 55%,#EFCB73 100%)" }}>
-        <svg className="relative block h-3.5 w-full text-[#8A5A12]" aria-hidden>
-          <defs>
-            <pattern id="dr-scallop" width="22" height="14" patternUnits="userSpaceOnUse">
-              <path d="M0 14Q11-3 22 14" fill="none" stroke="currentColor" strokeWidth="1" />
-              <circle cx="11" cy="9.5" r="1.1" fill="currentColor" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="14" fill="url(#dr-scallop)" />
-        </svg>
-        <span className="pointer-events-none absolute left-1/2 top-0 z-10 flex h-5 w-8 -translate-x-1/2 items-center justify-center rounded-b-full bg-[#E2B24F] text-[#6D0F1B]">
-          <Lotus className="h-4 w-4" />
-        </span>
-        <img
-          src={wedding.images.peacockBorder}
-          alt="Traditional Royal Maharashtrian Peacock Floral Border"
-          className="w-full object-cover object-center h-14"
-          style={{ transform: "scale(-1, -1)" }}
-          draggable={false}
-        />
-      </div>
     </div>
   );
 }
