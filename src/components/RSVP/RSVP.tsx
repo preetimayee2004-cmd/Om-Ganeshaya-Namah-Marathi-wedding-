@@ -87,6 +87,9 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
   const [revealDone, setRevealDone] = useState(false);
   // 0 closed | 1 seal breaking | 2 flap opening | 3 card rising | 4 text shown | 5 calendar shown
   const [stage, setStage] = useState(0);
+  // hearts bursting out of the little heart once the RSVP is accepted (again every few seconds while on screen)
+  const heartRef = useRef<SVGSVGElement>(null);
+  const [heartBurst, setHeartBurst] = useState<{ id: number; x: number; y: number; hearts: { dx: number; dy: number; s: number; r: number; d: number }[] } | null>(null);
   const [error, setError] = useState(false);
   const timers = useRef<number[]>([]);
 
@@ -196,6 +199,30 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
   const flapBack = stage >= 3; // once the flap has passed upright it lies behind the card
   const cardUp = stage >= 3;
   const textShown = stage >= 4;
+  useEffect(() => {
+    if (!textShown || !visible || window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+    const fire = () => {
+      const sec = sectionRef.current?.getBoundingClientRect();
+      const h = heartRef.current?.getBoundingClientRect();
+      if (!sec || !h) return;
+      setHeartBurst({
+        id: Date.now(),
+        x: h.left + h.width / 2 - sec.left,
+        y: h.top + h.height / 2 - sec.top,
+        hearts: Array.from({ length: 14 }, (_, i) => {
+          const a = -Math.PI / 2 + (i / 13 - 0.5) * Math.PI * 1.5;
+          const d = 60 + Math.random() * 90;
+          return { dx: Math.cos(a) * d, dy: Math.sin(a) * d - 30, s: 10 + Math.random() * 10, r: (Math.random() - 0.5) * 60, d: Math.random() * 200 };
+        }),
+      });
+    };
+    const first = window.setTimeout(fire, 300);
+    const id = window.setInterval(fire, 4000);
+    return () => {
+      clearTimeout(first);
+      clearInterval(id);
+    };
+  }, [textShown, visible]);
   const gone = (on: boolean): React.CSSProperties => ({ opacity: on ? 0 : 1 });
 
   // seal piece geometry, as fractions of the piece image
@@ -407,6 +434,7 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
                       </p>
                       {/* a small heart fills the space above the envelope's V */}
                       <svg
+                        ref={heartRef}
                         viewBox="0 0 24 22"
                         className="mt-[5cqw] block h-[11cqw] w-[12cqw]"
                         aria-hidden
@@ -619,6 +647,30 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
           Add to Calendar
         </button>
       </div>
+      {heartBurst && (
+        <div aria-hidden key={heartBurst.id} className="pointer-events-none absolute z-[60]" style={{ left: heartBurst.x, top: heartBurst.y }}>
+          {heartBurst.hearts.map((h, i) => (
+            <svg
+              key={i}
+              viewBox="0 0 24 22"
+              className="absolute"
+              style={{
+                width: h.s,
+                height: h.s,
+                left: -h.s / 2,
+                top: -h.s / 2,
+                opacity: 0,
+                ["--dx" as string]: `${h.dx}px`,
+                ["--dy" as string]: `${h.dy}px`,
+                ["--rr" as string]: `${h.r}deg`,
+                animation: `wish-heart-burst 1400ms ${h.d}ms cubic-bezier(0.22, 1, 0.36, 1) forwards`,
+              }}
+            >
+              <path d="M12 21s-8.5-5.3-10.6-10.4C-.1 5.9 3.6 1.5 7.7 2.6c1.9.5 3.3 2 4.3 3.6 1-1.6 2.4-3.1 4.3-3.6 4.1-1.1 7.8 3.3 6.3 8C20.5 15.7 12 21 12 21Z" fill="#b3243a" stroke="#d4a53c" strokeWidth="1" />
+            </svg>
+          ))}
+        </div>
+      )}
     </section>
   );
 }
