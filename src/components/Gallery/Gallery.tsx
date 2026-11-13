@@ -171,11 +171,11 @@ function Waterfront() {
     [4, 40], [16, 64], [28, 34], [52, 72], [64, 50], [118, 46], [130, 60], [142, 38], [154, 54],
   ] as const;
   return (
-    <svg viewBox="0 0 400 110" className="pointer-events-none absolute inset-x-0 bottom-0 w-full" preserveAspectRatio="xMidYMax slice" aria-hidden>
+    <svg viewBox="0 0 400 110" className="pointer-events-none absolute inset-x-0 bottom-0 w-full" preserveAspectRatio="xMidYMax slice" style={{ WebkitMaskImage: "linear-gradient(to bottom, #000 72%, transparent 100%)", maskImage: "linear-gradient(to bottom, #000 72%, transparent 100%)" }} aria-hidden>
       <defs>
         <linearGradient id="gal2-sea" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stopColor="#c9d6d0" stopOpacity=".55" />
-          <stop offset="1" stopColor="#efe0c2" stopOpacity=".9" />
+          <stop offset="1" stopColor="#efe0c2" stopOpacity="0" />
         </linearGradient>
       </defs>
       <g fill="#e2cfab" stroke="#b49a72" strokeWidth=".6" opacity=".85">
@@ -305,13 +305,13 @@ export default function Gallery() {
   const t = (i: number) => ({ "--i": i } as CSSProperties);
 
   return (
-    <section id="gallery" aria-labelledby="gallery-title" className="relative overflow-hidden pb-[27%] pt-6">
+    <section id="gallery" aria-labelledby="gallery-title" className="relative pb-[27%] pt-6" style={{ overflowX: "clip" }}>
       <style>{GAL_CSS}</style>
 
       {/* ---------- scenery ---------- */}
       <div className="pointer-events-none absolute inset-0" aria-hidden>
-        <Bougainvillea style={{ left: u(-6), top: u(-6), width: u(150), height: u(150), zIndex: 6 }} />
-        <div className="absolute" style={{ right: u(-6), bottom: u(-6), width: u(140), height: u(140), transform: "rotate(180deg)", zIndex: 6 }}>
+        <Bougainvillea style={{ left: u(-6), top: u(-40), width: u(150), height: u(150), zIndex: 6 }} />
+        <div className="absolute" style={{ right: u(-6), bottom: u(-12), width: u(130), height: u(140), transform: "rotate(180deg)", zIndex: 6 }}>
           <Bougainvillea style={{ left: 0, top: 0, width: "100%", height: "100%" }} />
         </div>
         {/* sun and birds */}

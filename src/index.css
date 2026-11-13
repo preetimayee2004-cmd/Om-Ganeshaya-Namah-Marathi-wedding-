@@ -37,7 +37,11 @@
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
+  /* no rubber-band pull at the top / bottom: it dragged the couple section down and showed the sky above it */
+  overscroll-behavior: none;
 }
+/* real phones: the page itself must not bounce past the couple section either */
+html, body { overscroll-behavior-y: none; }
 @supports (width: 1cqw) {
   .screen.screen--mockup > .screen-content { --u: calc(100cqw / 390); --vh: 1cqh; }
 }

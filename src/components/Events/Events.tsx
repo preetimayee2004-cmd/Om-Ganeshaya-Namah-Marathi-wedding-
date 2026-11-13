@@ -62,7 +62,7 @@ function Diamond({ style, size = 9 }: { style?: CSSProperties; size?: number }) 
 
 function Medallion({ src, alt }: { src: string; alt: string }) {
   return (
-    <div className="tl-medal relative mx-auto aspect-square w-full">
+    <div className="tl-medal relative mx-auto aspect-square w-[76%]">
       <div className="absolute inset-0 rounded-full" style={{ border: `${u(3)} solid ${MAROON}`, background: "radial-gradient(circle, #fbeee6 0%, #f3dcd2 100%)" }} />
       <div className="absolute overflow-hidden rounded-full" style={{ inset: u(7) }}>
         <img src={src} alt={alt} loading="lazy" draggable={false} className="h-full w-full object-cover" />
