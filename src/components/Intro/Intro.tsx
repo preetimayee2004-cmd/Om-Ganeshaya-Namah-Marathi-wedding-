@@ -1038,7 +1038,7 @@ export default function Intro() {
           }}
         >
           {/* Top Zone: Clean English Invitation Typography positioned in clear sunset sky */}
-          <div className={`tilt-3d intro-fit-top invite-zoom relative z-10 px-6 pt-[20%] text-center flex flex-col items-center${isPersonalised ? " has-guest" : ""}`}>
+          <div className={`tilt-3d intro-fit-top invite-zoom relative z-10 px-6 pt-[20%] text-center flex flex-col items-center has-guest`}>
             {/* Invitation Heading */}
             <div
               className="relative z-10 flex flex-col items-center"
@@ -1049,11 +1049,7 @@ export default function Intro() {
               }}
             >
               <h2 className="font-serif text-base font-medium tracking-wide text-[#6d0f1b] leading-snug drop-shadow-[0_1px_3px_rgba(255,255,255,0.95)]">
-                {isPersonalised && (
-                  <>
-                    Dear <span className="guest-name">{guestName}</span>,<br />
-                  </>
-                )}
+                Dear <span className="guest-name">{guestName}</span>,<br />
                 With Joyful Hearts,<br />We Invite You
               </h2>
             </div>

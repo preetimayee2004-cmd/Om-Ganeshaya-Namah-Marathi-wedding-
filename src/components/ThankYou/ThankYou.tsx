@@ -189,11 +189,9 @@ export default function ThankYou() {
         <LotusDivider w={65} />
 
         <div className="relative mx-auto mt-4 max-w-[318px] text-[18px] font-medium leading-[1.55]" style={{ fontFamily: SERIF, color: "#4a1a16", ...fade(650) }}>
-          {isPersonalised && (
-            <p className="mb-1 text-[20px] italic">
-              Dear <span className="guest-name not-italic">{guestName}</span>,
-            </p>
-          )}
+          <p className="mb-1 text-[20px] italic">
+            Dear <span className="guest-name not-italic">{guestName}</span>,
+          </p>
           <p>{wedding.thankYouMessage}</p>
         </div>
 

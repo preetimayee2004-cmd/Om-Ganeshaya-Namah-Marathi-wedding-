@@ -210,11 +210,9 @@ export default function WishingWall() {
         <p className="font-body text-[10px] uppercase tracking-[0.35em]" style={{ color: GOLD_LABEL }}>Wishing wall</p>
         <h2 id="blessings-title" className="section-title mt-2" style={{ color: INK }}>Blessings &amp; Wishes</h2>
         <p lang="mr" className="mt-1 text-sm font-semibold" style={{ color: GOLD_LABEL }}>शुभाशीर्वाद</p>
-        {isPersonalised && (
-          <p className="mx-auto mt-2 max-w-[18rem] text-[17px] italic leading-snug" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
-            <span className="guest-name not-italic">{guestName}</span>, leave a blessing for the couple
-          </p>
-        )}
+        <p className="mx-auto mt-2 max-w-[18rem] text-[17px] italic leading-snug" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
+          Dear <span className="guest-name not-italic">{guestName}</span>, leave a blessing for the couple
+        </p>
       </Reveal>
 
       {/* slow endless carousel of every wish: the list is drawn twice so it loops seamlessly;
@@ -284,11 +282,7 @@ export default function WishingWall() {
           <div>
             <label htmlFor="bl-msg" className="mb-1 block font-body text-xs uppercase tracking-widest" style={{ color: GOLD_LABEL }}>
               Your blessing
-              {isPersonalised && (
-                <>
-                  {" "}· <span className="guest-name normal-case tracking-normal">{guestName}</span>
-                </>
-              )}
+              {" "}· <span className="guest-name normal-case tracking-normal">{guestName}</span>
             </label>
             <textarea
               ref={msgRef}

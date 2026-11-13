@@ -297,11 +297,7 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
               <path d="M143 8l4-2.4 3 2.4-3 2.4zM157 8l-4-2.4-3 2.4 3 2.4z" fill="currentColor" opacity=".75" />
             </svg>
             <span className="mx-auto mt-[2.4cqw] block max-w-[84cqw] leading-[1.22]" style={{ fontSize: "5.6cqw", fontWeight: 600 }}>
-              Kindly let us know{isPersonalised ? (
-                <>
-                  , <span className="guest-name">{guestName}</span>,
-                </>
-              ) : null}{" "}
+              Kindly let us know, <span className="guest-name">{guestName}</span>,{" "}
               if you will be joining us for this special occasion.
             </span>
           </h2>
@@ -407,7 +403,7 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
                       </p>
                       <span className="mt-[3.5cqw] block h-px w-[44cqw] bg-gradient-to-r from-transparent via-[#c9992f] to-transparent" aria-hidden />
                       <p className="mt-[3.5cqw] font-body leading-[1.45] text-[#4b0f16]/90" style={{ fontSize: "5.6cqw" }}>
-                        We can&apos;t wait to celebrate this beautiful day with you!
+                        We can&apos;t wait to celebrate this beautiful day with you, <span className="guest-name">{guestName}</span>!
                       </p>
                       {/* a small heart fills the space above the envelope's V */}
                       <svg

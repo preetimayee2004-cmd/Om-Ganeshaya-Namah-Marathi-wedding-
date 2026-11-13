@@ -5,6 +5,7 @@ import { wedding } from "../../config/wedding";
 import { triggerPartyPopper } from "./partyPopper";
 import PointerHand, { TIP } from "../Layout/PointerHand";
 import { useScrollRoot } from "../Layout/ScrollRoot";
+import { useGuest } from "../../context/GuestContext";
 
 /** erase a soft round spot of the foil (destination-out) */
 function eraseAt(ctx: CanvasRenderingContext2D, x: number, y: number, r: number) {
@@ -189,6 +190,7 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
   const [peek, setPeek] = useState(false); // the date shows through the scratched spots
   const demoHandRef = useRef<HTMLDivElement | null>(null);
   const scroller = useScrollRoot();
+  const { guestName } = useGuest();
 
   const [particles, setParticles] = useState<Particle[]>([]);
   const [petals, setPetals] = useState<Petal[]>([]);
@@ -604,6 +606,9 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
           <circle cx="76" cy="7" r="1.3" fill="currentColor" stroke="none" />
           <circle cx="104" cy="7" r="1.3" fill="currentColor" stroke="none" />
         </svg>
+        <p className="mt-1.5 text-[#4a1a16]" style={{ fontFamily: '"Cormorant Garamond", Georgia, serif', fontStyle: "italic", fontWeight: 600, fontSize: "calc(var(--u) * 17)", lineHeight: 1.3 }}>
+          Dear <span className="guest-name not-italic">{guestName}</span>, keep this day for us
+        </p>
       </div>
 
       {/* ========================================================= */}

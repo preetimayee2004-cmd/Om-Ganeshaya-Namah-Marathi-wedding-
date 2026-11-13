@@ -78,15 +78,24 @@
 .couple-text.has-guest { padding-top: calc(var(--u) * 104); }
 
 /* the guest's own name, wherever the invitation addresses them */
+/* maroon, bold, on a gold marker stroke with a soft shine sweeping across it */
 .guest-name {
   font-weight: 700;
   color: #7a1420;
-  background: linear-gradient(transparent 60%, rgba(226, 178, 79, 0.45) 60%, rgba(226, 178, 79, 0.45) 92%, transparent 92%);
-  padding: 0 0.12em;
-  border-radius: 2px;
+  background:
+    linear-gradient(105deg, transparent 40%, rgba(255, 250, 225, 0.85) 50%, transparent 60%) no-repeat,
+    linear-gradient(transparent 52%, rgba(226, 178, 79, 0.6) 52%, rgba(226, 178, 79, 0.6) 94%, transparent 94%);
+  background-size: 250% 100%, 100% 100%;
+  background-position: 120% 0, 0 0;
+  text-shadow: 0 0 0.45em rgba(255, 220, 140, 0.55);
+  padding: 0 0.15em;
+  border-radius: 3px;
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
+  animation: guest-shine 3.6s ease-in-out infinite;
 }
+@keyframes guest-shine { 0%, 45% { background-position: 120% 0, 0 0 } 100% { background-position: -20% 0, 0 0 } }
+@media (prefers-reduced-motion: reduce) { .guest-name { animation: none } }
 
 /* Touch targets: every button/link gets an invisible hit area of at least 44x44 real px,
    centred on it, so small pill buttons and icons look the same but are easy to tap. */
