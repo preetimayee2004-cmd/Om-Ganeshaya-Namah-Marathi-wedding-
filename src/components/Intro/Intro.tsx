@@ -1271,7 +1271,7 @@ export default function Intro() {
             <img
               src={wedding.images.coupleScene}
               alt="The Maharashtrian Bride and Groom in Traditional Attire"
-              className="h-full w-full object-cover"
+              className="couple-tone h-full w-full object-cover"
               draggable={false}
             />
           </div>
@@ -1289,7 +1289,7 @@ export default function Intro() {
             <img
               src={wedding.images.coupleScene}
               alt="Bride in Paithani Nauvari"
-              className="h-full w-full object-cover"
+              className="couple-tone h-full w-full object-cover"
               draggable={false}
             />
           </div>
@@ -1307,7 +1307,7 @@ export default function Intro() {
             <img
               src={wedding.images.coupleScene}
               alt="Groom in Kurta Dhoti and Pheta"
-              className="h-full w-full object-cover"
+              className="couple-tone h-full w-full object-cover"
               draggable={false}
             />
           </div>
