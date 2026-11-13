@@ -594,7 +594,7 @@ export default function Intro() {
       aria-label="Maharashtrian Wedding Cinematic Invitation"
       className={
         stage >= 6
-          ? "intro-fit relative h-screen min-h-[100dvh] w-full select-none overflow-hidden bg-[#F8DFBF]"
+          ? "intro-fit relative h-screen min-h-[100dvh] w-full select-none overflow-hidden bg-transparent"
           : "intro-fit fixed inset-0 z-[95] select-none overflow-hidden bg-[#F8DFBF]"
       }
       onWheel={handleWheel}
@@ -622,7 +622,7 @@ export default function Intro() {
       </svg>
 
       {/* Mobile Viewport Stage */}
-      <div ref={stageRef} className="relative mx-auto h-full w-full overflow-hidden bg-[#F8DFBF]">
+      <div ref={stageRef} className={`relative mx-auto h-full w-full overflow-hidden ${stage >= 6 ? "bg-transparent" : "bg-[#F8DFBF]"}`}>
         {/* ========================================================= */}
         {/* SCENE 1: ROYAL TEMPLE DOUBLE DOORS (OPENS TO REVEAL GANPATI) */}
         {/* ========================================================= */}
@@ -1253,12 +1253,8 @@ export default function Intro() {
               </svg>
             </button>
           )}
-          {/* the couple scene melts into the shared sky below */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-x-0 bottom-0 z-30 h-[18%]"
-            style={{ background: "linear-gradient(to bottom, rgba(248,223,191,0) 0%, rgba(248,223,191,0.7) 55%, #F8DFBF 100%)" }}
-          />
+          {/* the couple scene melts into the shared sky below: the pictures fade out at the foot
+              (mask on .couple-tone) over the transparent section, so the sections' sunset sky shows through */}
           {/* Base Couple Mandap Illustration */}
           <div
             className="absolute inset-0"
