@@ -61,7 +61,7 @@ function Swash({ w = 120 }: { w?: number }) {
 }
 
 /** bougainvillea spray for a top corner (drawn for the left corner; mirror it for the right) */
-function Bougainvillea({ flip, style }: { flip?: boolean; style?: CSSProperties }) {
+export function Bougainvillea({ flip, style }: { flip?: boolean; style?: CSSProperties }) {
   const blooms = [
     [14, 12, 1.2], [34, 8, 1], [52, 18, 1.1], [24, 30, 1.15], [8, 44, 1], [44, 38, 0.9], [66, 10, 0.85],
     [18, 62, 0.9], [36, 54, 0.8], [80, 24, 0.75], [6, 80, 0.8], [58, 30, 0.7], [28, 86, 0.65], [92, 8, 0.7],
