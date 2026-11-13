@@ -36,7 +36,7 @@ export default function TopControls({ mode }: { mode: "fixed" | "sticky" }) {
         onClick={() => sound.toggle()}
         aria-label={off ? "Turn sound on" : "Turn sound off"}
         aria-pressed={!off}
-        className={`${pill} w-9`}
+        className={`${pill} w-9 ${introActive ? "" : "pill-gold"}`}
       >
         <SpeakerIcon off={off} />
       </button>

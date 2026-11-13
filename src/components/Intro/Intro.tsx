@@ -1240,7 +1240,7 @@ export default function Intro() {
             <button
               onClick={triggerBackToInvitation}
               aria-label="Back to Invitation"
-              className="group absolute left-4 top-[10px] z-50 flex h-9 w-9 items-center justify-center rounded-full border border-[#e6c47a]/80 bg-[#f6dc9c]/45 shadow-[0_4px_20px_rgba(110,60,10,0.22),inset_0_1px_1px_rgba(255,240,200,0.9)] backdrop-blur-md transition-all duration-300 hover:scale-110 hover:bg-[#f6dc9c]/65 active:scale-95"
+              className="pill-gold group absolute left-4 top-[10px] z-50 flex h-9 w-9 items-center justify-center rounded-full border border-[#e6c47a]/80 bg-[#f6dc9c]/45 shadow-[0_4px_20px_rgba(110,60,10,0.22),inset_0_1px_1px_rgba(255,240,200,0.9)] backdrop-blur-md transition-all duration-300 hover:scale-110 hover:bg-[#f6dc9c]/65 active:scale-95"
             >
               <svg
                 className="h-4 w-4 text-[#6d0f1b] transition-transform duration-300 group-hover:-translate-x-0.5"
