@@ -80,8 +80,6 @@ html, body { overscroll-behavior-y: none; }
 
 /* "Dear <guest>," adds a line above the couple's names: start the block that much higher */
 .couple-text.has-guest { padding-top: calc(var(--u) * 104); }
-/* the couple picture's heads sit high: keep the names block a little compact so it ends above them */
-.couple-text > * { zoom: 0.78; }
 .couple-text > :first-child { margin-top: calc(var(--u) * 22); }
 /* soft cream glow behind the names so they read over the sunset hills of the couple picture */
 .couple-text { background-image: radial-gradient(ellipse 66% 50% at 50% 62%, rgba(255, 246, 228, 0.82) 0%, rgba(255, 246, 228, 0.55) 45%, rgba(255, 246, 228, 0) 75%); }
