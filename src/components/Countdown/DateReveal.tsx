@@ -257,6 +257,10 @@ function Flourish({ className = "" }: { className?: string }) {
 
 /** how much of the foil must be scratched away before the date is revealed completely */
 const REVEAL_PERCENT = 40;
+/** the date reveals itself this long after the card is first on screen, if nobody scratched it */
+const AUTO_REVEAL_MS = 8000;
+/** how long the self-scratch sweep takes */
+const AUTO_SCRATCH_MS = 1200;
 
 export default function DateReveal({ onRevealed }: DateRevealProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -424,6 +428,66 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
       setPhase(3);
     }, 3000);
   }, [isRevealed, onRevealed]);
+
+  // Auto-scratch: AUTO_REVEAL_MS after the card is first on screen, if the date is still hidden,
+  // the foil scratches itself away in a quick zig-zag and the usual celebration plays.
+  const autoStarted = useRef(false);
+  useEffect(() => {
+    if (isRevealed || autoStarted.current) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    let timer = 0;
+    let raf = 0;
+    const run = () => {
+      if (autoStarted.current) return;
+      autoStarted.current = true;
+      hasInteractedRef.current = true;
+      setHasInteracted(true); // stops the hint hand
+      setPeek(true);
+      const ctx = canvas.getContext("2d", { willReadFrequently: true });
+      const w = canvas.clientWidth;
+      const h = canvas.clientHeight;
+      if (!ctx || window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
+        triggerCelebration();
+        return;
+      }
+      const ROWS = 4;
+      const r = Math.max(w, h) * 0.13;
+      const at = (t: number) => {
+        const row = Math.min(ROWS - 1, Math.floor(t * ROWS));
+        const k = t * ROWS - row;
+        const x = row % 2 === 0 ? k : 1 - k;
+        return { x: w * (0.06 + 0.88 * x), y: h * (0.14 + (0.72 * (row + k * 0.6)) / (ROWS - 0.4)) };
+      };
+      const t0 = performance.now();
+      let prev = at(0);
+      const tick = (now: number) => {
+        const t = Math.min(1, (now - t0) / AUTO_SCRATCH_MS);
+        const p = at(t);
+        ctx.save();
+        ctx.globalCompositeOperation = "destination-out";
+        const steps = Math.max(1, Math.floor(Math.hypot(p.x - prev.x, p.y - prev.y) / 6));
+        for (let i = 1; i <= steps; i++) eraseAt(ctx, prev.x + ((p.x - prev.x) * i) / steps, prev.y + ((p.y - prev.y) * i) / steps, r);
+        ctx.restore();
+        prev = p;
+        if (t < 1) raf = requestAnimationFrame(tick);
+        else triggerCelebration();
+      };
+      raf = requestAnimationFrame(tick);
+    };
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting && !timer) timer = window.setTimeout(run, AUTO_REVEAL_MS);
+      },
+      { root: scroller ?? null, threshold: 0.5 },
+    );
+    io.observe(canvas);
+    return () => {
+      io.disconnect();
+      window.clearTimeout(timer);
+      cancelAnimationFrame(raf);
+    };
+  }, [isRevealed, triggerCelebration, scroller]);
 
   // Calculate Cleared Percentage (fast 20px sampling to eliminate frame drops)
   const checkScratchPercentage = useCallback((force = false) => {

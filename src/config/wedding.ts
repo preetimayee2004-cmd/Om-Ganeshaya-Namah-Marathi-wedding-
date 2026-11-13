@@ -184,7 +184,7 @@ export const wedding = {
     { name: "Guest House", distance: "500 m from venue", tier: "Budget", phone: "", link: "" },
   ] as { name: string; distance: string; tier: string; phone: string; link: string }[],
   thankYouMessage:
-    "Your presence made our celebration even more beautiful. Thank you for showering us with your love, blessings and happiness. We will cherish these memories forever.",
+    "Thank you for your love and blessings. Your presence makes our day complete.",
   finalNote: "Until we celebrate together, with all our love.",
   hashtag: "#SreyashWedsSayeli",
   // Example contacts: replace with the real names. Use digits with country code, no spaces (e.g. +919876543210).

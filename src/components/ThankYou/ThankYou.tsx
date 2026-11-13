@@ -196,18 +196,6 @@ export default function ThankYou() {
         </div>
 
         <LotusDivider w={65} style={{ marginTop: "calc(var(--u) * 18)" }} />
-        <div className="relative" style={fade(800)}>
-          <p className="mt-3 font-script text-[26px] leading-none" style={{ color: MAROON }}>With love and gratitude,</p>
-          <p className="mt-2 whitespace-nowrap font-script text-[42px] leading-tight" style={{ color: MAROON, WebkitTextStroke: "0.5px #7a1420" }}>
-            {first} &amp; {second}
-          </p>
-          <p className="mt-2 text-[15px] font-semibold tracking-[0.32em]" style={{ fontFamily: SERIF, color: MAROON, paddingLeft: "0.32em" }}>{date}</p>
-          <p className="mt-3 text-[16px] font-medium" style={{ fontFamily: SERIF, color: MAROON }}>{wedding.hashtag}</p>
-        </div>
-        <LotusDivider w={65} style={{ marginTop: "calc(var(--u) * 14)" }} />
-        <p lang="mr" className="relative mt-2 font-marathi text-[15px] font-semibold" style={{ color: MAROON, ...fade(950) }}>
-          ॥ शुभमंगल सावधान ॥
-        </p>
 
       </div>
     </section>
