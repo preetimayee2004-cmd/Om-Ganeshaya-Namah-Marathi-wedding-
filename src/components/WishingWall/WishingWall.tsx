@@ -7,7 +7,9 @@ import Reveal, { useInView } from "../Layout/Reveal";
 import { wishTextProps } from "../../lib/scriptFont";
 
 const tilts = [-2.5, 1.8, -1.2, 2.4, -1.8];
-const WALL_MAX = 3; // only the latest three wishes are pinned on the wall
+const WALL_MAX = 30; // the carousel shows the latest 30 wishes (all of them are in "View all wishes")
+const WALL_SPEED = 22; // px per second: a slow, readable glide
+const RESUME_MS = 1500; // pause after a touch / swipe before gliding again
 const INK = "#6d0f1b";
 const INK_SOFT = "#4b0f16";
 const GOLD_LABEL = "#a8741a";
@@ -74,6 +76,17 @@ export default function WishingWall() {
   }, [live]);
   const sendingRef = useRef(false);
 
+  // ---- slow wish carousel ----
+  const hold = useRef(false); // mouse over it, finger on it or keyboard focus: stand still
+  const resumeAt = useRef(0); // after a touch / swipe / new wish, wait a moment before gliding again
+  const release = () => {
+    hold.current = false;
+    resumeAt.current = performance.now() + RESUME_MS;
+  };
+  const loopLen = Math.min(wall.length, WALL_MAX);
+  const looping = loopLen >= 2;
+  const shown = looping ? [...wall.slice(0, loopLen), ...wall.slice(0, loopLen)] : wall.slice(0, loopLen);
+
   // the flying wish + heart burst
   const sectionRef = useRef<HTMLElement>(null);
   const wallRef = useRef<HTMLDivElement>(null);
@@ -81,6 +94,32 @@ export default function WishingWall() {
   const btnRef = useRef<HTMLButtonElement>(null);
   const [flyer, setFlyer] = useState<{ text: string; x: number; y: number; w: number; dx: number; dy: number; go: boolean } | null>(null);
   const [burst, setBurst] = useState<{ id: number; x: number; y: number; hearts: { dx: number; dy: number; s: number; r: number; d: number }[] } | null>(null);
+
+  useEffect(() => {
+    const el = wallRef.current;
+    if (!el || !looping || window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+    let raf = 0;
+    let last = performance.now();
+    let pos = el.scrollLeft; // kept as a float: browsers may round scrollLeft
+    const tick = (t: number) => {
+      const dt = Math.min(64, t - last) / 1000;
+      last = t;
+      if (Math.abs(el.scrollLeft - pos) > 2) pos = el.scrollLeft; // the guest swiped it
+      const kids = el.children as HTMLCollectionOf<HTMLElement>;
+      const loop = kids[loopLen] ? kids[loopLen].offsetLeft - kids[0].offsetLeft : 0;
+      if (loop > 0 && !hold.current && t > resumeAt.current) {
+        pos += WALL_SPEED * dt;
+        if (pos >= loop) pos -= loop;
+        el.scrollLeft = pos;
+      } else if (loop > 0 && pos >= loop) {
+        pos -= loop;
+        el.scrollLeft = pos;
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [looping, loopLen]);
 
   useLayoutEffect(() => {
     if (flyer && !flyer.go) {
@@ -99,6 +138,7 @@ export default function WishingWall() {
     const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
     const pin = () => {
       setWall((w) => [{ name, message: text, fresh: true }, ...w.map((x) => ({ ...x, fresh: false }))]);
+      resumeAt.current = performance.now() + 4000; // let the new wish be read first
       wallRef.current?.scrollTo({ left: 0, behavior: reduce ? "auto" : "smooth" });
     };
     if (!sec || !ta || !wl || reduce) {
@@ -177,14 +217,25 @@ export default function WishingWall() {
         )}
       </Reveal>
 
+      {/* slow endless carousel of every wish: the list is drawn twice so it loops seamlessly;
+          it holds still while the mouse rests on it or a finger holds it */}
       <div
         ref={wallRef}
-        className="no-scrollbar mt-10 flex min-h-[150px] snap-x snap-mandatory gap-4 overflow-x-auto px-[11%] pb-6 pt-4"
+        className="no-scrollbar mt-10 flex min-h-[150px] gap-4 overflow-x-auto px-[11%] pb-6 pt-4"
         tabIndex={0}
-        aria-label="Latest blessings from guests"
+        aria-label="Blessings from guests"
+        onPointerEnter={(e) => e.pointerType === "mouse" && (hold.current = true)}
+        onPointerLeave={(e) => e.pointerType === "mouse" && release()}
+        onPointerDown={() => (hold.current = true)}
+        onPointerUp={(e) => e.pointerType !== "mouse" && release()}
+        onPointerCancel={release}
+        onTouchStart={() => (hold.current = true)}
+        onTouchEnd={release}
+        onFocus={() => (hold.current = true)}
+        onBlur={release}
       >
-        {wall.slice(0, WALL_MAX).map((b, i) => (
-          <Note key={`${b.name}-${b.message.slice(0, 12)}-${i}`} {...b} i={i} />
+        {shown.map((b, i) => (
+          <Note key={`${i < loopLen ? "a" : "b"}-${b.name}-${b.message.slice(0, 12)}-${i % loopLen}`} {...b} i={i % loopLen} />
         ))}
       </div>
 

@@ -45,9 +45,9 @@ function Actions({ c }: { c: Contact }) {
         href={`tel:${c.phone}`}
         aria-label={`Call ${c.name}, ${c.role}`}
         className="inline-flex shrink-0 items-center justify-center rounded-full transition active:scale-95"
-        style={{ width: size, height: size, background: "linear-gradient(180deg, #8f1427, #6d0f1b)", boxShadow: `0 ${u(3)} ${u(8)} rgba(90,10,20,0.3)` }}
+        style={{ width: size, height: size, background: "linear-gradient(180deg, #FCEFCB 0%, #F3DB9C 55%, #F8E8BC 100%)", border: `${u(1.5)} solid #D4AE5E`, boxShadow: `0 ${u(3)} ${u(8)} rgba(110,70,10,0.22)` }}
       >
-        <svg viewBox="0 0 16 16" style={{ width: u(16), height: u(16) }} fill="none" stroke="#f6dfe0" strokeWidth="1.4" strokeLinejoin="round" aria-hidden>
+        <svg viewBox="0 0 16 16" style={{ width: u(16), height: u(16) }} fill="none" stroke={MAROON} strokeWidth="1.4" strokeLinejoin="round" aria-hidden>
           <path d="M3.5 2.5h2.2l1.1 3-1.5 1a8 8 0 0 0 4.2 4.2l1-1.5 3 1.1v2.2a1.5 1.5 0 0 1-1.6 1.5A11 11 0 0 1 2 4.1a1.5 1.5 0 0 1 1.5-1.6Z" />
         </svg>
       </a>
@@ -57,7 +57,7 @@ function Actions({ c }: { c: Contact }) {
         rel="noopener noreferrer"
         aria-label={`WhatsApp ${c.name}, ${c.role}`}
         className="inline-flex shrink-0 items-center justify-center rounded-full bg-[#fffaf4] transition active:scale-95"
-        style={{ width: size, height: size, border: `${u(1.5)} solid ${MAROON}` }}
+        style={{ width: size, height: size, border: `${u(1.5)} solid #D4AE5E` }}
       >
         <svg viewBox="0 0 16 16" style={{ width: u(17), height: u(17) }} fill="none" stroke={MAROON} strokeWidth="1.3" aria-hidden>
           <path d="M8 2.2c3.4 0 6 2.3 6 5.2s-2.6 5.2-6 5.2c-.8 0-1.6-.1-2.3-.4L3 13.4l.8-2.4C2.7 10.1 2 8.8 2 7.4c0-2.9 2.6-5.2 6-5.2Z" />

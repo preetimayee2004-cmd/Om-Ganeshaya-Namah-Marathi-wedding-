@@ -1,7 +1,8 @@
-import { useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { wedding } from "../../config/wedding";
 import { useGuest } from "../../context/GuestContext";
 import { useInView } from "../Layout/Reveal";
+import PointerHand, { TIP } from "../Layout/PointerHand";
 
 /**
  * "Time Line": the schedule as a zig-zag of round illustrated medallions joined by a wavy gold
@@ -41,6 +42,8 @@ const TL_CSS = `
   .tl-thread.is-seen svg { clip-path: inset(-10% -10% -10% -10%); }
   .tl-thread .tl-bead { opacity: 0; transition: opacity 400ms ease-out 800ms; }
   .tl-thread.is-seen .tl-bead { opacity: 1; }
+  .tl-hint-tap { animation: tl-hint-tap 2s ease-in-out infinite; transform-origin: 35% 6%; }
+  @keyframes tl-hint-tap { 0%, 55%, 100% { transform: none; } 70% { transform: translateY(calc(var(--u) * 3)) scale(.9); } 82% { transform: none; } }
   .tl-more { animation: tl-more 450ms ease-out both; }
   @keyframes tl-more { from { opacity: 0; transform: translateY(calc(var(--u) * -6)); } to { opacity: 1; transform: none; } }
 }
@@ -99,7 +102,7 @@ function Stub({ hidden }: { hidden: boolean }) {
   return <span aria-hidden className="tl-stub mx-auto block w-px flex-1" style={{ background: hidden ? "transparent" : "#c9a056" }} />;
 }
 
-function Row({ e, i, first, last }: { e: Ev; i: number; first: boolean; last: boolean }) {
+function Row({ e, i, first, last, onTap }: { e: Ev; i: number; first: boolean; last: boolean; onTap: () => void }) {
   const [ref, seen] = useInView<HTMLDivElement>(0.25);
   const left = i % 2 === 0; // medallion on the left for even rows
   const t = (k: number) => ({ "--i": k, "--dx": left ? 14 : -14 } as CSSProperties);
@@ -125,10 +128,14 @@ function Row({ e, i, first, last }: { e: Ev; i: number; first: boolean; last: bo
         <div className="mt-3" style={t(3)}>
           <button
             type="button"
+            data-tl-btn
             className="btn-gold btn-outline whitespace-nowrap !px-3 !text-[10px] !tracking-[0.05em]"
             aria-expanded={open}
             aria-controls={`tl-more-${e.id}`}
-            onClick={() => setOpen((o) => !o)}
+            onClick={() => {
+              onTap();
+              setOpen((o) => !o);
+            }}
           >
             {open ? "Hide details" : "Tap to view details"}
           </button>
@@ -292,6 +299,38 @@ export default function Events() {
   const { guestName, isPersonalised } = useGuest();
   const events = wedding.events;
 
+  // hint hand: glides to the next event's "Tap to view details" every 2 s (only rows already
+  // revealed) until the guest taps one of them
+  const listRef = useRef<HTMLOListElement>(null);
+  const handRef = useRef<HTMLDivElement>(null);
+  const [tapped, setTapped] = useState(false);
+  useEffect(() => {
+    if (tapped) return;
+    let idx = -1;
+    const move = () => {
+      const list = listRef.current;
+      const hand = handRef.current;
+      if (!list || !hand) return;
+      const btns = Array.from(list.querySelectorAll<HTMLElement>("[data-tl-btn]")).filter((b) => b.closest(".tl-row")?.classList.contains("is-seen"));
+      if (!btns.length) {
+        hand.style.opacity = "0";
+        return;
+      }
+      idx = (idx + 1) % btns.length;
+      const lr = list.getBoundingClientRect();
+      const br = btns[idx].getBoundingClientRect();
+      const x = br.left - lr.left + br.width * 0.72 - TIP.x * hand.offsetWidth;
+      const y = br.top - lr.top + br.height * 0.62 - TIP.y * hand.offsetHeight;
+      const first = hand.style.opacity !== "1";
+      hand.style.transition = first ? "opacity 400ms ease" : "transform 1300ms cubic-bezier(.45,.05,.3,1), opacity 400ms ease";
+      hand.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px)`;
+      hand.style.opacity = "1";
+    };
+    move();
+    const id = window.setInterval(move, 2000);
+    return () => window.clearInterval(id);
+  }, [tapped]);
+
   return (
     <section id="events" aria-labelledby="events-title" className="px-4 py-6">
       <style>{TL_CSS}</style>
@@ -324,13 +363,20 @@ export default function Events() {
         )}
       </div>
 
-      <ol className="mt-8 list-none">
+      <ol ref={listRef} className="relative mt-8 list-none">
         {events.map((e, i) => (
           <li key={e.id} aria-labelledby={`tl-${e.id}`}>
             {i > 0 && <Thread fromLeft={(i - 1) % 2 === 0} />}
-            <Row e={e} i={i} first={i === 0} last={i === events.length - 1} />
+            <Row e={e} i={i} first={i === 0} last={i === events.length - 1} onTap={() => setTapped(true)} />
           </li>
         ))}
+        {!tapped && (
+          <div ref={handRef} aria-hidden className="pointer-events-none absolute left-0 top-0 z-10" style={{ opacity: 0 }}>
+            <div className="tl-hint-tap">
+              <PointerHand size={22} />
+            </div>
+          </div>
+        )}
       </ol>
     </section>
   );

@@ -3,6 +3,20 @@ import { weddingAudio } from "./weddingAudio";
 import { sound } from "../../lib/sound";
 import { wedding } from "../../config/wedding";
 import { triggerPartyPopper } from "./partyPopper";
+import PointerHand, { TIP } from "../Layout/PointerHand";
+import { useScrollRoot } from "../Layout/ScrollRoot";
+
+/** erase a soft round spot of the foil (destination-out) */
+function eraseAt(ctx: CanvasRenderingContext2D, x: number, y: number, r: number) {
+  const radial = ctx.createRadialGradient(x, y, 0, x, y, r);
+  radial.addColorStop(0, "rgba(0,0,0,1)");
+  radial.addColorStop(0.7, "rgba(0,0,0,0.85)");
+  radial.addColorStop(1, "rgba(0,0,0,0)");
+  ctx.fillStyle = radial;
+  ctx.beginPath();
+  ctx.arc(x, y, r, 0, Math.PI * 2);
+  ctx.fill();
+}
 
 interface Particle {
   id: number;
@@ -172,6 +186,9 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
   const [isRevealed, setIsRevealed] = useState(false);
   const [phase, setPhase] = useState<number>(0); // 0: initial, 1: dissolving (600ms), 2: date/mandala (900ms-1500ms), 3: settled
   const [hasInteracted, setHasInteracted] = useState(false);
+  const [peek, setPeek] = useState(false); // the date shows through the scratched spots
+  const demoHandRef = useRef<HTMLDivElement | null>(null);
+  const scroller = useScrollRoot();
 
   const [particles, setParticles] = useState<Particle[]>([]);
   const [petals, setPetals] = useState<Petal[]>([]);
@@ -209,6 +226,86 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, [initCanvas, isRevealed]);
+
+  // Hint hand demo: once the card is on screen the hand scratches a short wavy stroke over the
+  // middle of the date (a peek, far below the reveal threshold), lifts, and repeats the same
+  // stroke, so it never clears more, until the guest scratches themselves.
+  useEffect(() => {
+    if (hasInteracted || isRevealed) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    const STROKE = 1900;
+    const LIFT = 900;
+    const at = (t: number, w: number, h: number) => ({
+      x: w * (0.27 + 0.4 * t),
+      y: h * (0.42 + 0.08 * Math.sin(t * Math.PI * 4)),
+    });
+    let raf = 0;
+    let t0 = 0;
+    let prev: { x: number; y: number } | null = null;
+    let peeked = false;
+    const tick = (now: number) => {
+      const hand = demoHandRef.current;
+      const ctx = canvas.getContext("2d", { willReadFrequently: true });
+      if (!hand || !ctx) return;
+      if (!t0) t0 = now;
+      const w = canvas.clientWidth;
+      const h = canvas.clientHeight;
+      const k = (now - t0) % (STROKE + LIFT);
+      let p: { x: number; y: number };
+      if (k < STROKE) {
+        const s = k / STROKE;
+        const e = s < 0.5 ? 2 * s * s : 1 - (-2 * s + 2) ** 2 / 2; // ease in-out
+        p = at(e, w, h);
+        const r = w < 360 ? 15 : 18;
+        ctx.save();
+        ctx.globalCompositeOperation = "destination-out";
+        if (prev) {
+          const steps = Math.max(1, Math.floor(Math.hypot(p.x - prev.x, p.y - prev.y) / 4));
+          for (let i = 1; i <= steps; i++) eraseAt(ctx, prev.x + ((p.x - prev.x) * i) / steps, prev.y + ((p.y - prev.y) * i) / steps, r);
+        } else eraseAt(ctx, p.x, p.y, r);
+        ctx.restore();
+        prev = p;
+        if (!peeked) {
+          peeked = true;
+          setPeek(true);
+        }
+        hand.style.opacity = "1";
+      } else {
+        // lift and glide back to the start of the stroke
+        const s = (k - STROKE) / LIFT;
+        const a = at(1, w, h);
+        const b = at(0, w, h);
+        p = { x: a.x + (b.x - a.x) * s, y: a.y + (b.y - a.y) * s - Math.sin(s * Math.PI) * h * 0.12 };
+        prev = null;
+      }
+      const hw = hand.offsetWidth;
+      const hh = hand.offsetHeight;
+      hand.style.transform = `translate(${(p.x - TIP.x * hw).toFixed(1)}px, ${(p.y - TIP.y * hh).toFixed(1)}px) rotate(${k < STROKE ? -8 : 4}deg)`;
+      if (!reduce) raf = requestAnimationFrame(tick);
+    };
+    let running = false;
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting && !running) {
+          running = true;
+          t0 = 0;
+          prev = null;
+          raf = requestAnimationFrame(tick);
+        } else if (!e.isIntersecting && running) {
+          running = false;
+          cancelAnimationFrame(raf);
+        }
+      },
+      { root: scroller ?? null, threshold: 0.5 },
+    );
+    io.observe(canvas);
+    return () => {
+      io.disconnect();
+      cancelAnimationFrame(raf);
+    };
+  }, [hasInteracted, isRevealed, scroller]);
 
   // Trigger Refined Celebration Sequence
   const triggerCelebration = useCallback(() => {
@@ -296,6 +393,7 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
     if (!hasInteractedRef.current) {
       hasInteractedRef.current = true;
       setHasInteracted(true);
+      setPeek(true);
       weddingAudio.playTempleBell();
     }
 
@@ -541,7 +639,8 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
             <div
               className="relative z-10 flex flex-col items-center justify-center transition-all"
               style={{
-                opacity: phase >= 2 ? 1 : 0,
+                // shown under the foil as soon as anything scratches it (the hint hand or the guest)
+                opacity: phase >= 2 || peek ? 1 : 0,
                 transform: phase >= 2 ? "scale(1.0)" : "scale(0.96)",
                 transition: "opacity 900ms cubic-bezier(0.22, 1, 0.36, 1), transform 900ms cubic-bezier(0.22, 1, 0.36, 1)",
               }}
@@ -606,24 +705,11 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
             />
           ))}
 
-          {/* Tiny hand hint: rubs back and forth over the foil until the guest starts scratching */}
+          {/* Hint hand: it scratches a little of the foil by itself, so a peek of the date shows,
+              and keeps rubbing the same spot until the guest starts scratching */}
           {!hasInteracted && !isRevealed && (
-            <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center" aria-hidden>
-              <div className="relative h-8 w-24">
-                <span className="absolute inset-x-1 top-1/2 h-[2px] -translate-y-1/2 rounded-full" style={{ background: "repeating-linear-gradient(90deg, rgba(246,221,147,0.75) 0 calc(var(--u) * 4), transparent calc(var(--u) * 4) calc(var(--u) * 9))" }} />
-                <div className="absolute left-0 top-0" style={{ animation: "scratch-hand 1.6s ease-in-out infinite" }}>
-                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" style={{ width: "calc(var(--u) * 26)", height: "calc(var(--u) * 26)", filter: "drop-shadow(0 calc(var(--u) * 2) calc(var(--u) * 4) rgba(0,0,0,0.55)) drop-shadow(0 0 calc(var(--u) * 6) rgba(255,235,160,0.8))" }}>
-                    <path
-                      d="M12 2a1.5 1.5 0 0 0-1.5 1.5v7.2l-1.3-1.3a1.5 1.5 0 0 0-2.1 0 1.5 1.5 0 0 0 0 2.1l3.5 3.5c1 1 2.2 1.7 3.5 1.7h2.4a4.5 4.5 0 0 0 4.5-4.5V9.5a1.5 1.5 0 0 0-3 0v1a1.5 1.5 0 0 0-3 0V9a1.5 1.5 0 0 0-3 0v-5.5A1.5 1.5 0 0 0 12 2z"
-                      fill="#FFFDF7"
-                      stroke="#6d0f1b"
-                      strokeWidth="1.4"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
-              </div>
+            <div ref={demoHandRef} className="pointer-events-none absolute left-0 top-0 z-20" style={{ opacity: 0, transition: "opacity 400ms ease" }} aria-hidden>
+              <PointerHand size={30} />
             </div>
           )}
         </div>

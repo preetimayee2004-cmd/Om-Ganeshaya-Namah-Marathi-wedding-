@@ -170,7 +170,7 @@ export const wedding = {
     marathi: "विवाह स्थळ",
     address: "Shree Mangal Karyalaya, Pune, Maharashtra (add the street address and PIN)",
     mapUrl: "https://maps.google.com/?q=Shree+Mangal+Karyalaya+Pune",
-    note: "Parking is available on site. Please arrive 15 minutes before the ceremony.",
+    note: "Please arrive 15 minutes before the ceremony.",
   },
   // "Getting there" cards (By Air / By Train / By Road & Metro): placeholders, replace with the real details.
   travel: [
@@ -187,12 +187,12 @@ export const wedding = {
     "Your presence made our celebration even more beautiful. Thank you for showering us with your love, blessings and happiness. We will cherish these memories forever.",
   finalNote: "Until we celebrate together, with all our love.",
   hashtag: "#SreyashWedsSayeli",
-  // Placeholder contacts. Use digits with country code, no spaces (e.g. +919876543210).
+  // Example contacts: replace with the real names. Use digits with country code, no spaces (e.g. +919876543210).
   contacts: [
-    { name: "Contact Name", role: "Bride's Brother", phone: "+910000000011" },
-    { name: "Contact Name", role: "Groom's Sister", phone: "+910000000012" },
-    { name: "Contact Name", role: "Guest Coordinator", phone: "+910000000013", note: "Stay, travel & pickups" },
-    { name: "Contact Name", role: "Wedding Coordinator", phone: "+910000000014", note: "Venue, timings & rituals" },
+    { name: "Rohan Kulkarni", role: "Bride's Brother", phone: "+910000000011" },
+    { name: "Priya Deshpande", role: "Groom's Sister", phone: "+910000000012" },
+    { name: "Amit Joshi", role: "Guest Coordinator", phone: "+910000000013", note: "Stay, travel & pickups" },
+    { name: "Sneha Patil", role: "Wedding Coordinator", phone: "+910000000014", note: "Venue, timings & rituals" },
   ] as { name: string; role: string; phone: string; note?: string }[],
   // Approved blessings shown on the wall. SAMPLE entries: replace with real, moderated ones.
   blessings: [

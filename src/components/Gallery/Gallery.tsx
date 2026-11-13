@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { wedding } from "../../config/wedding";
 import Reveal from "../Layout/Reveal";
 import { useScrollRoot } from "../Layout/ScrollRoot";
@@ -161,6 +162,7 @@ export default function Gallery() {
   const activeRef = useRef(active);
   const drag = useRef({ down: false, moved: false, x: 0, pos: 0 });
   const pausedUntil = useRef(0);
+  const hovered = useRef(false); // mouse resting on the photos: the glide holds still
   const inView = useRef(false);
   const posRef = useRef(Math.min(HERO_INDEX, photos.length - 1)); // film position, in photo-pitches
 
@@ -259,7 +261,7 @@ export default function Gallery() {
     const tick = (t: number) => {
       const dt = Math.min(64, t - last) / 1000;
       last = t;
-      if (!reduce && !drag.current.down && t > pausedUntil.current) posRef.current = (posRef.current + dt / (SLIDE_MS / 1000)) % n;
+      if (!reduce && !drag.current.down && !hovered.current && t > pausedUntil.current) posRef.current = (posRef.current + dt / (SLIDE_MS / 1000)) % n;
       apply();
       raf = requestAnimationFrame(tick);
     };
@@ -332,8 +334,8 @@ export default function Gallery() {
   // ---------- lightbox (unchanged behaviour) ----------
   const open = (i: number, el: HTMLElement) => {
     opener.current = el;
-    // Inside the phone mockup, fixed positioning is relative to the scrolled content,
-    // so pin the lightbox to the visible part of the scroller instead.
+    // The viewer is portalled straight into the scroller (phone mockup) or <body>, so no transformed
+    // ancestor (reveals, tilt) can shift it. In the mockup it is pinned to the visible part of the scroller.
     setBox(
       scroller
         ? { position: "absolute", top: scroller.scrollTop, left: 0, width: "100%", height: scroller.clientHeight }
@@ -407,6 +409,12 @@ export default function Gallery() {
           onPointerMove={onPointerMove}
           onPointerUp={endDrag}
           onPointerCancel={endDrag}
+          onPointerEnter={(e) => e.pointerType === "mouse" && (hovered.current = true)}
+          onPointerLeave={(e) => {
+            if (e.pointerType !== "mouse") return;
+            hovered.current = false;
+            endDrag();
+          }}
           onWheel={onWheel}
           aria-label="Wedding photographs"
         >
@@ -478,7 +486,7 @@ export default function Gallery() {
         </p>
       </div>
 
-      {current && index !== null && (
+      {current && index !== null && createPortal(
         <div
           role="dialog"
           aria-modal="true"
@@ -531,7 +539,8 @@ export default function Gallery() {
               </button>
             ))}
           </div>
-        </div>
+        </div>,
+        scroller ?? document.body,
       )}
     </section>
   );

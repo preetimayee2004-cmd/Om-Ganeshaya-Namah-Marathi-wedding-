@@ -74,16 +74,6 @@ function FamilyCard({ f }: { f: Family }) {
             &ldquo;{f.message}&rdquo;
           </p>
         )}
-
-        {isMarathi(f.members.join("")) ? (
-          <p lang="mr" className="mx-auto mt-5 max-w-[18rem] font-marathi text-[13px] leading-relaxed text-espresso/60" style={{ textWrap: "balance" }}>
-            {f.members.join(" · ")}
-          </p>
-        ) : (
-          <p className="mt-5 font-body text-[11px] uppercase tracking-widest text-espresso/60">
-            {f.members.join(" · ")}
-          </p>
-        )}
       </article>
     </div>
   );

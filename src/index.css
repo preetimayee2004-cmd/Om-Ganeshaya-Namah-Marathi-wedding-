@@ -156,24 +156,25 @@
     min-height: 36px;
     padding: 0 20px;
     border-radius: 9999px;
-    /* maroon like the site's text, with the antique-gold border and ivory-gold lettering */
-    background: linear-gradient(180deg, #8f1427 0%, #6d0f1b 100%);
+    /* light gold like the invitation screen's buttons and the event / family cards:
+       gold gradient, antique-gold border, maroon serif lettering */
+    background: linear-gradient(180deg, #FCEFCB 0%, #F3DB9C 55%, #F8E8BC 100%);
     border: 1.5px solid #D4AE5E;
-    box-shadow: inset 0 0 0 2px #6d0f1b, inset 0 0 0 3px rgba(217, 178, 90, 0.55), 0 3px 10px rgba(60, 5, 15, 0.3);
+    box-shadow: inset 0 0 0 2px rgba(255, 248, 225, 0.7), inset 0 0 0 3px rgba(212, 174, 94, 0.45), 0 3px 10px rgba(110, 70, 10, 0.22);
     font-family: "Cormorant Garamond", Georgia, serif;
     font-size: 12.5px;
     font-weight: 700;
     letter-spacing: 0.14em;
     text-transform: uppercase;
     line-height: 1;
-    color: #f9e7b0;
+    color: #6d0f1b;
     cursor: pointer;
     transition: transform 300ms ease;
   }
   .btn-gold:hover { transform: scale(1.05); }
   .btn-gold:active { transform: scale(0.95); }
   .btn-gold:disabled { cursor: default; opacity: 0.6; }
-  .btn-gold svg { color: #E2BE6E; }
+  .btn-gold svg { color: #6d0f1b; }
   /* the original light-gold pill, kept for the opening / invitation screen */
   .btn-gold.btn-light {
     background: linear-gradient(180deg, #FCEFCB 0%, #F3DB9C 55%, #F8E8BC 100%);
@@ -181,11 +182,11 @@
     color: #6d0f1b;
   }
   .btn-gold.btn-light svg { color: #6d0f1b; }
-  /* outline ("stroke") variant: no fill, maroon border and lettering */
+  /* outline variant: ivory fill, antique-gold border, maroon lettering */
   .btn-gold.btn-outline {
-    background: rgba(255, 250, 242, 0.88);
-    box-shadow: none;
-    border: 1.5px solid #7a1420;
+    background: rgba(255, 250, 242, 0.92);
+    box-shadow: inset 0 0 0 2px rgba(255, 250, 242, 0.9), inset 0 0 0 3px rgba(212, 174, 94, 0.35);
+    border: 1.5px solid #D4AE5E;
     color: #7a1420;
   }
   .btn-gold.btn-outline svg { color: #7a1420; }
@@ -491,8 +492,6 @@ html { background: #2b1d18; }
 @media (prefers-reduced-motion: reduce) { [style*="rsvp-float"], [style*="rsvp-seal-shine"] { animation: none !important } }
 
 /* tiny hand hint on the scratch card */
-@keyframes scratch-hand { 0% { transform: translate(0, 4px) rotate(-18deg) } 50% { transform: translate(68px, -2px) rotate(8deg) } 100% { transform: translate(0, 4px) rotate(-18deg) } }
-@media (prefers-reduced-motion: reduce) { [style*="scratch-hand"] { animation: none !important } }
 
 /* RSVP: falling petals + waving couple */
 @keyframes rsvp-petal {
