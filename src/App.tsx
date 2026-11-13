@@ -10,6 +10,7 @@ import WishingWall from "./components/WishingWall/WishingWall";
 import TravelStay from "./components/TravelStay/TravelStay";
 import ThankYou from "./components/ThankYou/ThankYou";
 import Footer from "./components/Footer/Footer";
+import Blooms from "./components/Layout/Blooms";
 
 /**
  * Premium Cinematic Maharashtrian Wedding Invitation.
@@ -55,32 +56,48 @@ export default function App() {
             the same margin and gold frame line as the Thank You card, so the page reads as one */}
         <div className="framed-page">
         {/* 2. Countdown */}
-        <Countdown />
+        <Blooms corners={["tl", "tr"]}>
+          <Countdown />
+        </Blooms>
 
         {/* 5. Events */}
-        <Events />
+        <Blooms corners={["tr", "bl"]}>
+          <Events />
+        </Blooms>
 
         {/* 6. Family */}
-        <Family />
+        <Blooms corners={["tl"]}>
+          <Family />
+        </Blooms>
 
         {/* 7. Gallery */}
         <Gallery />
 
         {/* 8. RSVP */}
-        <RSVP />
+        <Blooms corners={["tl", "br"]}>
+          <RSVP />
+        </Blooms>
 
         {/* 9. Blessing Wall */}
-        <WishingWall />
+        <Blooms corners={["tr", "bl"]}>
+          <WishingWall />
+        </Blooms>
 
         {/* 10. Venue */}
-        <TravelStay />
+        <Blooms corners={["tl", "br"]}>
+          <TravelStay />
+        </Blooms>
 
         {/* 11. Thank You */}
-        <ThankYou />
+        <Blooms corners={["tr", "bl"]}>
+          <ThankYou />
+        </Blooms>
         </div>
 
         {/* 12. Final Love Notice */}
-        <Footer />
+        <Blooms corners={["tl", "tr"]} size={88}>
+          <Footer />
+        </Blooms>
       </div>
     </Layout>
   );
