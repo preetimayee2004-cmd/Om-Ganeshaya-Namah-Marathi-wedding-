@@ -8,7 +8,7 @@ export const wedding = {
     ganeshClosed: "/intro/ganesh-closed.jpg", // Ganpati, eyes closed
     ganeshBlessing: "/intro/ganesh-blessing.jpg", // Ganpati, blessing
     invitationScene: "/intro/invitation-wada.jpg", // invitation screen (courtyard)
-    coupleScene: "/intro/couple-sunset.jpg", // couple section after Open Invitation
+    coupleScene: "/intro/couple-terrace.jpg", // couple section after Open Invitation
     thankYouCouple: "/intro/couple-arch.jpg", // couple inside the Thank You arch
     rsvpCouple: "/rsvp/couple.png", // couple rising from the RSVP envelope (transparent PNG)
     venue: "/venue/mandap.jpg", // venue illustration

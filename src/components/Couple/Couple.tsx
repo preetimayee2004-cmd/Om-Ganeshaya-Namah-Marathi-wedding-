@@ -5,7 +5,7 @@ import Reveal, { useInView } from "../Layout/Reveal";
 export function CouplePlaceholder() {
   return (
     <img
-      src="/intro/couple-sunset.jpg"
+      src="/intro/couple-terrace.jpg"
       alt="The bride and groom in traditional Maharashtrian wedding attire"
       draggable={false}
       className="h-full w-full object-cover"
