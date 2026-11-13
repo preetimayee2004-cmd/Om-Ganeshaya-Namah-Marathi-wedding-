@@ -54,8 +54,8 @@ html, body { overscroll-behavior-y: none; }
 @media (max-width: 500px) and (min-aspect-ratio: 1/2) {
   .screen:not(.screen--mockup) .invite-zoom { zoom: 1.1; }
   /* couple section: lift the names/parents block so it clears the couple's heads */
-  .screen:not(.screen--mockup) .couple-text { padding-top: calc(var(--u) * 64); }
-  .screen:not(.screen--mockup) .couple-text.has-guest { padding-top: calc(var(--u) * 48); }
+  .screen:not(.screen--mockup) .couple-text { padding-top: calc(var(--u) * 96); }
+  .screen:not(.screen--mockup) .couple-text.has-guest { padding-top: calc(var(--u) * 72); }
   /* "Dear <guest>," adds a line to the invitation screen: start it higher so the venue stays above the roofs */
   .screen:not(.screen--mockup) .intro-fit-top.has-guest { padding-top: 12%; }
 }
@@ -79,8 +79,9 @@ html, body { overscroll-behavior-y: none; }
 .screen--mockup .top-controls { padding: 18px 28px 0; }
 
 /* "Dear <guest>," adds a line above the couple's names: start the block that much higher */
-.couple-text.has-guest { padding-top: calc(var(--u) * 72); }
-.couple-text > :first-child { margin-top: 0; }
+.couple-text.has-guest { padding-top: calc(var(--u) * 104); }
+.couple-text > * { zoom: 0.78; }
+.couple-text > :first-child { margin-top: calc(var(--u) * 22); }
 /* soft cream glow behind the names so they read over the sunset hills of the couple picture */
 .couple-text { background-image: radial-gradient(ellipse 66% 50% at 50% 62%, rgba(255, 246, 228, 0.82) 0%, rgba(255, 246, 228, 0.55) 45%, rgba(255, 246, 228, 0) 75%); }
 
@@ -579,7 +580,7 @@ html { background: #2b1d18; }
 
 /* couple section artwork warmed toward the golden-peach sunset sky behind every section:
    greens turn to olive-gold, whites to ivory, the sky to peach */
-.couple-tone { filter: sepia(0.5) saturate(1) hue-rotate(-8deg) brightness(0.94) contrast(1.05); }
+.couple-tone { filter: sepia(0.22) saturate(0.85) brightness(1.03) contrast(0.94) hue-rotate(-4deg); }
 
 /* opening artwork (Ganpati, invitation) warmed to the same golden-peach palette as the couple section */
 .intro-tone { filter: none; }
