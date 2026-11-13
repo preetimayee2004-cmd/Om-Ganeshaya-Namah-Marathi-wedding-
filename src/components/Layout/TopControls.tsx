@@ -26,7 +26,7 @@ export default function TopControls({ mode }: { mode: "fixed" | "sticky" }) {
   const off = muted;
   // frosted-glass round buttons, the same look as the couple section's back (‹) button
   const pill =
-    `pointer-events-auto flex h-9 items-center justify-center rounded-full border border-[#e6c47a]/80 bg-[#f6dc9c]/45 ${introActive ? "text-white" : "text-[#6d0f1b]"} shadow-[0_4px_20px_rgba(110,60,10,0.22),inset_0_1px_1px_rgba(255,240,200,0.9)] backdrop-blur-md transition-all duration-300 hover:scale-105 hover:bg-[#f6dc9c]/65 active:scale-95`;
+    `pointer-events-auto flex h-9 items-center justify-center rounded-full border border-[#e6c47a]/80 bg-[#f6dc9c]/45 text-[#6d0f1b] shadow-[0_4px_20px_rgba(110,60,10,0.22),inset_0_1px_1px_rgba(255,240,200,0.9)] backdrop-blur-md transition-all duration-300 hover:scale-105 hover:bg-[#f6dc9c]/65 active:scale-95`;
 
   // during the opening: sound on the left, Skip on the right; from the couple section on: sound on the right
   const row = (
