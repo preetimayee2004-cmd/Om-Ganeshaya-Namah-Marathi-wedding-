@@ -42,7 +42,7 @@ export default function Layout({ children }: { children: ReactNode }) {
           backgroundImage: `url("${wedding.images.laptopBackground}")`,
           backgroundSize: "cover",
           backgroundPosition: "center",
-          filter: "blur(4px) sepia(0.45) saturate(0.85) hue-rotate(-6deg) brightness(1.3) contrast(0.85)", // warmed to the golden-peach theme
+          filter: "blur(4px)",
           transform: "scale(1.08)",
         }}
       />
