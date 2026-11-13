@@ -1312,6 +1312,9 @@ export default function Intro() {
             />
           </div>
 
+          {/* ivory haze over the sky, matching the Save the Date card */}
+          <div aria-hidden className="couple-haze pointer-events-none absolute inset-0" />
+
           {/* Top Sky Region: Couple Names, Romantic Marathi Quotation, Parents (positioned below floral toran to prevent overlap) */}
           <div className={`tilt-3d couple-text relative z-10 px-6 pt-32 text-center${isPersonalised ? " has-guest" : ""}`}>
             {/* Marathi Romantic Quotation (2.20s – 2.80s) */}
