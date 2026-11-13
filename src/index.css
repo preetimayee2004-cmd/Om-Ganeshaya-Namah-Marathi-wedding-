@@ -573,6 +573,6 @@ html { background: #2b1d18; }
   color: #6d0f1b;
 }
 
-/* couple section artwork keeps its own warm sunset colours (they match the golden / peach
-   section backgrounds); no grade on top */
-.couple-tone { filter: none; }
+/* couple section artwork warmed toward the golden-peach sunset sky behind every section:
+   greens turn to olive-gold, whites to ivory, the sky to peach */
+.couple-tone { filter: sepia(0.32) saturate(0.95) hue-rotate(-6deg) brightness(1.04) contrast(0.96); }
