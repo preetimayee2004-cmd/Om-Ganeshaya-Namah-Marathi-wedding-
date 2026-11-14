@@ -607,3 +607,30 @@ html { background: #2b1d18; }
 .bless-btn .bless-shine { background: linear-gradient(105deg, transparent, rgba(255, 252, 235, 0.65), transparent); transform: skewX(-18deg); transition: left 700ms ease; }
 .bless-btn:hover .bless-shine { left: 110%; }
 @media (prefers-reduced-motion: reduce) { .bless-btn, .bless-btn .bless-shine { transition: none } }
+
+/* ===== Chapters: every section after the couple screen is one chapter of the same illustrated story ===== */
+/* a soft watercolor wash behind each chapter, in the couple section's parchment palette (feathered, low contrast) */
+.chapter-wash {
+  inset: 0 -4% 0 -4%;
+  background:
+    radial-gradient(ellipse 60% 22% at 30% 6%, var(--wash-a), transparent 70%),
+    radial-gradient(ellipse 70% 30% at 75% 45%, var(--wash-b), transparent 72%),
+    radial-gradient(ellipse 60% 26% at 25% 88%, var(--wash-a), transparent 70%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 6%, #000 94%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 6%, #000 94%, transparent 100%);
+}
+.chapter-parchment { --wash-a: rgba(252, 241, 216, 0.55); --wash-b: rgba(244, 222, 180, 0.35); }
+.chapter-blush     { --wash-a: rgba(250, 226, 214, 0.5);  --wash-b: rgba(246, 214, 196, 0.32); }
+.chapter-saffron   { --wash-a: rgba(252, 232, 186, 0.5);  --wash-b: rgba(246, 210, 150, 0.3); }
+.chapter-sage      { --wash-a: rgba(238, 236, 210, 0.5);  --wash-b: rgba(222, 226, 196, 0.3); }
+/* the chapter vine draws itself, then its leaves and lotus open */
+.chapter-vine .chapter-vine-line { stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 1400ms cubic-bezier(.4,0,.2,1); }
+.chapter-vine .chapter-vine-leaf { opacity: 0; transform-box: fill-box; transform-origin: center; transform: scale(.6); transition: opacity 600ms ease 900ms, transform 700ms cubic-bezier(.2,.8,.25,1) 900ms; }
+.chapter-vine.is-seen .chapter-vine-line { stroke-dashoffset: 0; }
+.chapter-vine.is-seen .chapter-vine-leaf { opacity: 1; transform: none; }
+/* one burgundy for every section title, like the couple names */
+.chapter h2 { color: #6d0f1b; }
+@media (prefers-reduced-motion: reduce) {
+  .chapter-vine .chapter-vine-line { stroke-dashoffset: 0; transition: none; }
+  .chapter-vine .chapter-vine-leaf { opacity: 1; transform: none; transition: none; }
+}
