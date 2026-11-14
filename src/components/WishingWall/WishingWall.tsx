@@ -202,7 +202,7 @@ export default function WishingWall() {
   };
 
   const inputCls =
-    "w-full rounded-md border border-[#e2c27a] bg-[#fffdf6] px-3 py-2 font-body text-base placeholder:text-[#4b0f16]/40 focus:border-[#c9992f] focus:outline-none focus:ring-2 focus:ring-[#e2c27a]/50";
+    "w-full rounded-[10px] border border-[#e8d3a0] bg-[#fffcf3]/90 px-3.5 py-3 font-body text-base leading-relaxed placeholder:italic placeholder:text-[#7a5a3a]/45 transition-colors focus:border-[#c9992f] focus:bg-[#fffdf7] focus:outline-none";
 
   return (
     <section ref={sectionRef} id="blessings" aria-labelledby="blessings-title" className="relative py-6" style={{ color: INK_SOFT }}>
@@ -272,22 +272,39 @@ export default function WishingWall() {
         <form
           onSubmit={onSubmit}
           noValidate
-          className="relative space-y-2.5 rounded-xl p-3.5"
+          className="relative overflow-hidden rounded-[18px] px-5 pb-5 pt-6"
           style={{
-            background: "linear-gradient(180deg, #fdf5e1 0%, #f8e8c2 100%)",
-            border: "calc(var(--u) * 1.5) solid #e2c27a",
-            boxShadow: "inset 0 0 0 calc(var(--u) * 4) #fdf5e1, inset 0 0 0 calc(var(--u) * 5) rgba(217,178,90,0.55), 0 calc(var(--u) * 6) calc(var(--u) * 18) calc(var(--u) * -8) rgba(120,80,20,0.35)",
+            background: "linear-gradient(180deg, #fffaf0 0%, #fbefd2 100%)",
+            border: "1px solid rgba(201, 153, 47, 0.45)",
+            boxShadow: "0 10px 24px -18px rgba(120, 80, 20, 0.45)",
           }}
         >
+          {/* a small marigold sprig in the corner: the only ornament */}
+          <svg viewBox="0 0 64 64" className="pointer-events-none absolute -right-2 -top-2 h-16 w-16 opacity-80" aria-hidden>
+            <path d="M58 6C46 10 38 18 34 30" fill="none" stroke="#9a8a4a" strokeWidth="1.2" strokeLinecap="round" />
+            <path d="M44 14c-5-1-9 1-11 5 5 1 9-1 11-5ZM38 22c-5 0-8 3-9 7 5 0 8-3 9-7Z" fill="#a7a25a" opacity=".75" />
+            {[[52, 12, 6.5], [40, 26, 5]].map(([cx, cy, rad], i) => (
+              <g key={i}>
+                {Array.from({ length: 10 }, (_, k) => (
+                  <ellipse key={k} cx={cx} cy={cy - rad * 0.55} rx={rad * 0.32} ry={rad * 0.55} fill={i ? "#f2a93b" : "#e8892a"} transform={`rotate(${k * 36} ${cx} ${cy})`} />
+                ))}
+                <circle cx={cx} cy={cy} r={rad * 0.35} fill="#c9661c" />
+              </g>
+            ))}
+          </svg>
           <div>
-            <label htmlFor="bl-msg" className="mb-1 block font-body text-xs uppercase tracking-widest" style={{ color: GOLD_LABEL }}>
-              Your blessing
-              {" "}· <span className="guest-name normal-case tracking-normal">{guestName}</span>
+            <label htmlFor="bl-msg" className="mb-3 block text-center">
+              <span className="block font-script text-[30px] leading-none" style={{ color: INK }}>Your Blessing</span>
+              <span className="mt-1.5 flex items-center justify-center gap-2 font-body text-[10.5px] uppercase tracking-[0.22em]" style={{ color: GOLD_LABEL }}>
+                <span className="h-px w-6" style={{ background: "rgba(168,116,26,0.5)" }} />
+                from <span className="guest-name normal-case tracking-normal">{guestName}</span>
+                <span className="h-px w-6" style={{ background: "rgba(168,116,26,0.5)" }} />
+              </span>
             </label>
             <textarea
               ref={msgRef}
               id="bl-msg"
-              rows={2}
+              rows={3}
               value={message}
               onChange={(e) => {
                 setMessage(e.target.value);
@@ -300,9 +317,9 @@ export default function WishingWall() {
               dir={wishTextProps(message, 17).dir}
               style={{ ...wishTextProps(message, 17).style, fontStyle: "normal", color: INK_SOFT }}
             />
-            <div className="mt-1 flex justify-between text-sm">
-              <span id="bl-msg-err" role="alert" style={{ color: INK }}>{error}</span>
-              <span className="font-body text-xs" style={{ color: message.length > limits.msgMax ? INK : `${INK_SOFT}80` }}>
+            <div className="mt-1.5 flex items-center justify-between gap-3">
+              <span id="bl-msg-err" role="alert" className="font-body text-[13px]" style={{ color: INK }}>{error}</span>
+              <span className="font-body text-[10.5px] tabular-nums tracking-wide" style={{ color: message.length > limits.msgMax ? INK : `${INK_SOFT}66` }}>
                 {message.length}/{limits.msgMax}
               </span>
             </div>
@@ -321,9 +338,13 @@ export default function WishingWall() {
             ref={btnRef}
             type="submit"
             disabled={status === "sending"}
-            className="btn-gold w-full"
+            className="bless-btn group relative mt-4 inline-flex h-[46px] w-full items-center justify-center gap-2 overflow-hidden rounded-full font-body text-[12px] font-bold uppercase tracking-[0.2em] disabled:opacity-60"
           >
-            {status === "sending" ? "Sending…" : "Send Blessing"}
+            <span aria-hidden className="bless-shine pointer-events-none absolute inset-y-0 -left-1/3 w-1/3" />
+            <svg viewBox="0 0 24 22" className="relative h-3.5 w-3.5" aria-hidden>
+              <path d="M12 21s-8.5-5.3-10.6-10.4C-.1 5.9 3.6 1.5 7.7 2.6c1.9.5 3.3 2 4.3 3.6 1-1.6 2.4-3.1 4.3-3.6 4.1-1.1 7.8 3.3 6.3 8C20.5 15.7 12 21 12 21Z" fill="currentColor" />
+            </svg>
+            <span className="relative">{status === "sending" ? "Sending…" : "Send Blessing"}</span>
           </button>
         </form>
       </Reveal>

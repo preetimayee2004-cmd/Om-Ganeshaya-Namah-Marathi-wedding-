@@ -594,3 +594,16 @@ html { background: #2b1d18; }
 /* invitation wada and couple artwork pulled toward the door / Ganpati / desktop backdrop:
    deeper antique gold and bronze, a touch more contrast, less bright green and pink */
 .invite-tone { filter: none; }
+
+/* Blessing wall: golden invitation-style send button */
+.bless-btn {
+  color: #5a1520;
+  background: linear-gradient(180deg, #f8e3a6 0%, #ecc867 55%, #e2b54d 100%);
+  border: 1px solid #b8862f;
+  transition: transform 260ms cubic-bezier(.22,1,.36,1), box-shadow 260ms ease, background-position 400ms ease;
+}
+.bless-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 14px -8px rgba(120, 80, 20, 0.55); }
+.bless-btn:active:not(:disabled) { transform: translateY(0) scale(0.985); }
+.bless-btn .bless-shine { background: linear-gradient(105deg, transparent, rgba(255, 252, 235, 0.65), transparent); transform: skewX(-18deg); transition: left 700ms ease; }
+.bless-btn:hover .bless-shine { left: 110%; }
+@media (prefers-reduced-motion: reduce) { .bless-btn, .bless-btn .bless-shine { transition: none } }
