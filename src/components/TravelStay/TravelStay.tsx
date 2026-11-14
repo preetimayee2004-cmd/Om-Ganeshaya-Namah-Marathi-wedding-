@@ -29,7 +29,7 @@ function RuleHeading({ children }: { children: string }) {
 
 function Plane() {
   return (
-    <svg viewBox="0 0 64 44" className="h-11 w-16" aria-hidden>
+    <svg viewBox="0 0 64 44" className="h-full w-full" aria-hidden>
       <path d="M6 30c10 6 22 7 34 1" fill="none" stroke="#d4a53c" strokeWidth="1.2" strokeLinecap="round" />
       <g transform="rotate(-24 32 20)">
         <path d="M8 21c0-2 2-3.5 5-3.5h34c4 0 8 1.6 9 3.5-1 1.9-5 3.5-9 3.5H13c-3 0-5-1.5-5-3.5Z" fill={RED} />
@@ -42,7 +42,7 @@ function Plane() {
 }
 function Train() {
   return (
-    <svg viewBox="0 0 64 44" className="h-11 w-16" aria-hidden>
+    <svg viewBox="0 0 64 44" className="h-full w-full" aria-hidden>
       <rect x="8" y="16" width="34" height="16" rx="3" fill={RED} />
       <rect x="40" y="10" width="16" height="22" rx="2" fill={RED} />
       <rect x="44" y="14" width="8" height="7" rx="1" fill="#faddb5" />
@@ -63,7 +63,7 @@ function Train() {
 }
 function Car() {
   return (
-    <svg viewBox="0 0 64 44" className="h-11 w-16" aria-hidden>
+    <svg viewBox="0 0 64 44" className="h-full w-full" aria-hidden>
       <rect x="27" y="9" width="10" height="4" rx="1" fill="#d4a53c" />
       <path d="M14 22l5-9h26l5 9Z" fill={RED} />
       <path d="M19.5 21l3.5-6h8v6ZM34 15h8l3.5 6H34Z" fill="#faddb5" />
@@ -86,26 +86,20 @@ const MODES = [
   { key: "road", label: "By Road & Metro", Icon: Car },
 ] as const;
 
-const cardFrame: React.CSSProperties = {
-  background: "#faddb5",
-  border: "calc(var(--u) * 1.5) solid #dcc08a",
-  boxShadow: "inset 0 0 0 calc(var(--u) * 4) #faddb5, inset 0 0 0 calc(var(--u) * 5) #e4cd9c",
-  borderRadius: "calc(var(--u) * 14)",
+const HAIRLINE = "rgba(184, 134, 47, 0.32)";
+const panel: React.CSSProperties = {
+  background: "rgba(255, 250, 236, 0.5)",
+  border: `1px solid ${HAIRLINE}`,
+  borderRadius: 8,
 };
-
-function Dots() {
-  return (
-    <div className="relative mx-6 h-4" aria-hidden>
-      <span className="absolute inset-x-0 top-1/2 -translate-y-1/2 border-t-2 border-dotted" style={{ borderColor: "#d8bd85" }} />
-      <span className="absolute left-1/2 top-1/2 h-1.5 w-3 -translate-x-1/2 -translate-y-1/2 rotate-0 rounded-full" style={{ background: "#c9a35a" }} />
-    </div>
-  );
-}
 
 /* ------------------------------------------------------------ route map */
 
 /** keyframes for the map. Lengths inside the SVG are viewBox units, so plain px are fine there. */
 const VEN_CSS = `
+.ven-dir { color: #6d0f1b; background: rgba(255,250,236,.55); border: 1px solid rgba(184,134,47,.6); transition: background-color 250ms ease, color 250ms ease, transform 250ms ease; }
+.ven-dir:hover { background: #6d0f1b; color: #fbefcf; }
+.ven-dir:active { transform: scale(.98); }
 @keyframes ven-draw { from { stroke-dashoffset: 1 } to { stroke-dashoffset: 0 } }
 @keyframes ven-fade { from { opacity: 0 } to { opacity: 1 } }
 @keyframes ven-pin { 0% { transform: translateY(-34px); opacity: 0 } 45% { opacity: 1 } 100% { transform: translateY(0); opacity: 1 } }
@@ -188,39 +182,41 @@ export default function TravelStay() {
       <Reveal className="mt-3 text-center" delay={150}>
         <p lang="mr" className="font-marathi text-[15px] font-semibold" style={{ color: GOLD }}>{venue.marathi}</p>
         <h3
-          className="mt-1 font-serif text-[36px] font-semibold leading-[1.05]"
+          className="mt-1.5 font-serif text-[32px] font-semibold leading-[1.08]"
           style={{ color: INK, textWrap: "balance" } as React.CSSProperties}
         >
           {venue.name}
         </h3>
-        <p className="mt-1.5 font-body text-[13px] font-bold uppercase tracking-[0.25em]" style={{ color: GOLD }}>{venue.city}</p>
-        <address className="mx-auto mt-3 max-w-[19rem] font-body text-[15px] not-italic leading-relaxed" style={{ color: INK_SOFT }}>
+        <p className="mt-2 font-body text-[11.5px] font-bold uppercase tracking-[0.3em]" style={{ color: GOLD }}>{venue.city}</p>
+        <address className="mx-auto mt-3 max-w-[18rem] font-body text-[14px] not-italic leading-relaxed" style={{ color: INK_SOFT }}>
           {venue.address}
         </address>
 
-        <div className="mx-auto mt-5 max-w-[300px] space-y-2 px-4 py-3.5 text-left" style={cardFrame}>
-          <p className="flex items-center gap-2.5 font-body text-[15px] font-bold" style={{ color: INK }}>
-            <IconCalendar />
-            <span>{date}</span>
-          </p>
-          <span className="block h-px" style={{ background: "linear-gradient(90deg, transparent, #dcc08a, transparent)" }} aria-hidden />
-          <p className="flex items-center gap-2.5 font-body text-[15px]" style={{ color: INK }}>
-            <IconClock />
-            <span>
-              <span className="font-bold uppercase tracking-[0.12em] text-[12px]" style={{ color: GOLD }}>Muhurat</span>{" "}
-              <span className="font-bold">{time}</span>
+        <div
+          className="mx-auto mt-6 grid max-w-[330px] grid-cols-[3fr_2fr] divide-x py-3"
+          style={{ borderTop: `1px solid ${HAIRLINE}`, borderBottom: `1px solid ${HAIRLINE}`, ["--tw-divide-opacity" as string]: "1", borderColor: HAIRLINE }}
+        >
+          <div className="flex flex-col items-center px-2" style={{ borderColor: HAIRLINE }}>
+            <span className="flex items-center gap-1.5 font-body text-[10px] font-bold uppercase tracking-[0.22em]" style={{ color: GOLD }}>
+              <IconCalendar /> Date
             </span>
-          </p>
+            <span className="mt-1 whitespace-nowrap text-[15.5px] font-semibold leading-snug" style={{ fontFamily: SERIF, color: INK }}>{date}</span>
+          </div>
+          <div className="flex flex-col items-center px-2" style={{ borderColor: HAIRLINE }}>
+            <span className="flex items-center gap-1.5 font-body text-[10px] font-bold uppercase tracking-[0.22em]" style={{ color: GOLD }}>
+              <IconClock /> Muhurat
+            </span>
+            <span className="mt-1 text-[16px] font-semibold leading-snug" style={{ fontFamily: SERIF, color: INK }}>{time}</span>
+          </div>
         </div>
 
         <a
           href={venue.mapUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="btn-gold mt-5"
-          style={{ minHeight: "calc(var(--u) * 44)", padding: "0 calc(var(--u) * 26)", fontSize: "calc(var(--u) * 14)" }}
+          className="ven-dir mt-6 inline-flex h-[42px] items-center justify-center gap-2 rounded-full px-6 font-body text-[11.5px] font-bold uppercase tracking-[0.22em]"
         >
-          <svg viewBox="0 0 16 16" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>
+          <svg viewBox="0 0 16 16" className="h-[13px] w-[13px]" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>
             <path d="M8 14s4.5-4 4.5-7.5a4.5 4.5 0 1 0-9 0C3.5 10 8 14 8 14Z" />
             <circle cx="8" cy="6.5" r="1.6" />
           </svg>
@@ -236,22 +232,19 @@ export default function TravelStay() {
       {/* getting there */}
       <Reveal className="mx-auto mt-10 max-w-[420px]" delay={100}>
         <RuleHeading>Getting There</RuleHeading>
-        <div className="mt-5">
+        <ul className="mt-5 divide-y px-4" style={{ ...panel, ["--tw-divide-opacity" as string]: "1" }}>
           {MODES.map(({ key, label, Icon }, i) => (
-            <div key={key}>
-              {i > 0 && <Dots />}
-              <div className="flex items-center gap-3 px-4 py-3.5" style={cardFrame}>
-                <span className="shrink-0">
-                  <Icon />
-                </span>
-                <span className="min-w-0">
-                  <span className="block text-[22px] italic leading-tight" style={{ fontFamily: SERIF, fontWeight: 600, color: RED }}>{label}</span>
-                  <span className="block font-body text-[13.5px] leading-snug" style={{ color: INK_SOFT }}>{travel[i]?.detail}</span>
-                </span>
-              </div>
-            </div>
+            <li key={key} className="flex items-center gap-3.5 py-3" style={{ borderColor: HAIRLINE }}>
+              <span className="block shrink-0" style={{ width: 40, height: 28 }}>
+                <Icon />
+              </span>
+              <span className="min-w-0">
+                <span className="block text-[18px] italic leading-tight" style={{ fontFamily: SERIF, fontWeight: 600, color: RED }}>{label}</span>
+                <span className="mt-0.5 block font-body text-[13px] leading-snug" style={{ color: INK_SOFT }}>{travel[i]?.detail}</span>
+              </span>
+            </li>
           ))}
-        </div>
+        </ul>
       </Reveal>
 
       {/* contact & assistance */}
