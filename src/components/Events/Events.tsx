@@ -30,6 +30,9 @@ const dayLine = (iso: string) =>
   new Intl.DateTimeFormat("en-GB", { weekday: "long", day: "numeric", month: "long", timeZone: tz }).format(new Date(iso));
 
 const TL_CSS = `
+.tl-seal .tl-seal-disc { transition: transform 300ms cubic-bezier(.2,.8,.25,1); }
+.tl-seal:hover .tl-seal-disc { transform: rotate(-8deg) scale(1.06); }
+.tl-seal:active .tl-seal-disc { transform: scale(.94); }
 @media (prefers-reduced-motion: no-preference) {
   .tl-row .tl-medal { opacity: 0; transform: scale(.88); transition: opacity 700ms ease-out, transform 900ms cubic-bezier(.2,.8,.25,1); }
   .tl-row.is-seen .tl-medal { opacity: 1; transform: none; }
@@ -60,22 +63,74 @@ function Diamond({ style, size = 9 }: { style?: CSSProperties; size?: number }) 
   );
 }
 
+/** small gold lotus, used as the medallion finial and on the seals */
+function Lotus({ size = 16, color = GOLD }: { size?: number; color?: string }) {
+  return (
+    <svg viewBox="0 0 24 16" style={{ width: u(size), height: u(size * 0.66) }} aria-hidden>
+      <path d="M12 1c2.3 2.8 2.3 6.7 0 10-2.3-3.3-2.3-7.2 0-10Z" fill={color} />
+      <path d="M12 11.6c-3.4-.4-6.2-2.6-7-6 3.4 0 6.1 2.2 7 6Zm0 0c3.4-.4 6.2-2.6 7-6-3.4 0-6.1 2.2-7 6Z" fill={color} opacity=".8" />
+      <path d="M4 14.2c4.6 1.6 11.4 1.6 16 0" fill="none" stroke={color} strokeWidth="1" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 function Medallion({ src, alt }: { src: string; alt: string }) {
   return (
-    <div className="tl-medal relative mx-auto aspect-square w-[76%]">
-      <div className="absolute inset-0 rounded-full" style={{ border: `${u(3)} solid ${MAROON}`, background: "radial-gradient(circle, #fbeee6 0%, #f3dcd2 100%)" }} />
+    <div className="tl-medal relative mx-auto aspect-square w-[74%]">
+      {/* outer hairline ring + soft ivory mat */}
+      <div className="absolute inset-0 rounded-full" style={{ border: `${u(1)} solid ${GOLD}`, background: "radial-gradient(circle, #fff7e8 0%, #f7e6c4 100%)" }} />
+      <div className="absolute rounded-full" style={{ inset: u(4), border: `${u(1.5)} solid rgba(122,31,43,0.75)` }} />
       <div className="absolute overflow-hidden rounded-full" style={{ inset: u(7) }}>
         <img src={src} alt={alt} loading="lazy" draggable={false} className="h-full w-full object-cover" />
       </div>
-      <div className="pointer-events-none absolute rounded-full" style={{ inset: u(10), border: `${u(1)} dashed rgba(226,190,110,0.85)` }} />
-      {/* ornaments at the four points of the ring */}
-      <Diamond style={{ left: "50%", top: 0, translate: "-50% -50%" }} />
-      <Diamond style={{ left: "50%", bottom: 0, translate: "-50% 50%" }} />
-      <Diamond style={{ top: "50%", left: 0, translate: "-50% -50%" }} size={7} />
-      <Diamond style={{ top: "50%", right: 0, translate: "50% -50%" }} size={7} />
+      {/* lotus finial on top, two small beads at the sides */}
+      <span className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-[62%] rounded-full px-1" style={{ background: "#f6e3bd" }}>
+        <Lotus size={18} />
+      </span>
+      {(["left", "right"] as const).map((side) => (
+        <span
+          key={side}
+          aria-hidden
+          className="absolute top-1/2 block rounded-full"
+          style={{ [side]: 0, width: u(5), height: u(5), translate: side === "left" ? "-50% -50%" : "50% -50%", background: GOLD } as CSSProperties}
+        />
+      ))}
     </div>
   );
 }
+
+/** "View details" as a small wax seal with an italic label */
+function SealButton({ open, onClick, id }: { open: boolean; onClick: () => void; id: string }) {
+  return (
+    <button
+      type="button"
+      data-tl-btn
+      aria-expanded={open}
+      aria-controls={`tl-more-${id}`}
+      onClick={onClick}
+      className="tl-seal group inline-flex items-center gap-2 whitespace-nowrap"
+    >
+      <span
+        aria-hidden
+        className="tl-seal-disc relative grid place-items-center rounded-full"
+        style={{
+          width: u(30),
+          height: u(30),
+          background: "radial-gradient(circle at 38% 32%, #9a2a37 0%, #7a1f2b 55%, #5c1520 100%)",
+          boxShadow: `0 0 0 ${u(1)} #e2be6e, 0 0 0 ${u(3)} rgba(226,190,110,0.25)`,
+        }}
+      >
+        <Lotus size={14} color="#f3d98b" />
+      </span>
+      <span className="text-[15px] italic leading-none" style={{ fontFamily: SERIF, fontWeight: 600, color: MAROON, borderBottom: `${u(1)} dotted ${GOLD}`, paddingBottom: u(2) }}>
+        {open ? "Close details" : "View details"}
+      </span>
+    </button>
+  );
+}
+
+const DEVANAGARI = "०१२३४५६७८९";
+const mrNum = (n: number) => String(n).padStart(2, "0").replace(/\d/g, (d) => DEVANAGARI[+d]);
 
 function PinButton({ href, name }: { href: string; name: string }) {
   return (
@@ -108,37 +163,36 @@ function Row({ e, i, first, last, onTap }: { e: Ev; i: number; first: boolean; l
   const t = (k: number) => ({ "--i": k, "--dx": left ? 14 : -14 } as CSSProperties);
   const [open, setOpen] = useState(false);
   return (
-    <div ref={ref} className={`tl-row grid items-stretch ${seen ? "is-seen" : ""}`} style={{ gridTemplateColumns: left ? "44% 1fr" : "1fr 44%" }}>
+    <div ref={ref} className={`tl-row grid items-stretch ${seen ? "is-seen" : ""}`} style={{ gridTemplateColumns: left ? "44% 1fr" : "1fr 44%", columnGap: u(6) }}>
       {/* medallion centred in its column; the stubs above and below keep the thread unbroken */}
       <div className={`flex flex-col ${left ? "order-1" : "order-2"}`}>
         <Stub hidden={first} />
         <Medallion src={e.image} alt={`${e.name} illustration`} />
         <Stub hidden={last} />
       </div>
-      <div className={`tl-text min-w-0 self-center ${left ? "order-2 pl-3 text-left" : "order-1 pr-3 text-right"}`}>
-        <h3 id={`tl-${e.id}`} className={`font-script ${e.name.length > 14 ? "text-[29px]" : "text-[36px]"} font-normal leading-[1.05] [overflow-wrap:anywhere]`} style={{ color: MAROON, ...t(0) }}>
+      <div className={`tl-text min-w-0 self-center py-2 ${left ? "order-2 pl-3 text-left" : "order-1 pr-3 text-right"}`}>
+        <p lang="mr" className="font-marathi text-[12px] leading-none tracking-[0.2em]" style={{ color: GOLD, ...t(0) }}>
+          {mrNum(i + 1)}
+        </p>
+        <h3 id={`tl-${e.id}`} className={`mt-1 font-script ${e.name.length > 14 ? "text-[31px]" : "text-[40px]"} font-normal leading-[1.02] [overflow-wrap:anywhere]`} style={{ color: MAROON, ...t(0) }}>
           {e.name}
         </h3>
         <p lang="mr" className="mt-0.5 font-marathi text-[13px]" style={{ color: GOLD, ...t(1) }}>
           {e.marathi}
         </p>
-        <p className="mt-1 text-[16px] font-semibold leading-snug" style={{ fontFamily: SERIF, color: INK, ...t(2) }}>
+        <p className={`mt-1.5 flex items-center gap-1.5 text-[16px] italic leading-snug ${left ? "" : "justify-end"}`} style={{ fontFamily: SERIF, fontWeight: 600, color: INK, ...t(2) }}>
+          <span aria-hidden className="inline-block rotate-45" style={{ width: u(5), height: u(5), background: GOLD }} />
           <time dateTime={e.start}>{dayLine(e.start)}</time>
         </p>
-        <div className="mt-3" style={t(3)}>
-          <button
-            type="button"
-            data-tl-btn
-            className="btn-gold btn-outline whitespace-nowrap !px-3 !text-[10px] !tracking-[0.05em]"
-            aria-expanded={open}
-            aria-controls={`tl-more-${e.id}`}
+        <div className="mt-3.5" style={t(3)}>
+          <SealButton
+            id={e.id}
+            open={open}
             onClick={() => {
               onTap();
               setOpen((o) => !o);
             }}
-          >
-            {open ? "Hide details" : "Tap to view details"}
-          </button>
+          />
         </div>
       </div>
       {open && (
@@ -311,15 +365,23 @@ function Thread({ fromLeft }: { fromLeft: boolean }) {
   // medallion centres sit at 22% (left column) and 78% (right column) of the row width
   const a = fromLeft ? 22 : 78;
   const b = fromLeft ? 78 : 22;
+  const id = `tlg-${fromLeft ? "l" : "r"}`;
   return (
-    <div ref={ref} aria-hidden className={`tl-thread relative ${seen ? "is-seen" : ""}`} style={{ height: u(70) }}>
-      <svg viewBox="0 0 100 70" preserveAspectRatio="none" className="absolute inset-0 h-full w-full overflow-visible">
-        <path d={`M${a} 0 C${a} 34, ${b} 36, ${b} 70`} fill="none" stroke="#c9a056" strokeWidth="1.3" vectorEffect="non-scaling-stroke" />
+    <div ref={ref} aria-hidden className={`tl-thread relative ${seen ? "is-seen" : ""}`} style={{ height: u(84) }}>
+      <svg viewBox="0 0 100 84" preserveAspectRatio="none" className="absolute inset-0 h-full w-full overflow-visible">
+        <defs>
+          <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#c9a056" stopOpacity=".9" />
+            <stop offset=".5" stopColor="#d9b56a" stopOpacity=".55" />
+            <stop offset="1" stopColor="#c9a056" stopOpacity=".9" />
+          </linearGradient>
+        </defs>
+        <path d={`M${a} 0 C${a} 46, ${b} 38, ${b} 84`} fill="none" stroke={`url(#${id})`} strokeWidth="1.1" vectorEffect="non-scaling-stroke" />
+        <path d={`M${a} 0 C${a} 46, ${b} 38, ${b} 84`} fill="none" stroke="#c9a056" strokeOpacity=".22" strokeWidth="3.5" strokeDasharray="0.1 9" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
       </svg>
-      <span
-        className="tl-bead absolute block"
-        style={{ left: "50%", top: "50%", width: u(8), height: u(8), translate: "-50% -50%", rotate: "45deg", background: "#fffaf2", border: `${u(1.5)} solid ${GOLD}` }}
-      />
+      <span className="tl-bead absolute -translate-x-1/2 -translate-y-1/2 rounded-full px-0.5" style={{ left: "50%", top: "50%", background: "#f6e3bd" }}>
+        <Lotus size={13} />
+      </span>
     </div>
   );
 }
