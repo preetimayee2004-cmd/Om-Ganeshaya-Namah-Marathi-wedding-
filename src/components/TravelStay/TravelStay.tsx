@@ -92,10 +92,6 @@ const HAIRLINE = "rgba(184, 134, 47, 0.32)";
 
 /** keyframes for the map. Lengths inside the SVG are viewBox units, so plain px are fine there. */
 const VEN_CSS = `
-.ven-dir { --cut: 16px; display: inline-block; padding: 1px; background: linear-gradient(180deg, #e9cd84, #b8862f); clip-path: polygon(var(--cut) 0, calc(100% - var(--cut)) 0, 100% 50%, calc(100% - var(--cut)) 100%, var(--cut) 100%, 0 50%); transition: transform 250ms ease, filter 250ms ease; }
-.ven-dir-inner { display: inline-flex; align-items: center; gap: 8px; height: 42px; padding: 0 30px; font-family: Lato, system-ui, sans-serif; font-size: 11.5px; font-weight: 700; letter-spacing: .24em; text-transform: uppercase; color: #fbefcf; background: linear-gradient(180deg, #8a1a26, #6d0f1b); clip-path: polygon(var(--cut) 0, calc(100% - var(--cut)) 0, 100% 50%, calc(100% - var(--cut)) 100%, var(--cut) 100%, 0 50%); box-shadow: inset 0 0 0 3px #6d0f1b, inset 0 0 0 4px rgba(233, 205, 132, .5); }
-.ven-dir:hover { transform: translateY(-1px); filter: brightness(1.06); }
-.ven-dir:active { transform: scale(.98); }
 @keyframes ven-draw { from { stroke-dashoffset: 1 } to { stroke-dashoffset: 0 } }
 @keyframes ven-fade { from { opacity: 0 } to { opacity: 1 } }
 @keyframes ven-pin { 0% { transform: translateY(-34px); opacity: 0 } 45% { opacity: 1 } 100% { transform: translateY(0); opacity: 1 } }
@@ -218,14 +214,13 @@ export default function TravelStay() {
         </div>
 
         {/* directions: a little gold-edged cartouche, the shape of a Peshwai door plaque */}
-        <a href={venue.mapUrl} target="_blank" rel="noopener noreferrer" className="ven-dir mt-8">
-          <span className="ven-dir-inner">
-            <svg viewBox="0 0 16 16" className="h-[13px] w-[13px]" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>
-              <path d="M8 14s4.5-4 4.5-7.5a4.5 4.5 0 1 0-9 0C3.5 10 8 14 8 14Z" />
-              <circle cx="8" cy="6.5" r="1.6" />
-            </svg>
-            Get Directions
-          </span>
+        {/* same golden button as "Back to top" */}
+        <a href={venue.mapUrl} target="_blank" rel="noopener noreferrer" className="btn-gold mt-8">
+          <svg viewBox="0 0 16 16" className="h-[13px] w-[13px]" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>
+            <path d="M8 14s4.5-4 4.5-7.5a4.5 4.5 0 1 0-9 0C3.5 10 8 14 8 14Z" />
+            <circle cx="8" cy="6.5" r="1.6" />
+          </svg>
+          Get Directions
         </a>
         {venue.note ? (
           <p className="mx-auto mt-3 max-w-[18rem] font-serif text-[15px] italic leading-snug" style={{ color: INK_SOFT }}>
