@@ -255,6 +255,37 @@ function Flourish({ className = "" }: { className?: string }) {
   );
 }
 
+/**
+ * True while the element is on screen AND the opening animation no longer covers the page.
+ * During the opening, #couple is a fixed full-screen overlay and this card sits right behind it, so a plain
+ * IntersectionObserver would report it "visible" and the hint / auto-reveal would run (and reveal the date)
+ * before the guest ever sees the card.
+ */
+function useOnScreenAfterIntro(ref: React.RefObject<HTMLElement>, root: HTMLElement | null, threshold = 0.5) {
+  const [inView, setInView] = useState(false);
+  const [introOn, setIntroOn] = useState(() => typeof document !== "undefined" && !!document.querySelector("#couple.fixed"));
+  useEffect(() => {
+    const intro = document.getElementById("couple");
+    if (!intro) {
+      setIntroOn(false);
+      return;
+    }
+    const update = () => setIntroOn(intro.classList.contains("fixed"));
+    update();
+    const mo = new MutationObserver(update);
+    mo.observe(intro, { attributes: true, attributeFilter: ["class"] });
+    return () => mo.disconnect();
+  }, []);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([e]) => setInView(e.isIntersecting), { root: root ?? null, threshold });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [ref, root, threshold]);
+  return inView && !introOn;
+}
+
 /** how much of the foil must be scratched away before the date is revealed completely */
 const REVEAL_PERCENT = 40;
 /** the date reveals itself this long after the card is first on screen, if nobody scratched it */
@@ -278,6 +309,7 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
   const demoHandRef = useRef<HTMLDivElement | null>(null);
   const scroller = useScrollRoot();
   const { guestName } = useGuest();
+  const onScreen = useOnScreenAfterIntro(canvasRef as React.RefObject<HTMLElement>, scroller, 0.5);
 
   const [particles, setParticles] = useState<Particle[]>([]);
   const [petals, setPetals] = useState<Petal[]>([]);
@@ -374,27 +406,10 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
       hand.style.transform = `translate(${(p.x - TIP.x * hw).toFixed(1)}px, ${(p.y - TIP.y * hh).toFixed(1)}px) rotate(${k < STROKE ? -8 : 4}deg)`;
       if (!reduce) raf = requestAnimationFrame(tick);
     };
-    let running = false;
-    const io = new IntersectionObserver(
-      ([e]) => {
-        if (e.isIntersecting && !running) {
-          running = true;
-          t0 = 0;
-          prev = null;
-          raf = requestAnimationFrame(tick);
-        } else if (!e.isIntersecting && running) {
-          running = false;
-          cancelAnimationFrame(raf);
-        }
-      },
-      { root: scroller ?? null, threshold: 0.5 },
-    );
-    io.observe(canvas);
-    return () => {
-      io.disconnect();
-      cancelAnimationFrame(raf);
-    };
-  }, [hasInteracted, isRevealed, scroller]);
+    if (!onScreen) return;
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [hasInteracted, isRevealed, onScreen]);
 
   // Trigger Refined Celebration Sequence
   const triggerCelebration = useCallback(() => {
@@ -475,19 +490,13 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
       };
       raf = requestAnimationFrame(tick);
     };
-    const io = new IntersectionObserver(
-      ([e]) => {
-        if (e.isIntersecting && !timer) timer = window.setTimeout(run, AUTO_REVEAL_MS);
-      },
-      { root: scroller ?? null, threshold: 0.5 },
-    );
-    io.observe(canvas);
+    if (!onScreen) return;
+    timer = window.setTimeout(run, AUTO_REVEAL_MS);
     return () => {
-      io.disconnect();
       window.clearTimeout(timer);
       cancelAnimationFrame(raf);
     };
-  }, [isRevealed, triggerCelebration, scroller]);
+  }, [isRevealed, triggerCelebration, onScreen]);
 
   // Calculate Cleared Percentage (fast 20px sampling to eliminate frame drops)
   const checkScratchPercentage = useCallback((force = false) => {
