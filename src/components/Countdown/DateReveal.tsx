@@ -295,15 +295,14 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
     const ctx = canvas.getContext("2d", { willReadFrequently: true });
     if (!ctx) return;
 
-    // layout size (ignores CSS transforms such as the reveal animation)
-    const w = canvas.offsetWidth;
-    const h = canvas.offsetHeight;
-    if (w < 2 || h < 2) return; // not laid out yet; the ResizeObserver repaints later
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    canvas.width = Math.round(w * dpr);
-    canvas.height = Math.round(h * dpr);
+    const rect = canvas.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = Math.round(rect.width * dpr);
+    canvas.height = Math.round(rect.height * dpr);
 
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.scale(dpr, dpr);
+    const w = rect.width;
+    const h = rect.height;
 
     drawSilkFoil(ctx, w, h);
   }, []);
@@ -314,29 +313,8 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
       if (!isRevealed) initCanvas();
     };
     window.addEventListener("resize", handleResize);
-    // The card can be laid out late (fonts, reveal animation, phone frame): repaint the foil whenever its size
-    // changes until the guest starts scratching, so a fresh foil is always there after every reload.
-    const canvas = canvasRef.current;
-    const ro = canvas
-      ? new ResizeObserver(() => {
-          if (!isRevealed && !hasInteractedRef.current) initCanvas();
-        })
-      : null;
-    if (canvas) ro?.observe(canvas);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-      ro?.disconnect();
-    };
+    return () => window.removeEventListener("resize", handleResize);
   }, [initCanvas, isRevealed]);
-
-  // Back/forward cache can restore an already-scratched page: reload it so the card starts fresh.
-  useEffect(() => {
-    const onShow = (e: PageTransitionEvent) => {
-      if (e.persisted) window.location.reload();
-    };
-    window.addEventListener("pageshow", onShow);
-    return () => window.removeEventListener("pageshow", onShow);
-  }, []);
 
   // Hint hand demo: once the card is on screen the hand scratches a short wavy stroke over the
   // middle of the date (a peek, far below the reveal threshold), lifts, and repeats the same
@@ -557,10 +535,8 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
     if (!ctx) return;
 
     const rect = canvas.getBoundingClientRect();
-    // pointer -> canvas layout pixels (corrects for any CSS scale on the card)
-    const k = rect.width ? canvas.offsetWidth / rect.width : 1;
-    const x = (clientX - rect.left) * k;
-    const y = (clientY - rect.top) * k;
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
 
     // 1. First interaction: one soft, authentic temple bell
     if (!hasInteractedRef.current) {
