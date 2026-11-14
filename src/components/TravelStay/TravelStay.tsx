@@ -87,18 +87,14 @@ const MODES = [
 ] as const;
 
 const HAIRLINE = "rgba(184, 134, 47, 0.32)";
-const panel: React.CSSProperties = {
-  background: "rgba(255, 250, 236, 0.5)",
-  border: `1px solid ${HAIRLINE}`,
-  borderRadius: 8,
-};
 
 /* ------------------------------------------------------------ route map */
 
 /** keyframes for the map. Lengths inside the SVG are viewBox units, so plain px are fine there. */
 const VEN_CSS = `
-.ven-dir { color: #6d0f1b; background: rgba(255,250,236,.55); border: 1px solid rgba(184,134,47,.6); transition: background-color 250ms ease, color 250ms ease, transform 250ms ease; }
-.ven-dir:hover { background: #6d0f1b; color: #fbefcf; }
+.ven-dir { --cut: 16px; display: inline-block; padding: 1px; background: linear-gradient(180deg, #e9cd84, #b8862f); clip-path: polygon(var(--cut) 0, calc(100% - var(--cut)) 0, 100% 50%, calc(100% - var(--cut)) 100%, var(--cut) 100%, 0 50%); transition: transform 250ms ease, filter 250ms ease; }
+.ven-dir-inner { display: inline-flex; align-items: center; gap: 8px; height: 42px; padding: 0 30px; font-family: Lato, system-ui, sans-serif; font-size: 11.5px; font-weight: 700; letter-spacing: .24em; text-transform: uppercase; color: #fbefcf; background: linear-gradient(180deg, #8a1a26, #6d0f1b); clip-path: polygon(var(--cut) 0, calc(100% - var(--cut)) 0, 100% 50%, calc(100% - var(--cut)) 100%, var(--cut) 100%, 0 50%); box-shadow: inset 0 0 0 3px #6d0f1b, inset 0 0 0 4px rgba(233, 205, 132, .5); }
+.ven-dir:hover { transform: translateY(-1px); filter: brightness(1.06); }
 .ven-dir:active { transform: scale(.98); }
 @keyframes ven-draw { from { stroke-dashoffset: 1 } to { stroke-dashoffset: 0 } }
 @keyframes ven-fade { from { opacity: 0 } to { opacity: 1 } }
@@ -122,28 +118,30 @@ const VEN_CSS = `
 `;
 
 
-function IconCalendar() {
+/** small gold flourish above the venue */
+function Flourish() {
   return (
-    <svg viewBox="0 0 16 16" className="h-4 w-4 shrink-0" fill="none" stroke="#C9963A" strokeWidth="1.4" aria-hidden>
-      <rect x="2.5" y="3.5" width="11" height="10" rx="1.5" />
-      <path d="M2.5 6.5h11M5.5 2v3M10.5 2v3" strokeLinecap="round" />
+    <svg viewBox="0 0 120 16" className="mx-auto block h-4 w-[120px]" fill="none" aria-hidden>
+      <path d="M4 8h40M76 8h40" stroke="#c9a35a" strokeWidth=".8" />
+      <path d="M44 8c4-5 9-5 12 0M76 8c-4-5-9-5-12 0" stroke="#c9a35a" strokeWidth=".8" />
+      <path d="M60 2c2.4 2.8 2.4 6 0 9-2.4-3-2.4-6.2 0-9Zm0 9.4c-3-.3-5.4-2-6.2-4.8 3 0 5.2 1.8 6.2 4.8Zm0 0c3-.3 5.4-2 6.2-4.8-3 0-5.2 1.8-6.2 4.8Z" fill="#c9a35a" />
     </svg>
   );
 }
-function IconClock() {
-  return (
-    <svg viewBox="0 0 16 16" className="h-4 w-4 shrink-0" fill="none" stroke="#C9963A" strokeWidth="1.4" aria-hidden>
-      <circle cx="8" cy="8" r="5.8" />
-      <path d="M8 4.8V8l2.2 1.6" strokeLinecap="round" />
-    </svg>
-  );
+function Diamond() {
+  return <span aria-hidden className="inline-block h-1.5 w-1.5 rotate-45" style={{ background: "#c9a35a" }} />;
 }
 
 export default function TravelStay() {
   const { venue, travel } = wedding;
   const { guestName, isPersonalised } = useGuest();
 
-  const date = new Intl.DateTimeFormat("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: tz }).format(new Date(wedding.date));
+  const dt = new Date(wedding.date);
+  const part = (o: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat("en-IN", { ...o, timeZone: tz }).format(dt);
+  const weekday = part({ weekday: "long" });
+  const day = part({ day: "numeric" });
+  const month = part({ month: "long" });
+  const year = part({ year: "numeric" });
   const time = new Intl.DateTimeFormat("en-IN", { hour: "numeric", minute: "2-digit", hour12: true, timeZone: tz }).format(new Date(wedding.date));
 
   return (
@@ -178,49 +176,56 @@ export default function TravelStay() {
         />
       </Reveal>
 
-      {/* wedding location, date and time: large and easy to read */}
-      <Reveal className="mt-3 text-center" delay={150}>
-        <p lang="mr" className="font-marathi text-[15px] font-semibold" style={{ color: GOLD }}>{venue.marathi}</p>
+      {/* ===== the venue, set like a printed invitation ===== */}
+      <Reveal className="mt-4 text-center" delay={150}>
+        <Flourish />
+        <p className="mt-3 text-[15px] italic leading-none" style={{ fontFamily: SERIF, color: GOLD }}>
+          the celebration will be held at
+        </p>
+        <p lang="mr" className="mt-3 font-marathi text-[15px] font-semibold leading-none" style={{ color: GOLD }}>
+          {venue.marathi}
+        </p>
         <h3
-          className="mt-1.5 font-serif text-[32px] font-semibold leading-[1.08]"
-          style={{ color: INK, textWrap: "balance" } as React.CSSProperties}
+          className="mx-auto mt-2 max-w-[19rem] font-serif text-[34px] font-semibold leading-[1.02]"
+          style={{ color: INK, textWrap: "balance", letterSpacing: "0.005em" } as React.CSSProperties}
         >
           {venue.name}
         </h3>
-        <p className="mt-2 font-body text-[11.5px] font-bold uppercase tracking-[0.3em]" style={{ color: GOLD }}>{venue.city}</p>
-        <address className="mx-auto mt-3 max-w-[18rem] font-body text-[14px] not-italic leading-relaxed" style={{ color: INK_SOFT }}>
+        <p className="mt-2.5 flex items-center justify-center gap-2.5 font-body text-[11px] font-bold uppercase tracking-[0.42em]" style={{ color: GOLD }}>
+          <Diamond /> {venue.city} <Diamond />
+        </p>
+        <address className="mx-auto mt-3 max-w-[17rem] text-[15px] italic not-italic leading-relaxed" style={{ fontFamily: SERIF, color: INK_SOFT, fontStyle: "italic" }}>
           {venue.address}
         </address>
 
-        <div
-          className="mx-auto mt-6 grid max-w-[330px] grid-cols-[3fr_2fr] divide-x py-3"
-          style={{ borderTop: `1px solid ${HAIRLINE}`, borderBottom: `1px solid ${HAIRLINE}`, ["--tw-divide-opacity" as string]: "1", borderColor: HAIRLINE }}
-        >
-          <div className="flex flex-col items-center px-2" style={{ borderColor: HAIRLINE }}>
-            <span className="flex items-center gap-1.5 font-body text-[10px] font-bold uppercase tracking-[0.22em]" style={{ color: GOLD }}>
-              <IconCalendar /> Date
+        {/* date set in the classic invitation manner: month | day | year, Muhurat beneath */}
+        <div className="mx-auto mt-7 max-w-[300px]">
+          <p className="font-body text-[10.5px] font-bold uppercase tracking-[0.4em]" style={{ color: GOLD }}>{weekday}</p>
+          <div className="mt-2 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+            <span className="border-y py-1.5 text-right font-body text-[11px] font-bold uppercase tracking-[0.28em]" style={{ borderColor: HAIRLINE, color: INK }}>
+              {month}
             </span>
-            <span className="mt-1 whitespace-nowrap text-[15.5px] font-semibold leading-snug" style={{ fontFamily: SERIF, color: INK }}>{date}</span>
-          </div>
-          <div className="flex flex-col items-center px-2" style={{ borderColor: HAIRLINE }}>
-            <span className="flex items-center gap-1.5 font-body text-[10px] font-bold uppercase tracking-[0.22em]" style={{ color: GOLD }}>
-              <IconClock /> Muhurat
+            <span className="text-[52px] font-semibold leading-none" style={{ fontFamily: SERIF, color: INK }}>{day}</span>
+            <span className="border-y py-1.5 text-left font-body text-[11px] font-bold uppercase tracking-[0.28em]" style={{ borderColor: HAIRLINE, color: INK }}>
+              {year}
             </span>
-            <span className="mt-1 text-[16px] font-semibold leading-snug" style={{ fontFamily: SERIF, color: INK }}>{time}</span>
           </div>
+          <p className="mt-3 text-[17px] italic leading-none" style={{ fontFamily: SERIF, color: INK_SOFT }}>
+            <span className="font-body text-[10.5px] font-bold not-italic uppercase tracking-[0.3em]" style={{ color: GOLD }}>Muhurat</span>
+            <span className="mx-2" style={{ color: GOLD }}>·</span>
+            {time}
+          </p>
         </div>
 
-        <a
-          href={venue.mapUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="ven-dir mt-6 inline-flex h-[42px] items-center justify-center gap-2 rounded-full px-6 font-body text-[11.5px] font-bold uppercase tracking-[0.22em]"
-        >
-          <svg viewBox="0 0 16 16" className="h-[13px] w-[13px]" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>
-            <path d="M8 14s4.5-4 4.5-7.5a4.5 4.5 0 1 0-9 0C3.5 10 8 14 8 14Z" />
-            <circle cx="8" cy="6.5" r="1.6" />
-          </svg>
-          Get Directions
+        {/* directions: a little gold-edged cartouche, the shape of a Peshwai door plaque */}
+        <a href={venue.mapUrl} target="_blank" rel="noopener noreferrer" className="ven-dir mt-8">
+          <span className="ven-dir-inner">
+            <svg viewBox="0 0 16 16" className="h-[13px] w-[13px]" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>
+              <path d="M8 14s4.5-4 4.5-7.5a4.5 4.5 0 1 0-9 0C3.5 10 8 14 8 14Z" />
+              <circle cx="8" cy="6.5" r="1.6" />
+            </svg>
+            Get Directions
+          </span>
         </a>
         {venue.note ? (
           <p className="mx-auto mt-3 max-w-[18rem] font-serif text-[15px] italic leading-snug" style={{ color: INK_SOFT }}>
@@ -229,22 +234,26 @@ export default function TravelStay() {
         ) : null}
       </Reveal>
 
-      {/* getting there */}
-      <Reveal className="mx-auto mt-10 max-w-[420px]" delay={100}>
+      {/* ===== getting there: a small travel guide, three columns with fine separators ===== */}
+      <Reveal className="mx-auto mt-12 max-w-[420px]" delay={100}>
         <RuleHeading>Getting There</RuleHeading>
-        <ul className="mt-5 divide-y px-4" style={{ ...panel, ["--tw-divide-opacity" as string]: "1" }}>
+        <ul className="mt-6 grid grid-cols-3">
           {MODES.map(({ key, label, Icon }, i) => (
-            <li key={key} className="flex items-center gap-3.5 py-3" style={{ borderColor: HAIRLINE }}>
-              <span className="block shrink-0" style={{ width: 40, height: 28 }}>
+            <li key={key} className="relative flex flex-col items-center px-2 text-center">
+              {i > 0 && (
+                <span aria-hidden className="absolute left-0 top-2 bottom-2 flex w-px flex-col items-center justify-center" style={{ background: `linear-gradient(180deg, transparent, ${HAIRLINE}, transparent)` }}>
+                  <span className="block h-1.5 w-1.5 rotate-45" style={{ background: "#c9a35a" }} />
+                </span>
+              )}
+              <span className="block" style={{ width: 46, height: 32 }}>
                 <Icon />
               </span>
-              <span className="min-w-0">
-                <span className="block text-[18px] italic leading-tight" style={{ fontFamily: SERIF, fontWeight: 600, color: RED }}>{label}</span>
-                <span className="mt-0.5 block font-body text-[13px] leading-snug" style={{ color: INK_SOFT }}>{travel[i]?.detail}</span>
-              </span>
+              <span className="mt-2 block text-[17px] italic leading-tight" style={{ fontFamily: SERIF, fontWeight: 600, color: RED }}>{label}</span>
+              <span className="mt-1 block font-body text-[11.5px] leading-snug" style={{ color: INK_SOFT }}>{travel[i]?.detail}</span>
             </li>
           ))}
         </ul>
+        <div aria-hidden className="mx-auto mt-6 h-px w-2/3" style={{ background: `linear-gradient(90deg, transparent, ${HAIRLINE}, transparent)` }} />
       </Reveal>
 
       {/* contact & assistance */}
