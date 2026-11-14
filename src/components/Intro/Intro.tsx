@@ -1309,7 +1309,7 @@ export default function Intro() {
           </div>
 
           {/* Top Sky Region: Couple Names, Romantic Marathi Quotation, Parents (positioned below floral toran to prevent overlap) */}
-          <div className={`tilt-3d couple-text relative z-10 px-6 pt-32 text-center${isPersonalised ? " has-guest" : ""}`}>
+          <div className={`tilt-3d couple-text relative z-10 px-6 pt-20 text-center${isPersonalised ? " has-guest" : ""}`}>
             {/* Marathi Romantic Quotation (2.20s – 2.80s) */}
             <div
               style={{
@@ -1319,14 +1319,14 @@ export default function Intro() {
               }}
             >
               {isPersonalised && (
-                <p className="mb-1 font-serif text-[17px] italic text-[#7a3a2a]">
+                <p className="mb-1 font-serif text-[19px] italic text-[#7a3a2a]">
                   Dear <span className="guest-name not-italic">{guestName}</span>,
                 </p>
               )}
-              <p lang="mr" className="font-marathi text-2xl font-bold text-[#6d0f1b]">
+              <p lang="mr" className="font-marathi text-[28px] font-bold text-[#6d0f1b]">
                 दोन मने, एक गाठ
               </p>
-              <p className="mt-0.5 font-serif text-[15px] italic tracking-wide text-[#7a3a2a]">
+              <p className="mt-0.5 font-serif text-[17px] italic tracking-wide text-[#7a3a2a]">
                 Two hearts, one knot
               </p>
             </div>
@@ -1335,13 +1335,13 @@ export default function Intro() {
             {/* names are written one after the other, like ink flowing from left to right */}
             <div className="mt-3">
               <div className="flex flex-col items-center leading-none">
-                <p className="font-script text-[44px] leading-[1.05] text-[#6d0f1b]" style={{ ...NAME_STROKE, ...inkWipe(s6Names, 0) }}>{first}</p>
+                <p className="font-script text-[54px] leading-[1.05] text-[#6d0f1b]" style={{ ...NAME_STROKE, ...inkWipe(s6Names, 0) }}>{first}</p>
                 <div className="flex items-center gap-2" style={inkWipe(s6Names, 650, 700)}>
                   <Flourish />
-                  <p className="font-script text-2xl leading-none text-[#a8741a]">&amp;</p>
+                  <p className="font-script text-[30px] leading-none text-[#a8741a]">&amp;</p>
                   <Flourish flip />
                 </div>
-                <p className="font-script text-[44px] leading-[1.05] text-[#6d0f1b]" style={{ ...NAME_STROKE, ...inkWipe(s6Names, 1000) }}>{second}</p>
+                <p className="font-script text-[54px] leading-[1.05] text-[#6d0f1b]" style={{ ...NAME_STROKE, ...inkWipe(s6Names, 1000) }}>{second}</p>
               </div>
             </div>
 
@@ -1374,10 +1374,10 @@ export default function Intro() {
                 transition: `opacity 600ms ${EASE_PRIMARY}, transform 600ms ${EASE_PRIMARY}`,
               }}
             >
-              <p className="font-serif text-base font-semibold tracking-wide text-[#4b0f16]">
+              <p className="font-serif text-[18px] font-semibold tracking-wide text-[#4b0f16]">
                 {wedding.parentsEn.groom}
               </p>
-              <p className="font-serif text-base font-semibold tracking-wide text-[#4b0f16]">
+              <p className="font-serif text-[18px] font-semibold tracking-wide text-[#4b0f16]">
                 {wedding.parentsEn.bride}
               </p>
             </div>
