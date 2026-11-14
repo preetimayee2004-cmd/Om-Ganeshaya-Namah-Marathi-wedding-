@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { wedding } from "../../config/wedding";
 import { useGuest } from "../../context/GuestContext";
 import { useInView } from "../Layout/Reveal";
+import { useScrollRoot } from "../Layout/ScrollRoot";
 import PointerHand, { TIP } from "../Layout/PointerHand";
 
 /**
@@ -392,6 +393,7 @@ export default function Events() {
 
   // hint hand: glides to the next event's "Tap to view details" every 2 s (only rows already
   // revealed) until the guest taps one of them
+  const scroller = useScrollRoot();
   const listRef = useRef<HTMLOListElement>(null);
   const handRef = useRef<HTMLDivElement>(null);
   const [tapped, setTapped] = useState(false);
@@ -402,16 +404,24 @@ export default function Events() {
       const list = listRef.current;
       const hand = handRef.current;
       if (!list || !hand) return;
-      const btns = Array.from(list.querySelectorAll<HTMLElement>("[data-tl-btn]")).filter((b) => b.closest(".tl-row")?.classList.contains("is-seen"));
+      // only buttons that are on screen right now, so the guest actually sees the hand tapping
+      const view = scroller ? scroller.getBoundingClientRect() : { top: 0, bottom: window.innerHeight };
+      const btns = Array.from(list.querySelectorAll<HTMLElement>("[data-tl-btn]")).filter((b) => {
+        if (!b.closest(".tl-row")?.classList.contains("is-seen")) return false;
+        const r = b.getBoundingClientRect();
+        return r.top > view.top + 20 && r.bottom < view.bottom - 20;
+      });
       if (!btns.length) {
         hand.style.opacity = "0";
         return;
       }
       idx = (idx + 1) % btns.length;
       const lr = list.getBoundingClientRect();
-      const br = btns[idx].getBoundingClientRect();
-      const x = br.left - lr.left + br.width * 0.72 - TIP.x * hand.offsetWidth;
-      const y = br.top - lr.top + br.height * 0.62 - TIP.y * hand.offsetHeight;
+      // the fingertip lands on the wax seal of the next event
+      const target = btns[idx].querySelector<HTMLElement>(".tl-seal-disc") ?? btns[idx];
+      const br = target.getBoundingClientRect();
+      const x = br.left - lr.left + br.width * 0.6 - TIP.x * hand.offsetWidth;
+      const y = br.top - lr.top + br.height * 0.6 - TIP.y * hand.offsetHeight;
       const first = hand.style.opacity !== "1";
       hand.style.transition = first ? "opacity 400ms ease" : "transform 1300ms cubic-bezier(.45,.05,.3,1), opacity 400ms ease";
       hand.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px)`;
@@ -420,7 +430,7 @@ export default function Events() {
     move();
     const id = window.setInterval(move, 2000);
     return () => window.clearInterval(id);
-  }, [tapped]);
+  }, [tapped, scroller]);
 
   return (
     <section id="events" aria-labelledby="events-title" className="px-4 py-6">
@@ -464,7 +474,7 @@ export default function Events() {
         {!tapped && (
           <div ref={handRef} aria-hidden className="pointer-events-none absolute left-0 top-0 z-10" style={{ opacity: 0 }}>
             <div className="tl-hint-tap">
-              <PointerHand size={22} />
+              <PointerHand size={28} />
             </div>
           </div>
         )}
