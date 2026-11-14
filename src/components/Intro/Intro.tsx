@@ -350,6 +350,17 @@ export default function Intro() {
     later(() => runScene2(), 1500);
   };
 
+  // The doors open on their own after 5 s if the guest has not tapped them yet.
+  // (Browsers may keep the music silent until the first real tap; the animation still plays.)
+  const AUTO_OPEN_MS = 5000;
+  const doorTapRef = useRef(handleDoorTap);
+  doorTapRef.current = handleDoorTap;
+  useEffect(() => {
+    if (stage !== 0 || !ready) return;
+    const t = window.setTimeout(() => doorTapRef.current(), AUTO_OPEN_MS);
+    return () => window.clearTimeout(t);
+  }, [stage, ready]);
+
   // -------------------------------------------------------------
   // SCENE 2: GANPATI BAPPA DIVINE REVEAL
   // Directly visible under the opening flaps, awakens smoothly
