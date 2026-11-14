@@ -196,15 +196,11 @@ const Icon = {
 };
 
 // soft palette for the expanded card: turmeric yellow, ivory, muted marigold
-const IVORY_GLASS = "rgba(255, 250, 236, 0.62)";
 const HAIRLINE = "rgba(184, 134, 47, 0.28)";
 
 function Tile({ icon, value, label }: { icon: JSX.Element; value: string; label: string }) {
   return (
-    <div
-      className="flex h-full min-w-0 flex-col items-center justify-start rounded-[12px] px-2 pb-3 pt-3 text-center"
-      style={{ background: IVORY_GLASS, border: `1px solid ${HAIRLINE}` }}
-    >
+    <div className="flex h-full min-w-0 flex-col items-center justify-start px-2 py-1 text-center">
       <span className="block" style={{ width: u(15), height: u(15), color: GOLD }}>{icon}</span>
       <span className="mt-1.5 font-body text-[9.5px] font-bold uppercase tracking-[0.16em]" style={{ color: GOLD }}>{label}</span>
       <span className="mt-1 text-[14.5px] font-semibold leading-tight [overflow-wrap:anywhere]" style={{ fontFamily: SERIF, color: INK }}>{value}</span>
@@ -239,23 +235,23 @@ function EventDetails({ e }: { e: Ev }) {
       </div>
 
       {/* three equal information boxes */}
-      <div className="mt-5 grid grid-cols-3 items-stretch gap-2.5">
+      <div
+        className="mt-5 grid grid-cols-3 items-stretch divide-x divide-[rgba(184,134,47,0.28)] rounded-[14px] py-3"
+        style={{ background: "rgba(255, 250, 236, 0.45)" }}
+      >
         <Tile icon={Icon.clock} value={timeOnly(e.start)} label="Time" />
         <Tile icon={Icon.place} value={place} label="Place" />
         <Tile icon={Icon.wear} value={wear} label="Wear" />
       </div>
 
       {/* description */}
-      <p className="mx-1 mt-7 text-[15.5px] italic" style={{ fontFamily: SERIF, color: "#5a3a2a", lineHeight: 1.6 }}>
+      <p className="mx-1 mt-6 text-[15.5px] italic" style={{ fontFamily: SERIF, color: "#5a3a2a", lineHeight: 1.6 }}>
         {e.description}
       </p>
 
       {/* dress code: one clean row, text left, swatches right */}
       {e.dressCode.length > 0 && (
-        <div
-          className="mt-6 flex items-center justify-between gap-4 rounded-[12px] px-4 py-3"
-          style={{ background: IVORY_GLASS, border: `1px solid ${HAIRLINE}` }}
-        >
+        <div className="mx-1 mt-6 flex items-center justify-between gap-4 border-t pt-4" style={{ borderColor: HAIRLINE }}>
           <div className="min-w-0">
             <p className="font-body text-[9.5px] font-bold uppercase tracking-[0.18em]" style={{ color: GOLD }}>Dress code</p>
             <p className="mt-0.5 text-[15px] font-semibold leading-snug" style={{ fontFamily: SERIF, color: INK }}>
@@ -276,16 +272,14 @@ function EventDetails({ e }: { e: Ev }) {
         </div>
       )}
 
-      {/* quiet divider */}
-      <div className="my-5 border-t border-dotted" style={{ borderColor: "rgba(184, 134, 47, 0.22)" }} />
 
       {/* actions: equal height, single thin border, subtle backgrounds */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="mt-6 grid grid-cols-2 gap-3">
         <button
           type="button"
           onClick={() => downloadEventIcs(e)}
           className="inline-flex h-[42px] items-center justify-center gap-2 rounded-full font-body text-[11px] font-bold uppercase tracking-[0.16em] transition active:scale-[0.98]"
-          style={{ background: "rgba(122, 31, 43, 0.92)", color: "#fbefcf", border: "1px solid rgba(122, 31, 43, 0.92)" }}
+          style={{ background: "rgba(122, 31, 43, 0.06)", color: MAROON, border: "1px solid rgba(122, 31, 43, 0.45)" }}
         >
           <svg viewBox="0 0 16 16" className="h-[13px] w-[13px]" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden>
             <rect x="2" y="3" width="12" height="11" rx="1.5" />
@@ -298,7 +292,7 @@ function EventDetails({ e }: { e: Ev }) {
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex h-[42px] items-center justify-center gap-2 rounded-full font-body text-[11px] font-bold uppercase tracking-[0.16em] transition active:scale-[0.98]"
-          style={{ background: IVORY_GLASS, color: MAROON, border: "1px solid rgba(184, 134, 47, 0.55)" }}
+          style={{ background: "transparent", color: MAROON, border: "1px solid rgba(184, 134, 47, 0.6)" }}
         >
           <svg viewBox="0 0 16 16" className="h-[13px] w-[13px]" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>
             <path d="M8 14s4.5-4 4.5-7.5a4.5 4.5 0 1 0-9 0C3.5 10 8 14 8 14Z" />
