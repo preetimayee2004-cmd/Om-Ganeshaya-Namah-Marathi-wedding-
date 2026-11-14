@@ -168,7 +168,7 @@ export const wedding = {
     name: "Shree Mangal Karyalaya",
     city: "Pune",
     marathi: "विवाह स्थळ",
-    address: "Shree Mangal Karyalaya, Pune, Maharashtra (add the street address and PIN)",
+    address: "24, Karve Road, Erandwane, Pune, Maharashtra 411004", // example address: replace with the real one
     mapUrl: "https://maps.google.com/?q=Shree+Mangal+Karyalaya+Pune",
     note: "Please arrive 15 minutes before the ceremony.",
   },
