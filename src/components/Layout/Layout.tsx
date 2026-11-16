@@ -32,24 +32,36 @@ export default function Layout({ children }: { children: ReactNode }) {
   return (
     <div
       className="fixed inset-0 flex items-center justify-center overflow-hidden"
-      style={{ backgroundColor: "#FAF6EF" }}
+      style={{ backgroundColor: "#E2BF86" }}
     >
-      {/* Blurred desktop backdrop: softens the paisley so the eye goes to the phone (scaled up so the blur never shows an edge) */}
+      {/* Desktop backdrop = the invitation's own sky with the same antique-gold wash as every section,
+          softly blurred, so the page around the phone feels like part of the invitation (scaled so the blur never shows an edge) */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0"
         style={{
-          backgroundImage: `url("${wedding.images.laptopBackground}")`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          filter: "blur(4px)",
+          backgroundColor: "#F8DFBF",
+          backgroundImage: `linear-gradient(180deg, rgba(214,178,112,0.55) 0%, rgba(200,160,96,0.5) 100%), url("${wedding.images.sky}")`,
+          backgroundSize: "100% 100%, cover",
+          backgroundPosition: "center, center",
+          backgroundBlendMode: "multiply, normal",
+          filter: "blur(6px)",
           transform: "scale(1.08)",
+        }}
+      />
+      {/* warm vignette + a faint gold glow behind the phone */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(ellipse 38% 60% at 50% 50%, rgba(255,236,190,0.45) 0%, rgba(255,236,190,0) 70%), radial-gradient(ellipse 85% 85% at 50% 50%, rgba(110,62,18,0) 55%, rgba(110,62,18,0.28) 100%)",
         }}
       />
 
       {/* Phone: slim bezel, nearly full viewport height (94.3%), 414:860 as measured on the reference */}
       <div
-        className="relative rounded-[3.3rem] bg-[#2b1f27] p-[8px] shadow-[0_30px_70px_-20px_rgba(60,40,20,0.55)]"
+        className="relative rounded-[3.3rem] bg-[#3a2216] p-[8px] shadow-[0_30px_70px_-20px_rgba(90,50,15,0.55),0_0_0_1.5px_rgba(212,174,94,0.75)]"
         style={{
           // capped at 926px tall so the display (width - 16px bezel) never exceeds the 430px column
           height: "min(94.3vh, 926px)",
@@ -61,10 +73,10 @@ export default function Layout({ children }: { children: ReactNode }) {
         }}
       >
         {/* side buttons */}
-        <span className="absolute -left-[3px] top-[120px] h-8 w-[3px] rounded-l bg-[#2b1f27]" />
-        <span className="absolute -left-[3px] top-[180px] h-14 w-[3px] rounded-l bg-[#2b1f27]" />
-        <span className="absolute -left-[3px] top-[250px] h-14 w-[3px] rounded-l bg-[#2b1f27]" />
-        <span className="absolute -right-[3px] top-[200px] h-20 w-[3px] rounded-r bg-[#2b1f27]" />
+        <span className="absolute -left-[3px] top-[120px] h-8 w-[3px] rounded-l bg-[#3a2216]" />
+        <span className="absolute -left-[3px] top-[180px] h-14 w-[3px] rounded-l bg-[#3a2216]" />
+        <span className="absolute -left-[3px] top-[250px] h-14 w-[3px] rounded-l bg-[#3a2216]" />
+        <span className="absolute -right-[3px] top-[200px] h-20 w-[3px] rounded-r bg-[#3a2216]" />
 
         {/* Screen. translateZ(0) makes position:fixed children stay inside the phone. */}
         <div
