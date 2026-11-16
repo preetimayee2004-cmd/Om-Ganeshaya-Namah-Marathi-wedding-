@@ -155,7 +155,7 @@ type Ev = (typeof wedding.events)[number];
 
 /** short straight piece of the gold thread that fills the gap between a medallion and its row edge */
 function Stub({ hidden }: { hidden: boolean }) {
-  return <span aria-hidden className="tl-stub mx-auto block w-px flex-1" style={{ background: hidden ? "transparent" : "#c9a056" }} />;
+  return <span aria-hidden className="tl-stub mx-auto block w-px flex-1" style={{ background: hidden ? "transparent" : "#9c6f24" }} />;
 }
 
 function Row({ e, i, first, last, onTap }: { e: Ev; i: number; first: boolean; last: boolean; onTap: () => void }) {
@@ -372,13 +372,13 @@ function Thread({ fromLeft }: { fromLeft: boolean }) {
       <svg viewBox="0 0 100 84" preserveAspectRatio="none" className="absolute inset-0 h-full w-full overflow-visible">
         <defs>
           <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="#c9a056" stopOpacity=".9" />
-            <stop offset=".5" stopColor="#d9b56a" stopOpacity=".55" />
-            <stop offset="1" stopColor="#c9a056" stopOpacity=".9" />
+            <stop offset="0" stopColor="#9c6f24" stopOpacity="1" />
+            <stop offset=".5" stopColor="#a87a2e" stopOpacity=".85" />
+            <stop offset="1" stopColor="#9c6f24" stopOpacity="1" />
           </linearGradient>
         </defs>
-        <path d={`M${a} 0 C${a} 46, ${b} 38, ${b} 84`} fill="none" stroke={`url(#${id})`} strokeWidth="1.1" vectorEffect="non-scaling-stroke" />
-        <path d={`M${a} 0 C${a} 46, ${b} 38, ${b} 84`} fill="none" stroke="#c9a056" strokeOpacity=".22" strokeWidth="3.5" strokeDasharray="0.1 9" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+        <path d={`M${a} 0 C${a} 46, ${b} 38, ${b} 84`} fill="none" stroke={`url(#${id})`} strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
+        <path d={`M${a} 0 C${a} 46, ${b} 38, ${b} 84`} fill="none" stroke="#9c6f24" strokeOpacity=".4" strokeWidth="3.5" strokeDasharray="0.1 9" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
       </svg>
       <span className="tl-bead absolute -translate-x-1/2 -translate-y-1/2 rounded-full px-0.5" style={{ left: "50%", top: "50%", background: "#f6e3bd" }}>
         <Lotus size={13} />

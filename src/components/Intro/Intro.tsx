@@ -547,6 +547,16 @@ export default function Intro() {
     }, supported ? SMOKE_MS : 1000);
   };
 
+  // The invitation opens on its own 8 s after "Open Invitation" appears, if the guest has not tapped it.
+  const AUTO_INVITE_MS = 8000;
+  const inviteRef = useRef(triggerCoupleTransition);
+  inviteRef.current = triggerCoupleTransition;
+  useEffect(() => {
+    if (stage !== 4 || !s4Hold) return;
+    const t = window.setTimeout(() => inviteRef.current(), AUTO_INVITE_MS);
+    return () => window.clearTimeout(t);
+  }, [stage, s4Hold]);
+
   // -------------------------------------------------------------
   // SCENE 6: COUPLE SECTION REVEAL
   // Final resting state of the invitation
