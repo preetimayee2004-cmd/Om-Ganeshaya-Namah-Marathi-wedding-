@@ -68,7 +68,7 @@ export const wedding = {
       venue: "Prabhat Lawns, Kothrud, Pune",
       mapUrl: "https://maps.google.com/?q=Shree+Mangal+Karyalaya+Pune",
       description:
-        "A golden morning of turmeric, marigolds and laughter. Family gather to bless the couple with haldi, wishing them a life as bright as sunshine.",
+        "A golden morning of turmeric and marigolds. Family bless the couple with joy and laughter.",
       dressCode: [{ name: "Haldi Yellow", color: "#F2C12E" }, { name: "Marigold", color: "#E98A15" }, { name: "Ivory", color: "#FFF4D6" }],
     },
     {
@@ -82,7 +82,7 @@ export const wedding = {
       venue: "Prabhat Lawns, Kothrud, Pune",
       mapUrl: "https://maps.google.com/?q=Shree+Mangal+Karyalaya+Pune",
       description:
-        "An afternoon of henna, folk songs and sweet moments. Delicate designs bloom on every hand as the women of the family celebrate together.",
+        "An afternoon of henna, folk songs and sweet moments. Delicate designs bloom as the family celebrates together.",
       dressCode: [{ name: "Leaf Green", color: "#5E8C4A" }, { name: "Rose Pink", color: "#D9578A" }, { name: "Mint", color: "#BFE0C8" }],
     },
     {
@@ -96,7 +96,7 @@ export const wedding = {
       venue: "Shree Mangal Karyalaya, Pune",
       mapUrl: "https://maps.google.com/?q=Shree+Mangal+Karyalaya+Pune",
       description:
-        "The two families meet at the threshold for a warm, traditional welcome. The kalash is worshipped and the groom is received with love and blessings.",
+        "The families meet at the threshold in welcome. The kalash is worshipped with love and blessings.",
       dressCode: [{ name: "Auspicious Red", color: "#B3202A" }, { name: "Antique Gold", color: "#D4A53C" }, { name: "Cream", color: "#F6EAD0" }],
     },
     {
@@ -110,7 +110,7 @@ export const wedding = {
       venue: "Shree Mangal Karyalaya, Pune",
       mapUrl: "https://maps.google.com/?q=Shree+Mangal+Karyalaya+Pune",
       description:
-        "A silk curtain is held between the couple while the mangalashtak verses are sung. The curtain falls, garlands are exchanged and two lives begin to unite.",
+        "A silk curtain is held as the mangalashtak is sung. It falls, garlands are exchanged, two lives unite.",
       dressCode: [{ name: "Maroon", color: "#7A1F2B" }, { name: "Gold", color: "#D4A53C" }, { name: "Ivory", color: "#FBF3E0" }],
     },
     {
@@ -124,7 +124,7 @@ export const wedding = {
       venue: "Shree Mangal Karyalaya, Pune",
       mapUrl: "https://maps.google.com/?q=Shree+Mangal+Karyalaya+Pune",
       description:
-        "The heart of the celebration. Before the sacred fire, the couple take their vows through Kanyadaan and Saptapadi, and begin their forever.",
+        "The heart of the celebration, before the sacred fire. Kanyadaan and Saptapadi begin their forever.",
       dressCode: [{ name: "Nauvari Maroon", color: "#8B1A2B" }, { name: "Mustard Gold", color: "#D9A81E" }, { name: "Cream", color: "#F7EBD0" }],
     },
     {
@@ -138,7 +138,7 @@ export const wedding = {
       venue: "The Grand Ballroom, Koregaon Park, Pune",
       mapUrl: "https://maps.google.com/?q=Shree+Mangal+Karyalaya+Pune",
       description:
-        "An evening of good food, music and blessings with everyone we love. Come dressed in your most elegant best and celebrate the newly-weds with us.",
+        "An evening of good food, music and blessings. Celebrate the newly-weds with all of us.",
       dressCode: [{ name: "Royal Blue", color: "#243B7A" }, { name: "Rose Gold", color: "#C98B7B" }, { name: "Champagne", color: "#E9D6B5" }],
     },
   ],

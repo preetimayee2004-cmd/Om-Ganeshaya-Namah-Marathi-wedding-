@@ -207,7 +207,6 @@ function Row({ e, i, first, last, onTap }: { e: Ev; i: number; first: boolean; l
 
 const timeOnly = (iso: string) =>
   new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit", hour12: true, timeZone: tz }).format(new Date(iso)).toUpperCase();
-const listNames = (xs: string[]) => (xs.length < 2 ? xs.join("") : `${xs.slice(0, -1).join(", ")} & ${xs[xs.length - 1]}`);
 
 /** one-event calendar file, so "Calendar" adds just this ceremony */
 function downloadEventIcs(e: Ev) {
@@ -240,7 +239,9 @@ const Icon = {
   ),
   place: (
     <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" aria-hidden>
-      <path d="M10 2.5l1 2h-2zM4 8h12L10 4.5zM5 8v8M15 8v8M8 16v-4a2 2 0 0 1 4 0v4M3 16.5h14" />
+      <path d="M10 17s5-4.6 5-8.6a5 5 0 1 0-10 0C5 12.4 10 17 10 17Z" />
+      <circle cx="10" cy="8.4" r="1.8" />
+      <path d="M6 18.5h8" strokeLinecap="round" />
     </svg>
   ),
   wear: (
@@ -250,95 +251,118 @@ const Icon = {
   ),
 };
 
-// soft palette for the expanded card: turmeric yellow, ivory, muted marigold
-const HAIRLINE = "rgba(184, 134, 47, 0.28)";
+const HAIRLINE = "rgba(184, 134, 47, 0.32)";
 
+/** one detail: small gold icon, refined uppercase label, serif value */
 function Tile({ icon, value, label }: { icon: JSX.Element; value: string; label: string }) {
   return (
-    <div className="flex h-full min-w-0 flex-col items-center justify-start px-2 py-1 text-center">
-      <span className="block" style={{ width: u(15), height: u(15), color: GOLD }}>{icon}</span>
-      <span className="mt-1.5 font-body text-[9.5px] font-bold uppercase tracking-[0.16em]" style={{ color: GOLD }}>{label}</span>
-      <span className="mt-1 text-[14.5px] font-semibold leading-tight [overflow-wrap:anywhere]" style={{ fontFamily: SERIF, color: INK }}>{value}</span>
+    <div className="flex min-w-0 flex-col items-center px-2 text-center">
+      <span className="block" style={{ width: u(18), height: u(18), color: GOLD }}>{icon}</span>
+      <span className="mt-2 font-body text-[9.5px] font-semibold uppercase tracking-[0.22em]" style={{ color: GOLD }}>{label}</span>
+      <span className="mt-1 text-[17px] leading-[1.15] [overflow-wrap:anywhere]" style={{ fontFamily: SERIF, fontWeight: 600, color: MAROON }}>{value}</span>
     </div>
   );
 }
 
-/** the expanded event: time / place / wear, description, dress code, calendar + directions */
+/** delicate vertical separator with a tiny diamond in the middle */
+function Sep() {
+  return (
+    <span aria-hidden className="relative block w-px self-stretch" style={{ background: HAIRLINE }}>
+      <span className="absolute left-1/2 top-1/2 block rotate-45" style={{ width: u(5), height: u(5), background: "#d4b06a", translate: "-50% -50%" }} />
+    </span>
+  );
+}
+
+/** hairline with a small lotus in the middle */
+function LotusRule() {
+  return (
+    <div aria-hidden className="flex items-center gap-3 px-6">
+      <span className="h-px flex-1" style={{ background: `linear-gradient(90deg, transparent, ${HAIRLINE})` }} />
+      <Lotus size={14} />
+      <span className="h-px flex-1" style={{ background: `linear-gradient(270deg, transparent, ${HAIRLINE})` }} />
+    </div>
+  );
+}
+
+/** the expanded event: arched illustration + title, time / place / wear, a two-line note, calendar + directions */
 function EventDetails({ e }: { e: Ev }) {
   const wear = e.dressCode[0]?.name ?? "Festive";
   const place = e.venue.split(",")[0];
+  // the description reads as two lines: one sentence per line
+  const lines = (e.description.match(/[^.!?]+[.!?]+/g) ?? [e.description]).map((x) => x.trim()).slice(0, 2);
+  const pill = {
+    background: "rgba(255, 248, 234, 0.85)",
+    color: MAROON,
+    border: "1px solid rgba(196, 150, 72, 0.75)",
+    boxShadow: `0 ${u(2)} ${u(6)} rgba(120, 80, 20, 0.12)`,
+  } as CSSProperties;
   return (
     <div
       id={`tl-more-${e.id}`}
-      className="tl-more relative overflow-hidden rounded-[16px] px-5 pb-5 pt-5 text-left"
-      style={{
-        background: "linear-gradient(180deg, #fbefcf 0%, #fdf6e4 100%)",
-        border: `1px solid ${HAIRLINE}`,
-      }}
+      className="tl-more relative overflow-hidden rounded-[18px] px-5 pb-6 pt-5"
+      style={{ background: "linear-gradient(180deg, #fbf0d6 0%, #fdf6e6 100%)", border: `1px solid ${HAIRLINE}` }}
     >
-      {/* header: small illustration on the left, Marathi title on the right */}
-      <div className="flex items-center justify-between gap-4">
-        <img src={e.image} alt="" aria-hidden className="h-[46px] w-[46px] rounded-[10px] object-cover" draggable={false} />
-        <div className="min-w-0 text-right">
-          <p lang="mr" className="font-marathi text-[24px] font-semibold leading-tight" style={{ color: MAROON }}>
+      {/* header: arched illustration on the left, Marathi title with the English name on the right */}
+      <div className="flex items-center gap-4">
+        <div
+          className="shrink-0 overflow-hidden p-[3px]"
+          style={{ width: u(92), height: u(108), borderRadius: `${u(46)} ${u(46)} ${u(6)} ${u(6)}`, border: "1px solid #d4b06a", background: "#fff8ea" }}
+        >
+          <img
+            src={e.image}
+            alt=""
+            aria-hidden
+            draggable={false}
+            className="h-full w-full object-cover"
+            style={{ borderRadius: `${u(43)} ${u(43)} ${u(4)} ${u(4)}` }}
+          />
+        </div>
+        <div className="min-w-0 flex-1 text-center">
+          <p lang="mr" className="font-marathi text-[30px] font-semibold leading-tight" style={{ color: MAROON }}>
             {e.marathi}
           </p>
-          <p className="mt-0.5 text-[13px] italic leading-none" style={{ fontFamily: SERIF, color: GOLD }}>
+          <div aria-hidden className="mx-auto mt-1 flex items-center gap-2" style={{ width: u(120) }}>
+            <span className="h-px flex-1" style={{ background: "#d4b06a" }} />
+            <span className="block rotate-45" style={{ width: u(5), height: u(5), background: "#d4b06a" }} />
+            <span className="h-px flex-1" style={{ background: "#d4b06a" }} />
+          </div>
+          <p className="mt-1 text-[19px] italic leading-none" style={{ fontFamily: SERIF, color: GOLD }}>
             {e.name}
           </p>
         </div>
       </div>
 
-      {/* three equal information boxes */}
-      <div
-        className="mt-5 grid grid-cols-3 items-stretch divide-x divide-[rgba(184,134,47,0.28)] rounded-[14px] py-3"
-        style={{ background: "rgba(255, 250, 236, 0.45)" }}
-      >
-        <Tile icon={Icon.clock} value={timeOnly(e.start)} label="Time" />
-        <Tile icon={Icon.place} value={place} label="Place" />
-        <Tile icon={Icon.wear} value={wear} label="Wear" />
+      {/* time / place / wear in one quiet panel */}
+      <div className="mt-5 flex items-stretch rounded-[14px] py-4" style={{ border: `1px solid ${HAIRLINE}`, background: "rgba(255, 252, 244, 0.6)" }}>
+        <div className="flex-1"><Tile icon={Icon.clock} value={timeOnly(e.start)} label="Time" /></div>
+        <Sep />
+        <div className="flex-1"><Tile icon={Icon.place} value={place} label="Place" /></div>
+        <Sep />
+        <div className="flex-1"><Tile icon={Icon.wear} value={wear} label="Wear" /></div>
       </div>
 
-      {/* description */}
-      <p className="mx-1 mt-6 text-[15.5px] italic" style={{ fontFamily: SERIF, color: "#5a3a2a", lineHeight: 1.6 }}>
-        {e.description}
-      </p>
+      {/* the note, framed by two lotus hairlines */}
+      <div className="mt-5">
+        <LotusRule />
+        <p className="mx-auto mt-3 text-center italic" style={{ fontFamily: SERIF, fontWeight: 500, color: MAROON, lineHeight: 1.55, fontSize: u(14.6) }}>
+          {lines.map((l, k) => (
+            <span key={k} className="block">{l}</span>
+          ))}
+        </p>
+        <div className="mt-3"><LotusRule /></div>
+      </div>
 
-      {/* dress code: one clean row, text left, swatches right */}
-      {e.dressCode.length > 0 && (
-        <div className="mx-1 mt-6 flex items-center justify-between gap-4 border-t pt-4" style={{ borderColor: HAIRLINE }}>
-          <div className="min-w-0">
-            <p className="font-body text-[9.5px] font-bold uppercase tracking-[0.18em]" style={{ color: GOLD }}>Dress code</p>
-            <p className="mt-0.5 text-[15px] font-semibold leading-snug" style={{ fontFamily: SERIF, color: INK }}>
-              {listNames(e.dressCode.map((d) => d.name))}
-            </p>
-          </div>
-          <div className="flex shrink-0 items-center gap-1.5">
-            {e.dressCode.map((d) => (
-              <span
-                key={d.name}
-                aria-hidden
-                title={d.name}
-                className="block rounded-full"
-                style={{ width: u(18), height: u(18), background: d.color, boxShadow: `0 0 0 1px ${HAIRLINE}` }}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-
-
-      {/* actions: equal height, single thin border, subtle backgrounds */}
+      {/* actions side by side */}
       <div className="mt-6 grid grid-cols-2 gap-3">
         <button
           type="button"
           onClick={() => downloadEventIcs(e)}
-          className="inline-flex h-[42px] items-center justify-center gap-2 rounded-full font-body text-[11px] font-bold uppercase tracking-[0.16em] transition active:scale-[0.98]"
-          style={{ background: "rgba(122, 31, 43, 0.06)", color: MAROON, border: "1px solid rgba(122, 31, 43, 0.45)" }}
+          className="inline-flex h-[44px] items-center justify-center gap-2 rounded-full font-body text-[11.5px] font-bold uppercase tracking-[0.16em] transition active:scale-[0.98]"
+          style={pill}
         >
-          <svg viewBox="0 0 16 16" className="h-[13px] w-[13px]" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden>
+          <svg viewBox="0 0 16 16" className="h-[14px] w-[14px]" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden>
             <rect x="2" y="3" width="12" height="11" rx="1.5" />
-            <path d="M2 6.5h12M5.5 1.5v3M10.5 1.5v3" />
+            <path d="M2 6.5h12M5.5 1.5v3M10.5 1.5v3M5 9.5h1.5M7.5 9.5H9M5 12h1.5" />
           </svg>
           Calendar
         </button>
@@ -346,12 +370,12 @@ function EventDetails({ e }: { e: Ev }) {
           href={e.mapUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex h-[42px] items-center justify-center gap-2 rounded-full font-body text-[11px] font-bold uppercase tracking-[0.16em] transition active:scale-[0.98]"
-          style={{ background: "transparent", color: MAROON, border: "1px solid rgba(184, 134, 47, 0.6)" }}
+          className="inline-flex h-[44px] items-center justify-center gap-2 rounded-full font-body text-[11.5px] font-bold uppercase tracking-[0.16em] transition active:scale-[0.98]"
+          style={pill}
         >
-          <svg viewBox="0 0 16 16" className="h-[13px] w-[13px]" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>
-            <path d="M8 14s4.5-4 4.5-7.5a4.5 4.5 0 1 0-9 0C3.5 10 8 14 8 14Z" />
-            <circle cx="8" cy="6.5" r="1.6" />
+          <svg viewBox="0 0 16 16" className="h-[14px] w-[14px]" aria-hidden>
+            <path d="M8 15s5-4.5 5-8.5a5 5 0 1 0-10 0C3 10.5 8 15 8 15Z" fill="currentColor" />
+            <circle cx="8" cy="6.5" r="1.9" fill="#fdf6e6" />
           </svg>
           Directions
         </a>
