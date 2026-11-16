@@ -547,8 +547,8 @@ export default function Intro() {
     }, supported ? SMOKE_MS : 1000);
   };
 
-  // The invitation opens on its own 8 s after "Open Invitation" appears, if the guest has not tapped it.
-  const AUTO_INVITE_MS = 8000;
+  // The invitation opens on its own 10 s after "Open Invitation" appears, if the guest has not tapped it.
+  const AUTO_INVITE_MS = 10000;
   const inviteRef = useRef(triggerCoupleTransition);
   inviteRef.current = triggerCoupleTransition;
   useEffect(() => {
