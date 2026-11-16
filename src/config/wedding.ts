@@ -65,6 +65,7 @@ export const wedding = {
       marathi: "हळद",
       start: "2027-02-26T10:00:00+05:30",
       tagline: "A Golden Celebration",
+      place: "Prabhat Lawns", // short name for the PLACE column
       venue: "Prabhat Lawns, Kothrud, Pune",
       mapUrl: "https://maps.google.com/?q=Shree+Mangal+Karyalaya+Pune",
       description:
@@ -79,6 +80,7 @@ export const wedding = {
       marathi: "मेहेंदी",
       start: "2027-02-26T15:00:00+05:30",
       tagline: "Hues of Love",
+      place: "Prabhat Lawns", // short name for the PLACE column
       venue: "Prabhat Lawns, Kothrud, Pune",
       mapUrl: "https://maps.google.com/?q=Shree+Mangal+Karyalaya+Pune",
       description:
@@ -93,6 +95,7 @@ export const wedding = {
       marathi: "सीमंत पूजन",
       start: "2027-02-26T18:00:00+05:30",
       tagline: "The Grand Welcome",
+      place: "Mangal Karyalaya", // short name for the PLACE column
       venue: "Shree Mangal Karyalaya, Pune",
       mapUrl: "https://maps.google.com/?q=Shree+Mangal+Karyalaya+Pune",
       description:
@@ -107,6 +110,7 @@ export const wedding = {
       marathi: "अंतरपाट आणि मंगलाष्टक",
       start: "2027-02-26T20:00:00+05:30",
       tagline: "The Sacred Union",
+      place: "Mangal Karyalaya", // short name for the PLACE column
       venue: "Shree Mangal Karyalaya, Pune",
       mapUrl: "https://maps.google.com/?q=Shree+Mangal+Karyalaya+Pune",
       description:
@@ -121,6 +125,7 @@ export const wedding = {
       marathi: "लग्न सोहळा",
       start: "2027-02-27T10:00:00+05:30",
       tagline: "The Wedding Ceremony",
+      place: "Mangal Karyalaya", // short name for the PLACE column
       venue: "Shree Mangal Karyalaya, Pune",
       mapUrl: "https://maps.google.com/?q=Shree+Mangal+Karyalaya+Pune",
       description:
@@ -135,6 +140,7 @@ export const wedding = {
       marathi: "रिसेप्शन",
       start: "2027-02-27T19:00:00+05:30",
       tagline: "An Evening of Celebration",
+      place: "Grand Ballroom", // short name for the PLACE column
       venue: "The Grand Ballroom, Koregaon Park, Pune",
       mapUrl: "https://maps.google.com/?q=Shree+Mangal+Karyalaya+Pune",
       description:

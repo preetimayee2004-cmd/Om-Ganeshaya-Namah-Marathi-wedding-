@@ -287,7 +287,7 @@ function LotusRule() {
 /** the expanded event: arched illustration + title, time / place / wear, a two-line note, calendar + directions */
 function EventDetails({ e }: { e: Ev }) {
   const wear = e.dressCode[0]?.name ?? "Festive";
-  const place = e.venue.split(",")[0];
+  const place = e.place || e.venue.split(",")[0];
   // the description reads as two lines: one sentence per line
   const lines = (e.description.match(/[^.!?]+[.!?]+/g) ?? [e.description]).map((x) => x.trim()).slice(0, 2);
   const pill = {
