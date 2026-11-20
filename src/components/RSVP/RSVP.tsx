@@ -7,24 +7,24 @@ import { useScrollRoot } from "../Layout/ScrollRoot";
 /**
  * Royal envelope RSVP.
  * Everything inside the envelope box is positioned in the artwork's own pixel space (1200 x 896) and converted to %.
- *  - /rsvp/envelope-purple.png : the Paithani-purple envelope on transparency (seal + tassel painted out), cropped from the 1200 x 896 artwork at (170, 145)
- *  - /rsvp/seal-purple.png     : the peacock wax seal + tassel as a separate cut-out (200 x 450, taken at x=500, y=360) that breaks away
+ *  - /rsvp/envelope-only.png : the envelope on transparency (seal + tassel painted out), cropped from the 1200 x 896 artwork at (240, 200)
+ *  - /rsvp/seal-piece.png   : the wax seal + tassel as a separate cut-out (200 x 390, taken at x=500, y=340) that breaks away
  *  - /rsvp/couple.png       : the illustrated bride and groom (rises out of the envelope together with the card)
  */
 // coordinates below stay in the original 1200 x 896 artwork space; the image is the crop starting at (OX, OY)
-const OX = 170;
-const OY = 145;
-const W = 860;
-const H = 655;
+const OX = 240;
+const OY = 200;
+const W = 720;
+const H = 540;
 const px = (x: number) => `${(((x - OX) / W) * 100).toFixed(3)}%`;
 const py = (y: number) => `${(((y - OY) / H) * 100).toFixed(3)}%`;
-const FLAP: [number, number][] = [[178, 156], [1020, 156], [598, 500]];
+const FLAP: [number, number][] = [[270, 222], [928, 222], [928, 296], [598, 522], [270, 296]];
 const FLAP_POLY = `polygon(${FLAP.map(([x, y]) => `${px(x)} ${py(y)}`).join(", ")})`;
-const FLAP_INNER = `polygon(${[[181, 158], [1017, 158], [598, 495]].map(([x, y]) => `${px(x)} ${py(y)}`).join(", ")})`;
+const FLAP_INNER = `polygon(${[[274, 225], [924, 225], [924, 292], [598, 516], [274, 292]].map(([x, y]) => `${px(x)} ${py(y)}`).join(", ")})`;
 // the card is only visible above the envelope and inside the open flap shape (it sits in the pocket)
-const CARD_CLIP = `polygon(-60% -250%, 160% -250%, 160% ${py(156)}, ${px(1020)} ${py(156)}, ${px(598)} ${py(500)}, ${px(178)} ${py(156)}, -60% ${py(156)})`;
-const SEAL = { x: 598, y: 450, r: 82 };
-const PIECE = { x: 500, y: 360, w: 200, h: 450 }; // seal-purple.png position inside the artwork
+const CARD_CLIP = `polygon(-60% -250%, 160% -250%, 160% ${py(222)}, ${px(928)} ${py(222)}, ${px(928)} ${py(296)}, ${px(598)} ${py(522)}, ${px(270)} ${py(296)}, ${px(270)} ${py(222)}, -60% ${py(222)})`;
+const SEAL = { x: 598, y: 431, r: 80 };
+const PIECE = { x: 500, y: 340, w: 200, h: 390 }; // seal-piece.png position inside the artwork
 
 // ===== layout (in container-width units, cqw) =====
 const SPACE_CLOSED = 60; // heading zone above the envelope (leaves breathing room before it)
@@ -282,7 +282,7 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
             <ellipse cx={(SEAL.x - OX) / W} cy={(SEAL.y - OY) / H} rx={SEAL.r / W} ry={SEAL.r / H} />
           </clipPath>
           <clipPath id="rsvp-tassel" clipPathUnits="objectBoundingBox">
-            <rect x={8 / PIECE.w} y={(515 - PIECE.y) / PIECE.h} width={184 / PIECE.w} height={(PIECE.h - (515 - PIECE.y)) / PIECE.h} />
+            <rect x={44 / PIECE.w} y={(505 - PIECE.y) / PIECE.h} width={112 / PIECE.w} height={(PIECE.h - (505 - PIECE.y)) / PIECE.h} />
           </clipPath>
         </defs>
       </svg>
@@ -362,7 +362,7 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
             >
               <div className="relative h-full w-full" style={{ perspective: "calc(var(--u) * 1400)", perspectiveOrigin: "50% 35%" }}>
                 {/* base: envelope + corner flowers, seal and tassel removed */}
-                <img src="/rsvp/envelope-purple.png" alt="" draggable={false} className="absolute inset-0 h-full w-full" />
+                <img src="/rsvp/envelope-only.png" alt="" draggable={false} className="absolute inset-0 h-full w-full" />
 
                 {/* inside of the envelope (shows once the flap lifts) */}
                 <div
@@ -375,10 +375,10 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
                   <div
                     className="absolute text-center"
                     style={{
-                      left: px(336),
-                      width: `${((525 / W) * 100).toFixed(3)}%`,
-                      top: py(-154),
-                      height: `${((669 / H) * 100).toFixed(3)}%`,
+                      left: px(380),
+                      width: `${((440 / W) * 100).toFixed(3)}%`,
+                      top: py(-38),
+                      height: `${((560 / H) * 100).toFixed(3)}%`,
                       transform: cardUp ? "translateY(0)" : "translateY(128%)",
                       transition: `transform ${T_CARD}ms ${EASE}`,
                       containerType: "inline-size",
@@ -462,7 +462,7 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
                   className="absolute inset-0"
                   style={{
                     transformStyle: "preserve-3d",
-                    transformOrigin: `50% ${py(156)}`,
+                    transformOrigin: `50% ${py(222)}`,
                     transform: flapOpen ? "rotateX(180deg)" : "rotateX(0deg)",
                     transition: `transform ${T_FLAP}ms cubic-bezier(0.55, 0.05, 0.25, 1)`,
                     zIndex: flapBack ? 1 : 3,
@@ -470,7 +470,7 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
                   }}
                 >
                   <img
-                    src="/rsvp/envelope-purple.png"
+                    src="/rsvp/envelope-only.png"
                     alt=""
                     draggable={false}
                     className="absolute inset-0 h-full w-full"
@@ -497,7 +497,7 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
                 ] as const).map(([id, move]) => (
                   <img
                     key={id}
-                    src="/rsvp/seal-purple.png"
+                    src="/rsvp/seal-piece.png"
                     alt=""
                     draggable={false}
                     className="pointer-events-none absolute"
@@ -516,7 +516,7 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
                   />
                 ))}
                 <img
-                  src="/rsvp/seal-purple.png"
+                  src="/rsvp/seal-piece.png"
                   alt=""
                   draggable={false}
                   className="pointer-events-none absolute"
