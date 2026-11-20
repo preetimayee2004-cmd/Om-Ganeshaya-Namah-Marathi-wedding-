@@ -4,14 +4,14 @@
 export const wedding = {
   // Illustrations and backgrounds. Any value can be a /public path or a full https:// image URL.
   images: {
-    door: "/intro/royal-door.jpg", // opening: the two door halves
+    door: "/intro/door-wada.jpg", // opening: the two door halves
     ganeshClosed: "/intro/ganesh-closed.jpg", // Ganpati, eyes closed
     ganeshBlessing: "/intro/ganesh-blessing.jpg", // Ganpati, blessing
     invitationScene: "/intro/invitation-wada.jpg", // invitation screen (courtyard)
     coupleScene: "/intro/couple-terrace.jpg", // couple section after Open Invitation
     thankYouCouple: "/intro/couple-arch.jpg", // couple inside the Thank You arch
     rsvpCouple: "/rsvp/couple.png", // couple rising from the RSVP envelope (transparent PNG)
-    venue: "/venue/mandap.jpg", // venue illustration
+    venue: "/venue/wada-mandap.jpg", // venue illustration
     sky: "/bg/sunset-sky.jpg", // sky background behind every section
     peacockBorder: "/border/peacock-border.png", // strip above/below the scratch card
     laptopBackground: "/bg/stage-diya.jpg", // blurred backdrop around the phone on laptops

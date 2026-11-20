@@ -5,7 +5,7 @@ import ContactCard from "../Contact/ContactCard";
 
 const INK = "#6d0f1b";
 const INK_SOFT = "#4b0f16";
-const GOLD = "#a8741a";
+const GOLD = "#6b3f1d"; // dark brown for small labels (gold stays for ornaments only)
 const RED = "#7a1420"; // maroon, like the rest of the site
 const SERIF = "'Cormorant Garamond', Georgia, serif";
 const tz = wedding.timeZone;
@@ -145,9 +145,8 @@ export default function TravelStay() {
       <style>{VEN_CSS}</style>
       <Reveal className="text-center">
         <p className="font-body text-[11px] uppercase tracking-[0.35em]" style={{ color: GOLD }}>Where &amp; how</p>
-        <h2 id="venue-title" className="section-title mt-2" style={{ color: INK, whiteSpace: "normal" }}>
-          <span className="block">Venue &amp; Travel</span>
-          <span className="block">Accommodation</span>
+        <h2 id="venue-title" className="section-title mt-2" style={{ color: INK }}>
+          Venue &amp; Travel
         </h2>
       </Reveal>
 
@@ -159,9 +158,9 @@ export default function TravelStay() {
           loading="lazy"
           className="block w-full"
           style={{
-            aspectRatio: "760 / 800", // crop the empty sky above the mandap
+            aspectRatio: "896 / 1120", // the wada courtyard mandap, a little of the paper edge trimmed
             objectFit: "cover",
-            objectPosition: "center bottom",
+            objectPosition: "center center",
             WebkitMaskImage:
               "linear-gradient(to bottom, transparent 0%, #000 6%, #000 88%, transparent 100%), linear-gradient(to right, transparent 0%, #000 10%, #000 90%, transparent 100%)",
             maskImage:
@@ -249,6 +248,37 @@ export default function TravelStay() {
           ))}
         </ul>
         <div aria-hidden className="mx-auto mt-6 h-px w-2/3" style={{ background: `linear-gradient(90deg, transparent, ${HAIRLINE}, transparent)` }} />
+      </Reveal>
+
+      {/* ===== accommodation: its own small sub-section ===== */}
+      <Reveal className="mx-auto mt-12 max-w-[420px]" delay={100}>
+        <RuleHeading>Accommodation</RuleHeading>
+        <ul className="mt-5 space-y-3">
+          {wedding.stays.map((h) => (
+            <li
+              key={h.name}
+              className="flex items-center justify-between gap-3 rounded-[14px] px-4 py-3"
+              style={{ border: `1px solid ${HAIRLINE}`, background: "rgba(255, 252, 244, 0.65)" }}
+            >
+              <span className="min-w-0">
+                <span className="block text-[18px] leading-tight" style={{ fontFamily: SERIF, fontWeight: 700, color: INK }}>{h.name}</span>
+                <span className="mt-0.5 block font-body text-[13px]" style={{ color: INK_SOFT }}>
+                  {h.tier} · {h.distance}
+                </span>
+              </span>
+              {h.phone && (
+                <a
+                  href={`tel:${h.phone}`}
+                  className="inline-flex h-9 shrink-0 items-center rounded-full px-4 font-body text-[11px] font-bold uppercase tracking-[0.16em]"
+                  style={{ border: "1px solid rgba(196,150,72,0.8)", color: INK, background: "#fff8ea" }}
+                  aria-label={`Call ${h.name}`}
+                >
+                  Call
+                </a>
+              )}
+            </li>
+          ))}
+        </ul>
       </Reveal>
 
       {/* contact & assistance */}
