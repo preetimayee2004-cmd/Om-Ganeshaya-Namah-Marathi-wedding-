@@ -770,7 +770,7 @@ export default function DateReveal({ onRevealed }: DateRevealProps) {
                   transition: "opacity 900ms cubic-bezier(0.22, 1, 0.36, 1), transform 900ms cubic-bezier(0.22, 1, 0.36, 1)",
                 }}
               >
-                <p className="uppercase text-[#6b3f1d]" style={{ fontFamily: SERIF, fontWeight: 700, fontSize: "calc(var(--u) * 13)", letterSpacing: "0.3em", paddingLeft: "0.3em" }}>
+                <p className="uppercase text-[#a8843f]" style={{ fontFamily: SERIF, fontWeight: 600, fontSize: "calc(var(--u) * 12)", letterSpacing: "0.3em", paddingLeft: "0.3em" }}>
                   Sunday
                 </p>
                 <div className="mt-1 flex items-center justify-center gap-3 text-[#6d0f1b]" style={{ fontFamily: SERIF, fontWeight: 600, fontSize: "calc(var(--u) * 42)", lineHeight: 1 }}>

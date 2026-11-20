@@ -144,12 +144,18 @@ html, body { overscroll-behavior-y: none; }
 
 @layer components {
   /* sky background matching the couple section mandap sky */
-  /* clean ivory paper with a faint Paithani butta (paisley) pattern behind every section */
   .sky-bg, .paper {
-    background-color: #FAF1DC;
-    background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'64'%20height%3D'64'%3E%3Cg%20fill%3D'none'%20stroke%3D'%23C8961E'%20stroke-width%3D'.9'%20opacity%3D'.09'%3E%3Cpath%20d%3D'M20%2010c6%200%209%206%206%2011-2%204-8%204-8%209%200%203%203%205%203%205s-7-1-8-7c-1-7%202-18%207-18Z'%2F%3E%3Ccircle%20cx%3D'20'%20cy%3D'17'%20r%3D'1.6'%2F%3E%3Cpath%20d%3D'M52%2042c6%200%209%206%206%2011-2%204-8%204-8%209%200%203%203%205%203%205s-7-1-8-7c-1-7%202-18%207-18Z'%2F%3E%3Ccircle%20cx%3D'52'%20cy%3D'49'%20r%3D'1.6'%2F%3E%3C%2Fg%3E%3Cg%20fill%3D'%23C8961E'%20opacity%3D'.08'%3E%3Ccircle%20cx%3D'48'%20cy%3D'14'%20r%3D'1.4'%2F%3E%3Ccircle%20cx%3D'14'%20cy%3D'48'%20r%3D'1.4'%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
-    background-size: calc(var(--u) * 64) calc(var(--u) * 64);
-    background-repeat: repeat;
+    background-color: #F8DFBF;
+    /* antique-gold wash (multiplied) over the sunset sky, so the sections match the door,
+       Ganpati and desktop backdrop instead of reading light peach */
+    background-image:
+      linear-gradient(180deg, rgba(214, 178, 112, 0.55) 0%, rgba(200, 160, 96, 0.5) 100%),
+      var(--sky-image, url("/bg/sunset-sky.jpg")),
+      radial-gradient(ellipse at 50% 0%, #FFF8EE 0%, #FDEBD1 25%, #F8DFBF 60%, #EFE0C1 100%);
+    background-size: 100% 100%, 100% auto, 100% 100%;
+    background-repeat: no-repeat, repeat-y, no-repeat;
+    background-position: center, center top, center center;
+    background-blend-mode: multiply, normal, normal;
   }
   /* dark forest green with the faint gold vine pattern (from the supplied swatch) */
   .weave {
@@ -627,24 +633,4 @@ html { background: #2b1d18; }
 @media (prefers-reduced-motion: reduce) {
   .chapter-vine .chapter-vine-line { stroke-dashoffset: 0; transition: none; }
   .chapter-vine .chapter-vine-leaf { opacity: 1; transform: none; transition: none; }
-}
-
-/* ===== Marathi identity ===== */
-/* large Marathi chapter heading */
-.chapter-title { font-family: "Rozha One", "Tiro Devanagari Marathi", serif; font-size: calc(var(--u) * 40); line-height: 1.15; font-weight: 400; letter-spacing: 0 !important; }
-/* the chapter heading replaces each section's own English heading block */
-.chapter section > div:has(> h2.section-title),
-.chapter section > h2.section-title { display: none; }
-/* parrot-green and Paithani-purple chapters: own ground with a faint gold butta */
-.chapter-green > .chapter-ground, .chapter-purple > .chapter-ground {
-  background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'56'%20height%3D'56'%3E%3Cg%20fill%3D'none'%20stroke%3D'%23E9C46A'%20stroke-width%3D'.9'%20opacity%3D'.22'%3E%3Cpath%20d%3D'M18%208c5%200%208%205%205%2010-2%203-7%203-7%208%200%202%203%204%203%204s-6-1-7-6c-1-6%202-16%206-16Z'%2F%3E%3Cpath%20d%3D'M46%2036c5%200%208%205%205%2010-2%203-7%203-7%208%200%202%203%204%203%204s-6-1-7-6c-1-6%202-16%206-16Z'%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
-  background-size: calc(var(--u) * 56) calc(var(--u) * 56);
-}
-.chapter-green > .chapter-ground { background-color: #1F7A3F; }
-.chapter-purple > .chapter-ground { background-color: #5B1A6E; }
-/* a band closes the coloured chapter at its foot too */
-.chapter-green, .chapter-purple { padding-bottom: calc(var(--u) * 30); }
-.chapter-green::after, .chapter-purple::after {
-  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: calc(var(--u) * 30);
-  background: linear-gradient(#C8961E 0 2px, #5B1A6E 2px calc(100% - 2px), #C8961E calc(100% - 2px));
 }

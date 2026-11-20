@@ -12,7 +12,7 @@ const WALL_SPEED = 22; // px per second: a slow, readable glide
 const RESUME_MS = 1500; // pause after a touch / swipe before gliding again
 const INK = "#6d0f1b";
 const INK_SOFT = "#4b0f16";
-const GOLD_LABEL = "#6b3f1d"; // dark brown: readable small text on light paper
+const GOLD_LABEL = "#a8741a";
 
 type Wish = { name: string; message: string; fresh?: boolean };
 
