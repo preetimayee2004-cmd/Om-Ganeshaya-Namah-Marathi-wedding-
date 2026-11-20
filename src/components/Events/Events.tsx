@@ -4,6 +4,7 @@ import { useGuest } from "../../context/GuestContext";
 import { useInView } from "../Layout/Reveal";
 import { useScrollRoot } from "../Layout/ScrollRoot";
 import PointerHand, { TIP } from "../Layout/PointerHand";
+import { Chandrakor } from "../Layout/Marathi";
 
 /**
  * "Time Line": the schedule as a zig-zag of round illustrated medallions joined by a wavy gold
@@ -14,7 +15,8 @@ import PointerHand, { TIP } from "../Layout/PointerHand";
 
 const MAROON = "#7a1f2b";
 const INK = "#4a1a16";
-const GOLD = "#b8862f";
+const GOLD = "#b8862f"; // ornaments only
+const LABEL = "#6b3f1d"; // small readable text on light paper
 const SERIF = '"Cormorant Garamond", Georgia, serif';
 const u = (n: number) => `calc(var(--u) * ${n})`;
 const tz = wedding.timeZone;
@@ -172,13 +174,13 @@ function Row({ e, i, first, last, onTap }: { e: Ev; i: number; first: boolean; l
         <Stub hidden={last} />
       </div>
       <div className={`tl-text min-w-0 self-center py-2 ${left ? "order-2 pl-3 text-left" : "order-1 pr-3 text-right"}`}>
-        <p lang="mr" className="font-marathi text-[12px] leading-none tracking-[0.2em]" style={{ color: GOLD, ...t(0) }}>
+        <p lang="mr" className="font-marathi text-[13px] leading-none tracking-[0.2em]" style={{ color: LABEL, ...t(0) }}>
           {mrNum(i + 1)}
         </p>
         <h3 id={`tl-${e.id}`} className={`mt-1 font-script ${e.name.length > 14 ? "text-[31px]" : "text-[40px]"} font-normal leading-[1.02] [overflow-wrap:anywhere]`} style={{ color: MAROON, ...t(0) }}>
           {e.name}
         </h3>
-        <p lang="mr" className="mt-0.5 font-marathi text-[13px]" style={{ color: GOLD, ...t(1) }}>
+        <p lang="mr" className="mt-0.5 font-marathi text-[14px]" style={{ color: LABEL, ...t(1) }}>
           {e.marathi}
         </p>
         <p className={`mt-1.5 flex items-center gap-1.5 text-[16px] italic leading-snug ${left ? "" : "justify-end"}`} style={{ fontFamily: SERIF, fontWeight: 600, color: INK, ...t(2) }}>
@@ -258,7 +260,7 @@ function Tile({ icon, value, label }: { icon: JSX.Element; value: string; label:
   return (
     <div className="flex min-w-0 flex-col items-center px-2 text-center">
       <span className="block" style={{ width: u(18), height: u(18), color: GOLD }}>{icon}</span>
-      <span className="mt-2 font-body text-[9.5px] font-semibold uppercase tracking-[0.22em]" style={{ color: GOLD }}>{label}</span>
+      <span className="mt-2 font-body text-[11px] font-semibold uppercase tracking-[0.2em]" style={{ color: LABEL }}>{label}</span>
       <span className="mt-1 text-[17px] leading-[1.15] [overflow-wrap:anywhere]" style={{ fontFamily: SERIF, fontWeight: 600, color: MAROON }}>{value}</span>
     </div>
   );
@@ -278,7 +280,7 @@ function LotusRule() {
   return (
     <div aria-hidden className="flex items-center gap-3 px-6">
       <span className="h-px flex-1" style={{ background: `linear-gradient(90deg, transparent, ${HAIRLINE})` }} />
-      <Lotus size={14} />
+      <Chandrakor size={16} />
       <span className="h-px flex-1" style={{ background: `linear-gradient(270deg, transparent, ${HAIRLINE})` }} />
     </div>
   );
@@ -326,7 +328,7 @@ function EventDetails({ e }: { e: Ev }) {
             <span className="block rotate-45" style={{ width: u(5), height: u(5), background: "#d4b06a" }} />
             <span className="h-px flex-1" style={{ background: "#d4b06a" }} />
           </div>
-          <p className="mt-1 text-[19px] italic leading-none" style={{ fontFamily: SERIF, color: GOLD }}>
+          <p className="mt-1 text-[19px] italic leading-none" style={{ fontFamily: SERIF, color: LABEL }}>
             {e.name}
           </p>
         </div>
@@ -423,37 +425,35 @@ export default function Events() {
   const [tapped, setTapped] = useState(false);
   useEffect(() => {
     if (tapped) return;
-    let idx = -1;
-    const move = () => {
+    let hideTimer = 0;
+    let shown = false;
+    const place = () => {
       const list = listRef.current;
       const hand = handRef.current;
-      if (!list || !hand) return;
-      // only buttons that are on screen right now, so the guest actually sees the hand tapping
+      if (!list || !hand || shown) return;
+      const btn = list.querySelector<HTMLElement>("[data-tl-btn]");
+      if (!btn || !btn.closest(".tl-row")?.classList.contains("is-seen")) return;
       const view = scroller ? scroller.getBoundingClientRect() : { top: 0, bottom: window.innerHeight };
-      const btns = Array.from(list.querySelectorAll<HTMLElement>("[data-tl-btn]")).filter((b) => {
-        if (!b.closest(".tl-row")?.classList.contains("is-seen")) return false;
-        const r = b.getBoundingClientRect();
-        return r.top > view.top + 20 && r.bottom < view.bottom - 20;
-      });
-      if (!btns.length) {
-        hand.style.opacity = "0";
-        return;
-      }
-      idx = (idx + 1) % btns.length;
+      const r = btn.getBoundingClientRect();
+      if (r.top < view.top + 20 || r.bottom > view.bottom - 20) return; // wait until the guest can see it
       const lr = list.getBoundingClientRect();
-      // the fingertip lands on the wax seal of the next event
-      const target = btns[idx].querySelector<HTMLElement>(".tl-seal-disc") ?? btns[idx];
+      // fingertip on the wax seal disc (no text there); the hand itself sits to its lower left
+      const target = btn.querySelector<HTMLElement>(".tl-seal-disc") ?? btn;
       const br = target.getBoundingClientRect();
-      const x = br.left - lr.left + br.width * 0.6 - TIP.x * hand.offsetWidth;
-      const y = br.top - lr.top + br.height * 0.6 - TIP.y * hand.offsetHeight;
-      const first = hand.style.opacity !== "1";
-      hand.style.transition = first ? "opacity 400ms ease" : "transform 1300ms cubic-bezier(.45,.05,.3,1), opacity 400ms ease";
+      const x = br.left - lr.left + br.width * 0.5 - TIP.x * hand.offsetWidth;
+      const y = br.top - lr.top + br.height * 0.55 - TIP.y * hand.offsetHeight;
+      hand.style.transition = "opacity 400ms ease";
       hand.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px)`;
       hand.style.opacity = "1";
+      shown = true;
+      hideTimer = window.setTimeout(() => setTapped(true), 4000);
     };
-    move();
-    const id = window.setInterval(move, 2000);
-    return () => window.clearInterval(id);
+    place();
+    const id = window.setInterval(place, 500);
+    return () => {
+      window.clearInterval(id);
+      window.clearTimeout(hideTimer);
+    };
   }, [tapped, scroller]);
 
   return (

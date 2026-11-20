@@ -58,54 +58,54 @@ export default function App() {
         <div className="framed-page">
         {/* 2. Countdown */}
         <Blooms corners={["tl", "tr"]}>
-          <Chapter n={1} name="The Date" tone="parchment">
+          <Chapter n={1} name="Save the Date" marathi="लग्नतिथी">
           <Countdown />
         </Chapter>
         </Blooms>
 
         {/* 5. Events */}
-        <Blooms corners={["tr", "bl"]}>
-          <Chapter n={2} name="The Celebrations" tone="saffron">
+        <Blooms corners={["tr", "br"]}>
+          <Chapter n={2} name="The Celebrations" marathi="कार्यक्रम">
           <Events />
         </Chapter>
         </Blooms>
 
         {/* 6. Family */}
         <Blooms corners={["tl"]}>
-          <Chapter n={3} name="Our Families" tone="blush">
+          <Chapter n={3} name="Our Families" marathi="आमचे कुटुंब" tone="green">
           <Family />
         </Chapter>
         </Blooms>
 
         {/* 7. Gallery */}
-        <Chapter n={4} name="Moments" tone="parchment">
+        <Chapter n={4} name="Our Gallery" marathi="क्षणचित्रे">
           <Gallery />
         </Chapter>
 
         {/* 8. RSVP */}
         <Blooms corners={["tl", "br"]}>
-          <Chapter n={5} name="Your Presence" tone="blush">
+          <Chapter n={5} name="Your Presence" marathi="आपली उपस्थिती" tone="purple">
           <RSVP />
         </Chapter>
         </Blooms>
 
         {/* 9. Blessing Wall */}
         <Blooms corners={["tr", "bl"]}>
-          <Chapter n={6} name="Blessings" tone="sage">
+          <Chapter n={6} name="Blessings" marathi="शुभाशीर्वाद">
           <WishingWall />
         </Chapter>
         </Blooms>
 
         {/* 10. Venue */}
         <Blooms corners={["tl", "br"]}>
-          <Chapter n={7} name="The Venue" tone="saffron">
+          <Chapter n={7} name="Venue & Travel" marathi="विवाह स्थळ">
           <TravelStay />
         </Chapter>
         </Blooms>
 
         {/* 11. Thank You */}
         <Blooms corners={["tr", "bl"]}>
-          <Chapter n={8} name="With Gratitude" tone="parchment">
+          <Chapter n={8} name="With Gratitude" marathi="धन्यवाद">
           <ThankYou />
         </Chapter>
         </Blooms>

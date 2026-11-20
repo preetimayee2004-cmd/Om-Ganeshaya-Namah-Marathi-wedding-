@@ -61,28 +61,39 @@ function Swash({ w = 120 }: { w?: number }) {
 }
 
 /** bougainvillea spray for a top corner (drawn for the left corner; mirror it for the right) */
+/**
+ * Corner decoration (kept under its old name so every section that used the bougainvillea now gets it):
+ * a marigold and mango-leaf corner garland with two hanging marigold strings (zendu ladi).
+ */
 export function Bougainvillea({ flip, style }: { flip?: boolean; style?: CSSProperties }) {
-  const blooms = [
-    [14, 12, 1.2], [34, 8, 1], [52, 18, 1.1], [24, 30, 1.15], [8, 44, 1], [44, 38, 0.9], [66, 10, 0.85],
-    [18, 62, 0.9], [36, 54, 0.8], [80, 24, 0.75], [6, 80, 0.8], [58, 30, 0.7], [28, 86, 0.65], [92, 8, 0.7],
-  ] as const;
-  const leaves = [
-    [22, 20, 30], [46, 26, -20], [12, 54, 70], [60, 22, -40], [30, 44, 10], [74, 16, -10], [16, 72, 80], [40, 66, 40],
-  ] as const;
+  const mari = (x: number, y: number, r: number, k: number) => (
+    <g key={`${x}-${y}`}>
+      <circle cx={x} cy={y} r={r} fill={k % 2 ? "#F08A1C" : "#F2B01E"} />
+      <circle cx={x} cy={y} r={r * 0.66} fill={k % 2 ? "#C9620C" : "#E58A12"} />
+      <circle cx={x} cy={y} r={r * 0.3} fill="#B4500A" />
+    </g>
+  );
+  const leaf = (x: number, y: number, rot: number, k: number) => (
+    <g key={`l${k}`} transform={`translate(${x} ${y}) rotate(${rot})`}>
+      <path d="M0 0c3 4 3 11 0 15-3-4-3-11 0-15Z" fill="#1F7A3F" />
+      <path d="M0 1v13" stroke="#8fc29a" strokeWidth=".5" />
+    </g>
+  );
+  // the corner garland: along the top edge and down the side, sagging a little
+  const top = Array.from({ length: 10 }, (_, i) => mari(8 + i * 10, 6 + Math.sin((i / 9) * Math.PI) * 6, 4.2, i));
+  const side = Array.from({ length: 8 }, (_, i) => mari(6 + Math.sin((i / 7) * Math.PI) * 5, 16 + i * 10, 4.2, i + 1));
+  const ladi1 = Array.from({ length: 5 }, (_, i) => mari(34, 20 + i * 8, 3.4, i));
+  const ladi2 = Array.from({ length: 4 }, (_, i) => mari(58, 18 + i * 8, 3.2, i + 1));
   return (
     <svg viewBox="0 0 110 110" className="pointer-events-none absolute" style={{ transform: flip ? "scaleX(-1)" : undefined, ...style }} aria-hidden>
-      <path d="M0 6C30 10 60 14 104 4M2 4C6 40 10 70 4 104M10 14C30 30 40 50 36 70" fill="none" stroke="#6b4a2a" strokeWidth="1.1" opacity=".55" />
-      {leaves.map(([x, y, r], i) => (
-        <ellipse key={`l${i}`} cx={x} cy={y} rx="6" ry="2.8" transform={`rotate(${r} ${x} ${y})`} fill={i % 2 ? "#5d7d3a" : "#4b6b2f"} opacity=".9" />
-      ))}
-      {blooms.map(([x, y, s], i) => (
-        <g key={`b${i}`} transform={`translate(${x} ${y}) scale(${s}) rotate(${i * 37})`}>
-          {[0, 120, 240].map((a) => (
-            <path key={a} d="M0 0C-4.5-3-4.5-8.5 0-10 4.5-8.5 4.5-3 0 0Z" transform={`rotate(${a})`} fill={i % 3 === 0 ? "#c2185b" : i % 3 === 1 ? "#d6336c" : "#ad1457"} stroke="#8a0f45" strokeWidth=".4" />
-          ))}
-          <circle r="1.3" fill="#fff3c4" />
-        </g>
-      ))}
+      <path d="M2 4C40 14 70 14 106 4M3 6C10 40 12 70 4 100M34 12v54M58 12v44" fill="none" stroke="#9c6f24" strokeWidth=".8" opacity=".8" />
+      {[leaf(20, 13, 10, 1), leaf(46, 15, -6, 2), leaf(72, 14, 8, 3), leaf(94, 10, -10, 4), leaf(12, 40, -30, 5), leaf(12, 70, -20, 6)]}
+      {top}
+      {side}
+      {ladi1}
+      {ladi2}
+      {leaf(34, 58, 0, 7)}
+      {leaf(58, 48, 0, 8)}
     </svg>
   );
 }

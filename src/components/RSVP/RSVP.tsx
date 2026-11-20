@@ -27,7 +27,7 @@ const SEAL = { x: 598, y: 450, r: 82 };
 const PIECE = { x: 500, y: 360, w: 200, h: 450 }; // seal-purple.png position inside the artwork
 
 // ===== layout (in container-width units, cqw) =====
-const SPACE_CLOSED = 60; // heading zone above the envelope (leaves breathing room before it)
+const SPACE_CLOSED = 34; // heading zone above the envelope (leaves breathing room before it)
 const SPACE_OPEN = 95; // room for the couple + card once the envelope is open
 const ENV_SCALE = 100; // the envelope fills the column
 
@@ -234,7 +234,7 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
   };
 
   return (
-    <section ref={sectionRef} id="rsvp" aria-labelledby="rsvp-title" className="relative overflow-x-clip px-5 py-6 text-[#4b0f16]">
+    <section ref={sectionRef} id="rsvp" aria-labelledby="rsvp-title" className="relative overflow-x-clip px-5 py-6 text-[#FAF1DC]">
       {/* continuous falling petals (behind the envelope, the couple, the text and the buttons) */}
       {showPetals && (
         <div className="pointer-events-none absolute inset-0 overflow-hidden" style={{ zIndex: 0 }} aria-hidden>
@@ -302,22 +302,18 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
         >
           <h2
             id="rsvp-title"
-            className="absolute inset-x-0 top-0 text-center font-normal text-[#7a1420]"
+            className="absolute inset-x-0 top-0 text-center font-normal text-[#FAF1DC]"
             style={{
               fontFamily: SERIF,
+              color: "#FAF1DC",
               opacity: entered && stage === 0 ? 1 : 0,
               transform: entered && stage === 0 ? "none" : "translateY(calc(var(--u) * 10))",
               transition: stage === 0 ? `opacity 1200ms ${EASE} 250ms, transform 1200ms ${EASE} 250ms` : `opacity 350ms ${EASE}`,
             }}
           >
-            <span className="block leading-[1.1]" style={{ fontSize: "10cqw", fontWeight: 700, letterSpacing: "0.01em" }}>
-              Your Presence,
-            </span>
-            <span className="block leading-[1.1]" style={{ fontSize: "10cqw", fontWeight: 700 }}>
-              Our Blessing
-            </span>
+            <span className="sr-only">Your Presence, Our Blessing</span>
             {/* divider: gold hairlines with small diamonds and a four-petal centre */}
-            <svg viewBox="0 0 300 16" className="mx-auto mt-[2cqw] block h-[4.4cqw] w-[82cqw] text-[#b5782a]" fill="none" aria-hidden>
+            <svg viewBox="0 0 300 16" className="mx-auto mt-[2cqw] block h-[4.4cqw] w-[82cqw] text-[#C8961E]" fill="none" aria-hidden>
               <path d="M6 8h112M182 8h112" stroke="currentColor" strokeWidth=".9" />
               <path d="M126 8l3.2-3.2L132.4 8l-3.2 3.2zM167.6 8l3.2-3.2L174 8l-3.2 3.2z" fill="currentColor" />
               <path d="M150 1.5l4.6 6.5-4.6 6.5-4.6-6.5z" fill="currentColor" />
@@ -602,21 +598,21 @@ export default function RSVP(_props: { inScene?: boolean } = {}) {
           </svg>
           <span>Joyfully Accept</span>
         </button>
-        <p className="mt-2 font-body text-[12.5px] font-semibold tracking-[0.06em] text-[#8a5f15]">
+        <p className="mt-2 font-body text-[13px] font-semibold tracking-[0.06em] text-[#F3D98B]">
           <span aria-hidden>↑ </span>Tap on the Accept button
         </p>
         {/* "We can't wait to celebrate with you!" framed by gold rules */}
         <div className="mt-4 flex w-full max-w-[360px] items-center gap-3 px-1" aria-hidden={false}>
-          <span className="h-px flex-1" style={{ background: "linear-gradient(90deg, transparent, #b5782a)" }} />
-          <span className="relative -ml-1 -mr-1 h-1.5 w-1.5 rotate-45 bg-[#b5782a]" style={{ marginRight: "calc(var(--u) * -6)" }} />
-          <p className="whitespace-nowrap text-center italic leading-none text-[#7a1420]" style={{ fontFamily: SERIF, fontWeight: 600, fontSize: "calc(var(--u) * 20)" }}>
+          <span className="h-px flex-1" style={{ background: "linear-gradient(90deg, transparent, #C8961E)" }} />
+          <span className="relative -ml-1 -mr-1 h-1.5 w-1.5 rotate-45 bg-[#C8961E]" style={{ marginRight: "calc(var(--u) * -6)" }} />
+          <p className="whitespace-nowrap text-center italic leading-none text-[#F3D98B]" style={{ fontFamily: SERIF, fontWeight: 600, fontSize: "calc(var(--u) * 20)" }}>
             We can&apos;t wait to celebrate with you!
           </p>
-          <span className="relative h-1.5 w-1.5 rotate-45 bg-[#b5782a]" style={{ marginLeft: "calc(var(--u) * -6)" }} />
-          <span className="h-px flex-1" style={{ background: "linear-gradient(270deg, transparent, #b5782a)" }} />
+          <span className="relative h-1.5 w-1.5 rotate-45 bg-[#C8961E]" style={{ marginLeft: "calc(var(--u) * -6)" }} />
+          <span className="h-px flex-1" style={{ background: "linear-gradient(270deg, transparent, #C8961E)" }} />
         </div>
         {error && (
-          <p role="alert" className="mt-3 text-center font-body text-sm text-[#6d0f1b]">
+          <p role="alert" className="mt-3 text-center font-body text-[15px] text-[#F3D98B]">
             Something went wrong. Please try again.
           </p>
         )}

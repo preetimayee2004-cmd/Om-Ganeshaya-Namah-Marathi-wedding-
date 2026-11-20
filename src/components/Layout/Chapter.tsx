@@ -1,58 +1,60 @@
 import type { ReactNode } from "react";
 import { useInView } from "./Reveal";
+import { ChandrakorRule, PaithaniBand, PALETTE, Rangoli } from "./Marathi";
 
 /**
- * One "chapter" of the illustrated wedding story. Every section after the couple screen is wrapped in this:
- *  - a soft watercolor wash behind it, taken from the couple section's parchment palette (each chapter has its
- *    own tint so they feel related but not identical),
- *  - a small chapter mark above it: a hand-drawn gold vine with a lotus, the Marathi chapter number and an
- *    italic chapter name. The vine draws itself in when the chapter scrolls into view.
+ * One "chapter" of the invitation. Every section after the couple screen is wrapped in this:
+ *  - a Paithani border band (purple with gold zari peacocks and parrots) joins it to the section above,
+ *  - a large Marathi heading in Rozha One with the English name smaller beneath it,
+ *  - a chandrakor divider and a small Sanskar Bharati rangoli under the heading.
+ * Most chapters sit on ivory paper; "green" (parrot green) and "purple" (Paithani purple) chapters get their
+ * own coloured ground with a faint gold butta pattern, and switch to light text.
  */
-export type Tone = "parchment" | "blush" | "saffron" | "sage";
+export type Tone = "ivory" | "green" | "purple" | "parchment" | "blush" | "saffron" | "sage";
 
 const DEV = "०१२३४५६७८९";
 const mr = (n: number) => String(n).padStart(2, "0").replace(/\d/g, (d) => DEV[+d]);
 
-function Vine({ seen }: { seen: boolean }) {
-  return (
-    <svg viewBox="0 0 220 26" className={`chapter-vine mx-auto block ${seen ? "is-seen" : ""}`} style={{ width: "calc(var(--u) * 200)", height: "calc(var(--u) * 24)" }} fill="none" aria-hidden>
-      {/* two curling vines that meet at a lotus */}
-      <path className="chapter-vine-line" pathLength={1} d="M100 13C84 13 76 6 62 8S38 18 24 14 8 10 2 13" stroke="#b8862f" strokeWidth="0.9" strokeLinecap="round" />
-      <path className="chapter-vine-line" pathLength={1} d="M120 13c16 0 24-7 38-5s24 10 38 6 16-4 22-1" stroke="#b8862f" strokeWidth="0.9" strokeLinecap="round" />
-      {/* leaves */}
-      {[
-        [70, 7, -30], [44, 15, 25], [22, 13, -20],
-        [150, 7, 30], [176, 15, -25], [198, 13, 20],
-      ].map(([x, y, r], i) => (
-        <path key={i} className="chapter-vine-leaf" d={`M${x} ${y}c3-3 7-3 9 0-3 3-7 3-9 0Z`} fill="#8f9a5a" fillOpacity=".7" transform={`rotate(${r} ${x} ${y})`} />
-      ))}
-      {/* lotus */}
-      <g className="chapter-vine-leaf">
-        <path d="M110 3c2.6 3 2.6 7 0 10.5-2.6-3.5-2.6-7.5 0-10.5Z" fill="#7a1f2b" />
-        <path d="M110 14c-3.6-.4-6.6-2.8-7.4-6.4 3.6 0 6.5 2.4 7.4 6.4Zm0 0c3.6-.4 6.6-2.8 7.4-6.4-3.6 0-6.5 2.4-7.4 6.4Z" fill="#b8862f" />
-        <path d="M102 17.5c5 1.6 11 1.6 16 0" stroke="#b8862f" strokeWidth=".9" strokeLinecap="round" />
-      </g>
-    </svg>
-  );
-}
-
-export default function Chapter({ n, name, tone = "parchment", children }: { n: number; name: string; tone?: Tone; children: ReactNode }) {
+export default function Chapter({
+  n,
+  name,
+  marathi,
+  tone = "ivory",
+  children,
+}: {
+  n: number;
+  name: string;
+  marathi: string;
+  tone?: Tone;
+  children: ReactNode;
+}) {
   const [ref, seen] = useInView<HTMLDivElement>(0.15);
+  const dark = tone === "green" || tone === "purple";
+  const title = dark ? "#FAF1DC" : PALETTE.kumkum;
+  const sub = dark ? "#F3D98B" : "#5a2a1e";
   return (
     <div ref={ref} className={`chapter chapter-${tone} relative`}>
-      {/* painted first and with no z-index, so it sits behind the chapter without creating a stacking context */}
-      <div aria-hidden className="chapter-wash pointer-events-none absolute" />
-      <div className="chapter-mark relative pt-6 text-center" style={{ opacity: seen ? 1 : 0, transition: "opacity 900ms ease" }}>
-        <Vine seen={seen} />
-        <p className="mt-1.5 flex items-center justify-center gap-2 leading-none">
-          <span lang="mr" className="font-marathi text-[12px] tracking-[0.12em]" style={{ color: "#a8741a" }}>
+      {/* the coloured ground of a green / purple chapter (ivory chapters just show the paper) */}
+      {dark && <div aria-hidden className="chapter-ground pointer-events-none absolute inset-0" />}
+      <PaithaniBand />
+      <div className="chapter-mark relative px-4 pt-12 text-center" style={{ opacity: seen ? 1 : 0, transition: "opacity 900ms ease" }}>
+        <p className="flex items-center justify-center gap-2 leading-none">
+          <span lang="mr" className="font-marathi text-[13px] tracking-[0.08em]" style={{ color: sub }}>
             अध्याय {mr(n)}
           </span>
-          <span aria-hidden className="inline-block h-1 w-1 rotate-45" style={{ background: "#b8862f" }} />
-          <span className="text-[14px] italic" style={{ fontFamily: '"Cormorant Garamond", Georgia, serif', fontWeight: 600, color: "#7a1f2b" }}>
-            {name}
-          </span>
         </p>
+        <h2 lang="mr" className="chapter-title mt-2" style={{ color: title }}>
+          {marathi}
+        </h2>
+        <p className="mt-1 text-[19px] italic leading-tight" style={{ fontFamily: '"Cormorant Garamond", Georgia, serif', fontWeight: 600, color: sub }}>
+          {name}
+        </p>
+        <div className="mt-3">
+          <ChandrakorRule color={dark ? PALETTE.haldi : PALETTE.kumkum} line={dark ? "rgba(243,217,139,0.7)" : "rgba(200,150,30,0.6)"} />
+        </div>
+        <div className="mt-3">
+          <Rangoli size={52} dark={dark} />
+        </div>
       </div>
       <div className="relative">{children}</div>
     </div>

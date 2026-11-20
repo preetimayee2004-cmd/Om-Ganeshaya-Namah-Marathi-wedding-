@@ -3,6 +3,7 @@ import PointerHand from "../Layout/PointerHand";
 import { useScrollRoot } from "../Layout/ScrollRoot";
 import { wedding, coupleOrder } from "../../config/wedding";
 import { sound } from "../../lib/sound";
+import { Mundavalya } from "../Layout/Marathi";
 import { useGuest } from "../../context/GuestContext";
 
 // ===== SMOKE REVEAL SETTINGS (invitation -> couple screen) =====
@@ -1344,7 +1345,9 @@ export default function Intro() {
 
             {/* Names (1.50s – 2.10s) */}
             {/* names are written one after the other, like ink flowing from left to right */}
-            <div className="mt-3">
+            <div className="mt-3 flex items-start justify-center gap-2">
+              {/* mundavalya: pearl strings hanging beside the names */}
+              <Mundavalya height={118} style={{ opacity: s6Names ? 1 : 0, transition: "opacity 900ms ease 300ms" }} />
               <div className="flex flex-col items-center leading-none">
                 <p className="font-script text-[54px] leading-[1.05] text-[#6d0f1b]" style={{ ...NAME_STROKE, ...inkWipe(s6Names, 0) }}>{first}</p>
                 <div className="flex items-center gap-2" style={inkWipe(s6Names, 650, 700)}>
@@ -1354,6 +1357,7 @@ export default function Intro() {
                 </div>
                 <p className="font-script text-[54px] leading-[1.05] text-[#6d0f1b]" style={{ ...NAME_STROKE, ...inkWipe(s6Names, 1000) }}>{second}</p>
               </div>
+              <Mundavalya height={118} flip style={{ opacity: s6Names ? 1 : 0, transition: "opacity 900ms ease 300ms" }} />
             </div>
 
             {/* Ornamental Divider (1.90s – 2.40s) */}
@@ -1372,7 +1376,9 @@ export default function Intro() {
                   strokeDashoffset={s6Divider ? "0" : "160"}
                   style={{ transition: `stroke-dashoffset 500ms ${EASE_PRIMARY}` }}
                 />
-                <circle cx="80" cy="6" r="3" fill="#6d0f1b" opacity={s6Divider ? 1 : 0} />
+                {/* chandrakor (crescent bindi) as the divider centre */}
+                <path d="M72 3c2 5 14 5 16 0-2 7-14 7-16 0Z" fill="#7A1F2B" stroke="none" opacity={s6Divider ? 1 : 0} />
+                <circle cx="80" cy="3" r="1.3" fill="#7A1F2B" stroke="none" opacity={s6Divider ? 1 : 0} />
               </svg>
             </div>
 
